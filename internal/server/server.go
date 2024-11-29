@@ -10,6 +10,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/tuanvumaihuynh/roboflow/db"
+	qrLocationHttp "github.com/tuanvumaihuynh/roboflow/internal/location/port"
+	qrLocationRepo "github.com/tuanvumaihuynh/roboflow/internal/location/repository"
+	qrLocationSvc "github.com/tuanvumaihuynh/roboflow/internal/location/service"
 	raybotHttp "github.com/tuanvumaihuynh/roboflow/internal/raybot/port"
 	raybotRepo "github.com/tuanvumaihuynh/roboflow/internal/raybot/repository"
 	raybotSvc "github.com/tuanvumaihuynh/roboflow/internal/raybot/service"
@@ -18,7 +21,8 @@ import (
 )
 
 type services struct {
-	raybotSvc raybotSvc.RaybotService
+	raybotSvc     raybotSvc.RaybotService
+	qrLocationSvc qrLocationSvc.QrLocationService
 }
 
 type CleanupFunc func(ctx context.Context)
@@ -27,10 +31,12 @@ func Run(cfg *config.Config, conn *pgxpool.Pool, logger *zap.Logger) CleanupFunc
 	// Setup store and repositories
 	store := db.NewStore(conn)
 	raybotRepo := raybotRepo.NewRaybotRepository(store)
+	qrLocationRepo := qrLocationRepo.NewQrRepository(store)
 
 	// Setup services
 	svcs := services{
-		raybotSvc: *raybotSvc.NewRaybotService(raybotRepo),
+		raybotSvc:     *raybotSvc.NewRaybotService(raybotRepo),
+		qrLocationSvc: *qrLocationSvc.NewQrLocationService(qrLocationRepo),
 	}
 
 	// Setup server
@@ -65,6 +71,7 @@ func setupHandler(
 ) chi.Router {
 	// Setup handlers
 	raybotHandler := raybotHttp.NewRaybotHandler(svcs.raybotSvc, logger)
+	qrLocationHandler := qrLocationHttp.NewQrLocationHandler(svcs.qrLocationSvc, logger)
 
 	// Setup middleware
 	r.Use(middleware.Logging(logger))
@@ -80,6 +87,13 @@ func setupHandler(
 			r.Get("/", raybotHandler.HandleListRaybots)
 			r.Post("/", raybotHandler.HandleCreateRaybot)
 			r.Delete("/{id}", raybotHandler.HandleDeleteRaybot)
+		})
+		r.Route("/qr-locations", func(r chi.Router) {
+			r.Get("/{id}", qrLocationHandler.HandleGetQRLocation)
+			r.Get("/", qrLocationHandler.HandleListQRLocations)
+			r.Post("/", qrLocationHandler.HandleCreateQRLocation)
+			r.Put("/{id}", qrLocationHandler.HandleUpdateQRLocation)
+			r.Delete("/{id}", qrLocationHandler.HandleDeleteQRLocation)
 		})
 	})
 
