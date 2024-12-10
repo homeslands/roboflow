@@ -7,9 +7,15 @@ import (
 
 // ErrorResponse represents an error response.
 type ErrorResponse struct {
-	StatusCode int    `json:"-"`
-	Code       string `json:"code"`
-	Message    string `json:"message"`
+	StatusCode int               `json:"-"`
+	Code       string            `json:"code"`
+	Message    string            `json:"message"`
+	Details    []ValidationError `json:"details,omitempty"`
+}
+
+type ValidationError struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
 }
 
 func (e ErrorResponse) Error() string {

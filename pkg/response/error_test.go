@@ -5,11 +5,23 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/tuanvumaihuynh/roboflow/pkg/response"
 	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
+
+// FieldErrorMock is a mock implementation of validator.FieldError for testing purposes.
+type mockFieldError struct {
+	validator.FieldError
+	tag   string
+	field string
+}
+
+func (e mockFieldError) Tag() string { return e.tag }
+
+func (e mockFieldError) Field() string { return e.field }
 
 func TestErrorToResponse(t *testing.T) {
 	tests := []struct {
@@ -105,6 +117,28 @@ func TestErrorToResponse(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 				Code:       "internal_error",
 				Message:    "Internal server error",
+			},
+		},
+		{
+			name: "ValidationError",
+			err: validator.ValidationErrors{
+				&mockFieldError{
+					tag:   "required",
+					field: "Field1",
+				},
+				&mockFieldError{
+					tag:   "email",
+					field: "Field2",
+				},
+			},
+			expected: response.ErrorResponse{
+				StatusCode: http.StatusBadRequest,
+				Code:       "validation_error",
+				Message:    "Validation error",
+				Details: []response.ValidationError{
+					{Field: "Field1", Message: "'Field1' required"},
+					{Field: "Field2", Message: "'Field2' email"},
+				},
 			},
 		},
 	}

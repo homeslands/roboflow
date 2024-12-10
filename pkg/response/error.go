@@ -2,7 +2,10 @@ package response
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 
 	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
@@ -59,6 +62,20 @@ func ErrorToResponse(err error) ErrorResponse {
 			StatusCode: http.StatusServiceUnavailable,
 			Code:       err.GetCode(),
 			Message:    err.GetMessage(),
+		}
+	case validator.ValidationErrors:
+		validationErrs := make([]ValidationError, len(err))
+		for i, e := range err {
+			validationErrs[i] = ValidationError{
+				Field:   e.Field(),
+				Message: fmt.Sprintf("'%s' %s", e.Field(), e.Tag()),
+			}
+		}
+		return ErrorResponse{
+			StatusCode: http.StatusBadRequest,
+			Code:       "validation_error",
+			Message:    "Validation error",
+			Details:    validationErrs,
 		}
 	default:
 		e := new(xerrors.XError)
