@@ -2,24 +2,24 @@ package validator
 
 import "github.com/go-playground/validator/v10"
 
-type Validator interface {
-	Validate(s interface{}) error
-}
-
-// xValidator is a wrapper around the go-playground/validator
-type xValidator struct {
+// Validator is a wrapper around the go-playground/validator
+type Validator struct {
 	validate *validator.Validate
 }
 
 // New creates a new validator
-func New() *xValidator {
-	return &xValidator{
-		validate: validator.New(validator.WithRequiredStructEnabled()),
+func New() *Validator {
+	v := validator.New(validator.WithRequiredStructEnabled())
+
+	// Register custom validators here
+	v.RegisterValidation("alphanumspace", alphaNumberSpaceValidator)
+	return &Validator{
+		validate: v,
 	}
 }
 
 // Validate validates the given struct
-func (v *xValidator) Validate(s interface{}) error {
+func (v *Validator) Validate(s interface{}) error {
 	return v.validate.Struct(s)
 }
 
