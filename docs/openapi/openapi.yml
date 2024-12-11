@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: Roboflow API
+  description: >-
+    Roboflow API Swagger
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080/api
+tags:
+  - name: raybot
+    description: Raybot operations
+paths:
+  /raybots:
+    $ref: "./paths/raybots.yml"
+  /raybots/{raybotId}:
+    $ref: "./paths/raybots@{raybotId}.yml"
+
+  /raybot-commands:
+    $ref: "./paths/raybotCommands.yml"
+  /raybot-commands/{raybotCommandId}:
+    $ref: "./paths/raybotCommands@{raybotCommandId}.yml"
+
+  /qr-locations:
+    $ref: "./paths/qrLocations.yml"
+  /qr-locations/{qrLocationId}:
+    $ref: "./paths/qrLocations@{qrLocationId}.yml"
+  # /workflows:
+  #   $ref: "./paths/workflows.yml"
+  # /workflows/{workflowId}:
+  #   $ref: "./paths/workflows@{workflowId}.yml"

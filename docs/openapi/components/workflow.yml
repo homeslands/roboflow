@@ -1,0 +1,179 @@
+parameters:
+  WorkflowId:
+    name: workflowId
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  Workflow:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      definition:
+        $ref: "./workflow.yml#/schemas/WorkflowDefinition"
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - name
+      - createdAt
+      - updatedAt
+  CreateWorkflow:
+    type: object
+    properties:
+      name:
+        type: string
+      definition:
+        $ref: "./workflow.yml#/schemas/WorkflowDefinition"
+    required:
+      - name
+      - definition
+  RuntimeConfig:
+    type: object
+    properties:
+
+  WorkflowDefinition:
+    type: object
+    properties:
+      nodes:
+        type: array
+        items:
+          $ref: "./workflow.yml#/schemas/Node"
+      edges:
+        type: array
+        items:
+          $ref: "./workflow.yml#/schemas/Edge"
+      viewport:
+        $ref: "./workflow.yml#/schemas/ViewPort"
+      zoom:
+        type: number
+        format: float
+  Node:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      type:
+        $ref: "./workflow.yml#/schemas/NodeType"
+      initialized:
+        type: boolean
+      position:
+        $ref: "./workflow.yml#/schemas/Position"
+      definition:
+        $ref: "./workflow.yml#/schemas/NodeDefinition"
+    required:
+      - id
+      - type
+      - initialized
+      - position
+      - definition
+  NodeDefinition:
+    type: object
+    properties:
+      type:
+        $ref: "./workflow.yml#/schemas/TaskType"
+      params:
+        type: object
+        additionalProperties:
+          $ref: "./workflow.yml#/schemas/NodeParam"
+    required:
+      - type
+      - params
+  NodeType:
+    type: string
+    enum:
+      - RoboflowNode
+    x-oapi-codegen-extra-tags:
+      validate: required,oneof=RoboflowNode
+  TaskType:
+    type: string
+    enum:
+      - STOP
+      - MOVE_FORWARD
+      - MOVE_BACKWARD
+      - MOVE_TO_LOCATION
+      - OPEN_BOX
+      - CLOSE_BOX
+      - LIFT_BOX
+      - DROP_BOX
+      - CHECK_QR
+      - WAIT_GET_ITEM
+    x-oapi-codegen-extra-tags:
+      validate: required,oneof=STOP MOVE_FORWARD MOVE_BACKWARD MOVE_TO_LOCATION OPEN_BOX CLOSE_BOX LIFT_BOX DROP_BOX CHECK_QR WAIT_GET_ITEM
+  NodeParam:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        config_key:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+      additionalProperties: false
+  Edge:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      source:
+        type: string
+      target:
+        type: string
+      sourceHandle:
+        type: string
+      targetHandle:
+        type: string
+      label:
+        type: string
+      animated:
+        type: boolean
+      sourceX:
+        type: integer
+      sourceY:
+        type: integer
+      targetX:
+        type: integer
+      targetY:
+        type: integer
+  ViewPort:
+    type: object
+    properties:
+      x:
+        type: integer
+      y:
+        type: integer
+      zoom:
+        type: number
+        format: float
+
+  Position:
+    type: object
+    properties:
+      x:
+        type: integer
+        x-oapi-codegen-extra-tags:
+          validate: required,number
+      y:
+        type: integer
+        x-oapi-codegen-extra-tags:
+          validate: required,number
+    required:
+      - x
+      - y
+

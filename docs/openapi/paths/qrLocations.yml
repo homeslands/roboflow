@@ -1,0 +1,71 @@
+get:
+  summary: List all QR locations
+  operationId: listAllQRLocations
+  description: List all QR locations
+  tags:
+    - qrLocation
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/qrLocation.yml#/schemas/QRLocation"
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "internal_server_error"
+            message: "Internal server error"
+
+post:
+  summary: Create QR location
+  operationId: createQRLocation
+  description: Create a QR location
+  tags:
+    - qrLocation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/qrLocation.yml#/schemas/CreateQRLocation"
+  responses:
+    '201':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/qrLocation.yml#/schemas/QRLocation"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "qr_code_already_exists"
+            message: "QR code already exists"
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "internal_server_error"
+            message: "Internal server error"

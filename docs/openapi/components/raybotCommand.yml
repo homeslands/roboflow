@@ -1,0 +1,100 @@
+parameters:
+  RaybotCommandId:
+    name: raybotCommandId
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  RaybotCommand:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      raybotId:
+        type: string
+        format: uuid
+      type:
+        $ref: "./raybotCommand.yml#/schemas/RaybotCommandType"
+      status:
+        $ref: "./raybotCommand.yml#/schemas/RaybotCommandStatus"
+      input:
+        type: object
+      output:
+        type: object
+      createdAt:
+        type: string
+        format: date-time
+      completedAt:
+        type: string
+        format: date-time
+        nullable: true
+    required:
+      - id
+      - raybotId
+      - type
+      - input
+      - output
+      - status
+      - createdAt
+  CreateRaybotCommand:
+    type: object
+    properties:
+      raybotId:
+        type: string
+        format: uuid
+        x-oapi-codegen-extra-tags:
+          validate: required,uuid
+      type:
+        $ref: "./raybotCommand.yml#/schemas/RaybotCommandType"
+      input:
+        type: object
+        x-oapi-codegen-extra-tags:
+          validate: required
+    required:
+      - raybotId
+      - type
+      - input
+  RaybotCommandType:
+    type: string
+    enum:
+      - STOP
+      - MOVE_FORWARD
+      - MOVE_BACKWARD
+      - MOVE_TO_LOCATION
+      - OPEN_BOX
+      - CLOSE_BOX
+      - LIFT_BOX
+      - DROP_BOX
+      - CHECK_QR
+      - WAIT_GET_ITEM
+    x-oapi-codegen-extra-tags:
+      validate: required,oneof=STOP MOVE_FORWARD MOVE_BACKWARD MOVE_TO_LOCATION OPEN_BOX CLOSE_BOX LIFT_BOX DROP_BOX CHECK_QR WAIT_GET_ITEM
+    x-enum-varnames:
+      - RaybotCommandTypeStop
+      - RaybotCommandTypeMoveForward
+      - RaybotCommandTypeMoveBackward
+      - RaybotCommandTypeMoveToLocation
+      - RaybotCommandTypeOpenBox
+      - RaybotCommandTypeCloseBox
+      - RaybotCommandTypeLiftBox
+      - RaybotCommandTypeDropBox
+      - RaybotCommandTypeCheckQr
+      - RaybotCommandTypeWaitGetItem
+  RaybotCommandStatus:
+    type: string
+    enum:
+      - PENDING
+      - IN_PROGRESS
+      - SUCCESS
+      - FAILURE
+    x-oapi-codegen-extra-tags:
+      validate: required,oneof=PENDING IN_PROGRESS SUCCESS FAILURE
+    x-enum-varnames:
+      - RaybotCommandStatusPending
+      - RaybotCommandStatusInProgress
+      - RaybotCommandStatusSuccess
+      - RaybotCommandStatusFailure

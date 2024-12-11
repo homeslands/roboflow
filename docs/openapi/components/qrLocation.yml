@@ -1,0 +1,94 @@
+parameters:
+  QRLocationId:
+    name: qrLocationId
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  QRLocation:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      qrCode:
+        type: string
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - name
+      - qrCode
+      - metadata
+      - createdAt
+      - updatedAt
+  CreateQRLocation:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        regex: "^[a-zA-Z0-9_]+$"
+        example: "my-raybot"
+        x-oapi-codegen-extra-tags:
+          validate: required,alphanum,min=1,max=100
+      qrCode:
+        type: string
+        minLength: 1
+        maxLength: 100
+        regex: "^[a-zA-Z0-9_]+$"
+        example: "my-raybot"
+        x-oapi-codegen-extra-tags:
+          validate: required,alphanum,min=1,max=100
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+    required:
+      - name
+      - qrCode
+      - metadata
+  UpdateQRLocation:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        regex: "^[a-zA-Z0-9_]+$"
+        example: "my-raybot"
+        x-oapi-codegen-extra-tags:
+          validate: alphanum,min=1,max=100
+      qrCode:
+        type: string
+        minLength: 1
+        maxLength: 100
+        regex: "^[a-zA-Z0-9_]+$"
+        example: "my-raybot"
+        x-oapi-codegen-extra-tags:
+          validate: alphanum,min=1,max=100
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+    required:
+      - name
+      - qrCode
+      - metadata

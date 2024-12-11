@@ -1,0 +1,101 @@
+get:
+  summary: List all raybot commands
+  operationId: listAllRaybotCommands
+  description: List all raybot commands
+  tags:
+    - raybotCommand
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/raybotCommand.yml#/schemas/RaybotCommand"
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "internal_server_error"
+            message: "Internal server error"
+
+post:
+  summary: Create raybot command
+  operationId: createRaybotCommand
+  description: >
+    Create a command based on the specified `RaybotCommandType`. Each raybot command type defines the structure of its input.
+
+    ### Raybot Command Types and Inputs:
+
+    - **STOP**: No input required.
+
+    - **MOVE_FORWARD**: No input required.
+
+    - **MOVE_BACKWARD**: No input required.
+
+    - **OPEN_BOX**: No input required.
+
+    - **CLOSE_BOX**: No input required.
+
+    - **LIFT_BOX**: No input required.
+
+    - **WAIT_GET_ITEM**: No input required.
+
+    - **MOVE_TO_LOCATION**: Requires the following input:
+      ```json
+      {
+        "location": "string",
+        "direction": "FORWARD or BACKWARD"
+      }
+      ```
+    - **DROP_BOX**: Requires the following input:
+      ```json
+      {
+        "distance": 1300
+      }
+      ```
+    - **CHECK_QR**: Requires the following input:
+      ```json
+      {
+        "qr_code": "string"
+      }
+      ```
+
+    The `input` field must match the required structure for the selected `RaybotCommandType`. An invalid or missing input will result in an error.
+  tags:
+    - raybotCommand
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/raybotCommand.yml#/schemas/CreateRaybotCommand"
+  responses:
+    '201':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/raybotCommand.yml#/schemas/RaybotCommand"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "internal_server_error"
+            message: "Internal server error"

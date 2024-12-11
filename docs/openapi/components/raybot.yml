@@ -1,0 +1,70 @@
+parameters:
+  RaybotId:
+    name: raybotId
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  Raybot:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      token:
+        type: string
+      status:
+        $ref: "./raybot.yml#/schemas/RaybotStatus"
+      ipAddress:
+        type: string
+        format: ipv4
+        nullable: true
+      lastConnectedAt:
+        type: string
+        format: date-time
+        nullable: true
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - name
+      - token
+      - status
+      - ipAddress
+      - lastConnectedAt
+      - createdAt
+      - updatedAt
+  CreateRaybot:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        regex: "^[a-zA-Z0-9_]+$"
+        example: "my-raybot"
+        x-oapi-codegen-extra-tags:
+          validate: required,alphanum,min=1,max=100
+    required:
+      - name
+  RaybotStatus:
+    type: string
+    enum:
+      - OFFLINE
+      - IDLE
+      - BUSY
+    x-oapi-codegen-extra-tags:
+      validate: required,oneof=OFFLINE IDLE BUSY
+    x-enum-varnames:
+      - RaybotStatusOffline
+      - RaybotStatusIdle
+      - RaybotStatusBusy
