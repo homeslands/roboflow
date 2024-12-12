@@ -4,10 +4,10 @@ package middleware
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
-	"go.uber.org/zap"
 )
 
 // Recoverer is a middleware that recovers from panics, logs the panic (and a
@@ -15,12 +15,12 @@ import (
 // possible.
 //
 // Recoverer prints a stack trace of the last function call.
-func Recoverer(next http.Handler, isProd bool, logger *zap.Logger) http.Handler {
+func Recoverer(next http.Handler, isProd bool, log *slog.Logger) http.Handler {
 	errorResponse := struct {
-		Code    int    `json:"code"`
+		Code    string `json:"code"`
 		Message string `json:"message"`
 	}{
-		Code:    http.StatusInternalServerError,
+		Code:    "internal_server_error",
 		Message: "Internal Server Error",
 	}
 
@@ -39,7 +39,7 @@ func Recoverer(next http.Handler, isProd bool, logger *zap.Logger) http.Handler 
 				}
 
 				if isProd {
-					logger.Panic("panic", zap.Any("recover", rvr))
+					log.Error("panic", slog.Any("recover", rvr))
 				} else {
 					chimiddleware.PrintPrettyStack(rvr)
 				}

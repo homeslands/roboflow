@@ -4,16 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"go.uber.org/zap"
 
-	commandModel "github.com/tuanvumaihuynh/roboflow/internal/command/model"
-	commandSvc "github.com/tuanvumaihuynh/roboflow/internal/command/service"
-	raybotModel "github.com/tuanvumaihuynh/roboflow/internal/raybot/model"
-	raybotSvc "github.com/tuanvumaihuynh/roboflow/internal/raybot/service"
+	"github.com/tuanvumaihuynh/roboflow/internal/model"
+	raybotService "github.com/tuanvumaihuynh/roboflow/internal/service/raybot"
+	raybotCommandService "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command"
 )
 
 const (
@@ -31,31 +30,31 @@ const (
 )
 
 type RaybotClient struct {
-	raybot *raybotModel.Raybot
+	raybot *model.Raybot
 
-	cmdMap  map[string]*commandModel.Command
-	cmdChan chan *commandModel.Command
+	cmdMap  map[string]*model.RaybotCommand
+	cmdChan chan *model.RaybotCommand
 
 	// services
-	raybotSvc raybotSvc.RaybotService
-	cmdSvc    commandSvc.CommandService
+	raybotSvc raybotService.Service
+	cmdSvc    raybotCommandService.Service
 
 	conn   *websocket.Conn
 	send   chan []byte
-	logger *zap.Logger
+	logger *slog.Logger
 }
 
 func NewRaybotClient(
-	raybot *raybotModel.Raybot,
-	raybotSvc raybotSvc.RaybotService,
-	cmdSvc commandSvc.CommandService,
+	raybot *model.Raybot,
+	raybotSvc raybotService.Service,
+	cmdSvc raybotCommandService.Service,
 	conn *websocket.Conn,
-	logger *zap.Logger,
+	logger *slog.Logger,
 ) *RaybotClient {
 	return &RaybotClient{
 		raybot:    raybot,
-		cmdMap:    make(map[string]*commandModel.Command),
-		cmdChan:   make(chan *commandModel.Command, 1),
+		cmdMap:    make(map[string]*model.RaybotCommand),
+		cmdChan:   make(chan *model.RaybotCommand, 1),
 		raybotSvc: raybotSvc,
 		cmdSvc:    cmdSvc,
 		conn:      conn,
@@ -67,17 +66,20 @@ func NewRaybotClient(
 func InitilizeRaybotClient(
 	ctx context.Context,
 	raybotID uuid.UUID,
-	raybotSvc raybotSvc.RaybotService,
-	cmdSvc commandSvc.CommandService,
+	raybotSvc raybotService.Service,
+	cmdSvc raybotCommandService.Service,
 	conn *websocket.Conn,
-	logger *zap.Logger,
+	logger *slog.Logger,
 ) (*RaybotClient, error) {
-	raybot, err := raybotSvc.GetRaybot(ctx, raybotID)
+	raybot, err := raybotSvc.GetByID(ctx, raybotService.GetRaybotByIDQuery{ID: raybotID})
 	if err != nil {
 		return nil, fmt.Errorf("error getting raybot: %w", err)
 	}
 
-	err = raybotSvc.UpdateRaybotStatus(ctx, raybotID, raybotModel.RaybotStatusIdle)
+	err = raybotSvc.UpdateState(ctx, raybotService.UpdateStateCommand{
+		ID:    raybotID,
+		State: model.RaybotStateIdle,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("error updating raybot status: %w", err)
 	}
@@ -87,7 +89,7 @@ func InitilizeRaybotClient(
 		raybotSvc,
 		cmdSvc,
 		conn,
-		logger.With(zap.String("raybot_id", raybot.ID.String())),
+		logger.With(slog.String("raybot_id", raybotID.String())),
 	), nil
 }
 
@@ -96,9 +98,13 @@ func (c RaybotClient) ID() string {
 }
 
 func (c *RaybotClient) Close() {
-	err := c.raybotSvc.UpdateRaybotStatus(context.Background(), c.raybot.ID, raybotModel.RaybotStatusOffline)
+	err := c.raybotSvc.UpdateState(context.Background(), raybotService.UpdateStateCommand{
+		ID:    c.raybot.ID,
+		State: model.RaybotStateOffline,
+	})
+
 	if err != nil {
-		c.logger.Error("Error updating raybot status", zap.Error(err))
+		c.logger.Error("Error updating raybot status", slog.Any("error", err))
 	}
 
 	close(c.send)
@@ -121,12 +127,12 @@ func (c *RaybotClient) WritePump() {
 			}
 
 			if err := c.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-				c.logger.Error("error when write message", zap.Error(err))
+				c.logger.Error("Error when write message", slog.Any("error", err))
 				return
 			}
 		case <-ticker.C:
 			if err := c.conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(writeWait)); err != nil {
-				c.logger.Error("error when ping", zap.Error(err))
+				c.logger.Warn("Error when ping", slog.Any("error", err))
 				return
 			}
 		}
@@ -145,7 +151,7 @@ func (c *RaybotClient) ReadPump(unregister chan<- *RaybotClient) {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				c.logger.Error("Unexpected close", zap.Error(err))
+				c.logger.Error("Unexpected close", slog.Any("error", err))
 			}
 			unregister <- c
 			break
@@ -154,8 +160,8 @@ func (c *RaybotClient) ReadPump(unregister chan<- *RaybotClient) {
 	}
 }
 
-func (c *RaybotClient) SendCommand(cmd *commandModel.Command) error {
-	c.logger.Debug("Received command", zap.Any("cmd", cmd))
+func (c *RaybotClient) SendCommand(cmd *model.RaybotCommand) error {
+	c.logger.Debug("Received command", slog.Any("cmd", cmd))
 	c.cmdMap[cmd.ID.String()] = cmd
 
 	msg := OutboundCommandMsg{
@@ -203,6 +209,6 @@ func closeConn(c *RaybotClient, statusCode int, text string) {
 		websocket.FormatCloseMessage(statusCode, text), time.Now().Add(writeWait))
 
 	if err != nil {
-		c.logger.Error("Error when close connection", zap.Error(err))
+		c.logger.Error("Error when close connection", slog.Any("error", err))
 	}
 }
