@@ -2,25 +2,21 @@ package validator
 
 import "github.com/go-playground/validator/v10"
 
-// Validator is a wrapper around the go-playground/validator
-type Validator struct {
+var (
 	validate *validator.Validate
-}
+)
 
-// New creates a new validator
-func New() *Validator {
-	v := validator.New(validator.WithRequiredStructEnabled())
+func init() {
+	validate = validator.New(validator.WithRequiredStructEnabled())
 
 	// Register custom validators here
-	v.RegisterValidation("alphanumspace", alphaNumberSpaceValidator)
-	return &Validator{
-		validate: v,
-	}
+	validate.RegisterValidation("alphanumspace", AlphaNumberSpaceValidator)
+	validate.RegisterValidation("qrcode", QRCodeValidator)
 }
 
 // Validate validates the given struct
-func (v *Validator) Validate(s interface{}) error {
-	return v.validate.Struct(s)
+func Validate(s interface{}) error {
+	return validate.Struct(s)
 }
 
 // IsValidationError checks if the given error is a validation error
