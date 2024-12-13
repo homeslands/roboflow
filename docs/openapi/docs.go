@@ -30,6 +30,8 @@ func GetTemplate(specPath string) string {
       url: '%s',
       dom_id: '#swagger-ui',
       deepLinking: true,
+	  showExtensions: true,
+	  showCommonExtensions: true,
     });
   };
 </script>
