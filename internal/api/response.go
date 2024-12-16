@@ -1,7 +1,8 @@
-package response
+package api
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 )
 
@@ -22,18 +23,25 @@ func (e ErrorResponse) Error() string {
 	return e.Message
 }
 
-// JSON writes the response as JSON.
-func JSON(w http.ResponseWriter, statusCode int, data any) {
+// responseJSON writes the response as JSON to the response writer.
+func (s *HTTPServer) respondJSON(w http.ResponseWriter, statusCode int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	if data == nil {
 		return
 	}
+
 	json.NewEncoder(w).Encode(data)
 }
 
-// Error writes the error response as JSON.
-func Error(w http.ResponseWriter, err error) {
-	res := ErrorToResponse(err)
-	JSON(w, res.StatusCode, res)
+// respondError writes the error response to the response writer.
+func (s *HTTPServer) respondError(w http.ResponseWriter, r *http.Request, err error) {
+	res, isInternalErr := ErrorToResponse(err)
+	if isInternalErr {
+		s.log.ErrorContext(r.Context(), err.Error(), slog.Any("error", err))
+	} else {
+		s.log.DebugContext(r.Context(), err.Error(), slog.Any("error", err))
+	}
+
+	s.respondJSON(w, res.StatusCode, res)
 }
