@@ -43,18 +43,14 @@ schemas:
         type: string
         minLength: 1
         maxLength: 100
-        regex: "^[a-zA-Z0-9_]+$"
+        pattern: "^[a-zA-Z0-9 ]+$"
         example: "my-raybot"
-        x-oapi-codegen-extra-tags:
-          validate: required,alphanum,min=1,max=100
       qrCode:
         type: string
         minLength: 1
         maxLength: 100
-        regex: "^[a-zA-Z0-9_]+$"
+        pattern: "^[a-zA-Z0-9_-]+$"
         example: "my-raybot"
-        x-oapi-codegen-extra-tags:
-          validate: required,alphanum,min=1,max=100
       metadata:
         type: object
         additionalProperties: true
@@ -71,18 +67,14 @@ schemas:
         type: string
         minLength: 1
         maxLength: 100
-        regex: "^[a-zA-Z0-9_]+$"
+        pattern: "^[a-zA-Z0-9 ]+$"
         example: "my-raybot"
-        x-oapi-codegen-extra-tags:
-          validate: alphanum,min=1,max=100
       qrCode:
         type: string
         minLength: 1
         maxLength: 100
-        regex: "^[a-zA-Z0-9_]+$"
+        pattern: "^[a-zA-Z0-9_-]+$"
         example: "my-raybot"
-        x-oapi-codegen-extra-tags:
-          validate: alphanum,min=1,max=100
       metadata:
         type: object
         additionalProperties: true

@@ -43,19 +43,11 @@ schemas:
   CreateRaybotCommand:
     type: object
     properties:
-      raybotId:
-        type: string
-        format: uuid
-        x-oapi-codegen-extra-tags:
-          validate: required,uuid
       type:
         $ref: "./raybotCommand.yml#/schemas/RaybotCommandType"
       input:
         type: object
-        x-oapi-codegen-extra-tags:
-          validate: required
     required:
-      - raybotId
       - type
       - input
   RaybotCommandType:
@@ -71,8 +63,6 @@ schemas:
       - DROP_BOX
       - CHECK_QR
       - WAIT_GET_ITEM
-    x-oapi-codegen-extra-tags:
-      validate: required,oneof=STOP MOVE_FORWARD MOVE_BACKWARD MOVE_TO_LOCATION OPEN_BOX CLOSE_BOX LIFT_BOX DROP_BOX CHECK_QR WAIT_GET_ITEM
     x-enum-varnames:
       - RaybotCommandTypeStop
       - RaybotCommandTypeMoveForward
@@ -91,8 +81,6 @@ schemas:
       - IN_PROGRESS
       - SUCCESS
       - FAILURE
-    x-oapi-codegen-extra-tags:
-      validate: required,oneof=PENDING IN_PROGRESS SUCCESS FAILURE
     x-enum-varnames:
       - RaybotCommandStatusPending
       - RaybotCommandStatusInProgress

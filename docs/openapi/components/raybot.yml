@@ -1,6 +1,7 @@
 parameters:
   RaybotId:
     name: raybotId
+    description: The ID of the raybot
     in: path
     required: true
     schema:
@@ -50,10 +51,8 @@ schemas:
         type: string
         minLength: 1
         maxLength: 100
-        regex: "^[a-zA-Z0-9_]+$"
+        pattern: "^[a-zA-Z0-9 ]+$"
         example: "my-raybot"
-        x-oapi-codegen-extra-tags:
-          validate: required,alphanum,min=1,max=100
     required:
       - name
   RaybotStatus:
@@ -62,8 +61,6 @@ schemas:
       - OFFLINE
       - IDLE
       - BUSY
-    x-oapi-codegen-extra-tags:
-      validate: required,oneof=OFFLINE IDLE BUSY
     x-enum-varnames:
       - RaybotStatusOffline
       - RaybotStatusIdle

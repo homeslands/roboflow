@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   version: 0.0.1
   title: Roboflow API
@@ -7,25 +7,25 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://localhost:8080/api
+  - url: /api
 tags:
   - name: raybot
     description: Raybot operations
 paths:
   /raybots:
-    $ref: "./paths/raybots.yml"
+    $ref: "./raybot/raybots.yml"
   /raybots/{raybotId}:
-    $ref: "./paths/raybots@{raybotId}.yml"
+    $ref: "./raybot/raybots@{raybotId}.yml"
 
-  /raybot-commands:
-    $ref: "./paths/raybotCommands.yml"
+  /raybots/{raybotId}/commands:
+    $ref: "./raybot_command/raybots@{raybotId}@commands.yml"
   /raybot-commands/{raybotCommandId}:
-    $ref: "./paths/raybotCommands@{raybotCommandId}.yml"
+    $ref: "./raybot_command/raybotCommands@{raybotCommandId}.yml"
 
   /qr-locations:
-    $ref: "./paths/qrLocations.yml"
+    $ref: "./qr_location/qrLocations.yml"
   /qr-locations/{qrLocationId}:
-    $ref: "./paths/qrLocations@{qrLocationId}.yml"
+    $ref: "./qr_location/qrLocations@{qrLocationId}.yml"
   # /workflows:
   #   $ref: "./paths/workflows.yml"
   # /workflows/{workflowId}:
