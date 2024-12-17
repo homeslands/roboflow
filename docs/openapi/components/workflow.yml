@@ -93,8 +93,13 @@ schemas:
     properties:
       name:
         type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9 ]+$"
+        example: "my workflow"
       description:
         type: string
+        maxLength: 1000
         nullable: true
       definition:
         $ref: "#/schemas/WorkflowDefinition"

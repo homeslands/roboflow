@@ -65,7 +65,7 @@ schemas:
         minLength: 1
         maxLength: 100
         pattern: "^[a-zA-Z0-9 ]+$"
-        example: "my-raybot"
+        example: "my raybot"
     required:
       - name
   RaybotStatus:
