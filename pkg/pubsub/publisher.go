@@ -5,6 +5,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type Publisher interface {
+	Publish(topic string, payload []byte) error
+}
+
 type eventPublisher struct {
 	publisher message.Publisher
 }
