@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
 
 func TestNewList(t *testing.T) {
@@ -53,13 +51,13 @@ func TestNewList(t *testing.T) {
 			name:       "Invalid input with trailing space",
 			input:      "name ,created_at",
 			expectErr:  true,
-			errMessage: "invalid sort",
+			errMessage: "invalid sort column",
 		},
 		{
 			name:       "Invalid input with leading space",
 			input:      " -created_at",
 			expectErr:  true,
-			errMessage: "invalid sort",
+			errMessage: "invalid sort column",
 		},
 	}
 
@@ -70,7 +68,6 @@ func TestNewList(t *testing.T) {
 			if tt.expectErr {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.errMessage, "error message does not match")
-				assert.True(t, xerrors.IsErrorInvalidArgument(err), "error type is not ErrInvalidArgument")
 			} else {
 				require.NoError(t, err, "unexpected error occurred")
 				assert.Equal(t, tt.expected, result, "result mismatch for input '%s'", tt.input)

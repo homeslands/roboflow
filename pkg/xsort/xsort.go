@@ -1,11 +1,10 @@
 package xsort
 
 import (
+	"fmt"
 	"strings"
 
 	sq "github.com/Masterminds/squirrel"
-
-	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
 
 const (
@@ -39,7 +38,7 @@ func NewList(s *string) ([]Sort, error) {
 	for i, r := range orderBys {
 		orderBy := string(r)
 		if strings.HasPrefix(orderBy, " ") || strings.HasSuffix(orderBy, " ") {
-			return nil, xerrors.ThrowInvalidArgument(nil, "invalid sort")
+			return nil, fmt.Errorf("invalid sort column: %s", orderBy)
 		}
 
 		order := OrderASC
