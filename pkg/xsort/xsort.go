@@ -13,13 +13,13 @@ const (
 )
 
 type Sort struct {
-	col   string
-	order string
+	Col   string
+	Order string
 }
 
 // Attach attaches sort to builder.
 func (s Sort) Attach(b sq.SelectBuilder) sq.SelectBuilder {
-	return b.OrderBy(s.col + " " + s.order)
+	return b.OrderBy(s.Col + " " + s.Order)
 }
 
 // NewList parses a comma-separated string into a slice of Sort objects.
@@ -48,8 +48,8 @@ func NewList(s *string) ([]Sort, error) {
 		}
 
 		sorts[i] = Sort{
-			col:   orderBy,
-			order: order,
+			Col:   orderBy,
+			Order: order,
 		}
 	}
 

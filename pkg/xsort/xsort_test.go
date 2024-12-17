@@ -19,7 +19,7 @@ func TestNewList(t *testing.T) {
 			name:  "Single column, ascending",
 			input: "created_at",
 			expected: []Sort{
-				{col: "created_at", order: OrderASC},
+				{Col: "created_at", Order: OrderASC},
 			},
 			expectErr: false,
 		},
@@ -27,7 +27,7 @@ func TestNewList(t *testing.T) {
 			name:  "Single column, descending",
 			input: "-updated_at",
 			expected: []Sort{
-				{col: "updated_at", order: OrderDESC},
+				{Col: "updated_at", Order: OrderDESC},
 			},
 			expectErr: false,
 		},
@@ -35,9 +35,9 @@ func TestNewList(t *testing.T) {
 			name:  "Multiple columns",
 			input: "name,-created_at,updated_at",
 			expected: []Sort{
-				{col: "name", order: OrderASC},
-				{col: "created_at", order: OrderDESC},
-				{col: "updated_at", order: OrderASC},
+				{Col: "name", Order: OrderASC},
+				{Col: "created_at", Order: OrderDESC},
+				{Col: "updated_at", Order: OrderASC},
 			},
 			expectErr: false,
 		},
