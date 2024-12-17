@@ -1,15 +1,20 @@
 package db
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type Store struct {
-	p *pgxpool.Pool
 	*Queries
+	DB          *pgxpool.Pool
+	StmtBuilder sq.StatementBuilderType
 }
 
 func NewStore(p *pgxpool.Pool) *Store {
 	return &Store{
-		p:       p,
-		Queries: New(p),
+		DB:          p,
+		Queries:     New(p),
+		StmtBuilder: sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
 	}
 }
