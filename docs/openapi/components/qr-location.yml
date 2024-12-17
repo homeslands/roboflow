@@ -8,7 +8,7 @@ parameters:
       format: uuid
 
 schemas:
-  QRLocation:
+  QRLocationResponse:
     type: object
     properties:
       id:
@@ -36,7 +36,20 @@ schemas:
       - metadata
       - createdAt
       - updatedAt
-  CreateQRLocation:
+  PagingQRLocationResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/QRLocationResponse"
+    required:
+      - totalItems
+      - items
+  CreateQRLocationRequest:
     type: object
     properties:
       name:
@@ -60,7 +73,7 @@ schemas:
       - name
       - qrCode
       - metadata
-  UpdateQRLocation:
+  UpdateQRLocationRequest:
     type: object
     properties:
       name:

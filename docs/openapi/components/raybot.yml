@@ -9,7 +9,7 @@ parameters:
       format: uuid
 
 schemas:
-  Raybot:
+  RaybotResponse:
     type: object
     properties:
       id:
@@ -20,7 +20,7 @@ schemas:
       token:
         type: string
       status:
-        $ref: "./raybot.yml#/schemas/RaybotStatus"
+        $ref: "#/schemas/RaybotStatus"
       ipAddress:
         type: string
         format: ipv4
@@ -44,7 +44,20 @@ schemas:
       - lastConnectedAt
       - createdAt
       - updatedAt
-  CreateRaybot:
+  PagingRaybotResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/RaybotResponse"
+    required:
+      - totalItems
+      - items
+  CreateRaybotRequest:
     type: object
     properties:
       name:
@@ -61,7 +74,4 @@ schemas:
       - OFFLINE
       - IDLE
       - BUSY
-    x-enum-varnames:
-      - RaybotStatusOffline
-      - RaybotStatusIdle
-      - RaybotStatusBusy
+    x-go-type: string

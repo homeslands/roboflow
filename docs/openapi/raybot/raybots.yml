@@ -1,0 +1,79 @@
+get:
+  summary: List raybots
+  operationId: listRaybots
+  description: List raybots
+  tags:
+    - raybot
+  parameters:
+    - $ref: "../components/paging.yml#/parameters/Page"
+    - $ref: "../components/paging.yml#/parameters/PageSize"
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+          - Separate multiple columns with a comma (e.g., created_at,-updated_at).
+
+        Allowed columns: `name`, `status`, `last_connected_at`, `created_at`, `updated_at`.
+      required: false
+      schema:
+        type: string
+    - name: state
+      in: query
+      description: >
+        Filter by raybot state.
+      required: false
+      schema:
+        type: string
+        enum:
+          - OFFLINE
+          - IDLE
+          - BUSY
+        example: "OFFLINE"
+        x-go-type: string
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/raybot.yml#/schemas/PagingRaybotResponse"
+
+post:
+  summary: Create raybot
+  operationId: createRaybot
+  description: Create raybot
+  tags:
+    - raybot
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/raybot.yml#/schemas/CreateRaybotRequest"
+  responses:
+    '201':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/raybot.yml#/schemas/RaybotResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "conflict"
+            message: "Raybot already exists"

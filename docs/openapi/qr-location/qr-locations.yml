@@ -1,0 +1,75 @@
+get:
+  summary: List QR locations
+  operationId: listQRLocations
+  description: List QR locations
+  tags:
+    - qrLocation
+  parameters:
+    - $ref: "../components/paging.yml#/parameters/Page"
+    - name: pageSize
+      in: query
+      description: The number of items per page.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 10000
+        default: 10
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+          - Separate multiple columns with a comma (e.g., created_at,-updated_at).
+
+        Allowed columns: `name`, `qr_code`, `created_at`, `updated_at`.
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/qr-location.yml#/schemas/PagingQRLocationResponse"
+
+post:
+  summary: Create QR location
+  operationId: createQRLocation
+  description: Create a QR location
+  tags:
+    - qrLocation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/qr-location.yml#/schemas/CreateQRLocationRequest"
+  responses:
+    '201':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/qr-location.yml#/schemas/QRLocationResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "qr_code_already_exists"
+            message: "QR code already exists"

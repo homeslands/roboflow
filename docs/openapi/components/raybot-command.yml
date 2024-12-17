@@ -8,7 +8,7 @@ parameters:
       format: uuid
 
 schemas:
-  RaybotCommand:
+  RaybotCommandResponse:
     type: object
     properties:
       id:
@@ -18,9 +18,9 @@ schemas:
         type: string
         format: uuid
       type:
-        $ref: "./raybotCommand.yml#/schemas/RaybotCommandType"
+        $ref: "#/schemas/RaybotCommandType"
       status:
-        $ref: "./raybotCommand.yml#/schemas/RaybotCommandStatus"
+        $ref: "#/schemas/RaybotCommandStatus"
       input:
         type: object
       output:
@@ -40,11 +40,24 @@ schemas:
       - output
       - status
       - createdAt
-  CreateRaybotCommand:
+  PagingRaybotCommandResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/RaybotCommandResponse"
+    required:
+      - totalItems
+      - items
+  CreateRaybotCommandRequest:
     type: object
     properties:
       type:
-        $ref: "./raybotCommand.yml#/schemas/RaybotCommandType"
+        $ref: "#/schemas/RaybotCommandType"
       input:
         type: object
     required:
@@ -63,17 +76,7 @@ schemas:
       - DROP_BOX
       - CHECK_QR
       - WAIT_GET_ITEM
-    x-enum-varnames:
-      - RaybotCommandTypeStop
-      - RaybotCommandTypeMoveForward
-      - RaybotCommandTypeMoveBackward
-      - RaybotCommandTypeMoveToLocation
-      - RaybotCommandTypeOpenBox
-      - RaybotCommandTypeCloseBox
-      - RaybotCommandTypeLiftBox
-      - RaybotCommandTypeDropBox
-      - RaybotCommandTypeCheckQr
-      - RaybotCommandTypeWaitGetItem
+    x-go-type: string
   RaybotCommandStatus:
     type: string
     enum:
@@ -81,8 +84,4 @@ schemas:
       - IN_PROGRESS
       - SUCCESS
       - FAILURE
-    x-enum-varnames:
-      - RaybotCommandStatusPending
-      - RaybotCommandStatusInProgress
-      - RaybotCommandStatusSuccess
-      - RaybotCommandStatusFailure
+    x-go-type: string
