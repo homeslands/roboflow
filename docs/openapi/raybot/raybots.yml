@@ -19,10 +19,10 @@ get:
       required: false
       schema:
         type: string
-    - name: state
+    - name: status
       in: query
       description: >
-        Filter by raybot state.
+        Filter by raybot status.
       required: false
       schema:
         type: string
@@ -30,7 +30,6 @@ get:
           - OFFLINE
           - IDLE
           - BUSY
-        example: "OFFLINE"
         x-go-type: string
   responses:
     '200':
