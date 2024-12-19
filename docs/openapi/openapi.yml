@@ -7,7 +7,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: /api
+  - url: /api/v1
 tags:
   - name: raybot
     description: Raybot operations
