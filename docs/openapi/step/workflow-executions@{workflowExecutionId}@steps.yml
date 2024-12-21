@@ -1,7 +1,7 @@
 get:
-  summary: Get steps by workflow execution id
-  operationId: getStepsByWorkflowExecutionId
-  description: Get steps by workflow execution id
+  summary: List steps by workflow execution id
+  operationId: listStepsByWorkflowExecutionId
+  description: List steps by workflow execution id
   tags:
     - step
   parameters:
