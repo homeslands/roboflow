@@ -43,19 +43,6 @@ schemas:
       - status
       - startedAt
       - completedAt
-  PagingStepResponse:
-    type: object
-    properties:
-      totalItems:
-        type: integer
-        format: int64
-      items:
-        type: array
-        items:
-          $ref: "#/schemas/StepResponse"
-    required:
-      - totalItems
-      - items
   WorkflowExecutionStepStatus:
     type: string
     enum:

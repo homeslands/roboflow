@@ -6,8 +6,6 @@ get:
     - step
   parameters:
     - $ref: "../components/workflow-execution.yml#/parameters/WorkflowExecutionId"
-    - $ref: "../components/paging.yml#/parameters/Page"
-    - $ref: "../components/paging.yml#/parameters/PageSize"
     - name: sort
       in: query
       description: >
@@ -26,4 +24,6 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../components/step.yml#/schemas/PagingStepResponse"
+            type: array
+            items:
+              $ref: "../components/step.yml#/schemas/StepResponse"
