@@ -67,4 +67,5 @@ schemas:
       - RUNNING
       - COMPLETED
       - FAILED
+      - CANCELLED
     x-go-type: string
