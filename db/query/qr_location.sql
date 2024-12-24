@@ -2,15 +2,19 @@
 SELECT * FROM qr_locations
 WHERE id = $1;
 
--- name: ListQRLocations :many
-SELECT * FROM qr_locations
-ORDER BY created_at DESC;
+-- name: ExistsQRLocationByQRCode :one
+SELECT EXISTS(
+	SELECT 1
+	FROM qr_locations
+	WHERE qr_code = $1
+);
 
 -- name: CreateQRLocation :exec
 INSERT INTO qr_locations (
     id,
     name,
     qr_code,
+	metadata,
     created_at,
     updated_at
 )
@@ -19,15 +23,18 @@ VALUES (
     $2,
     $3,
     $4,
-    $5
+    $5,
+	$6
 );
 
--- name: UpdateQRLocation :exec
+-- name: UpdateQRLocation :one
 UPDATE qr_locations
 SET name = $1,
     qr_code = $2,
-    updated_at = $3
-WHERE id = $4;
+	metadata = $3,
+    updated_at = $4
+WHERE id = $5
+RETURNING *;
 
 -- name: DeleteQRLocation :exec
 DELETE FROM qr_locations

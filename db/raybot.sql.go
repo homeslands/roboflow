@@ -63,7 +63,7 @@ func (q *Queries) DeleteRaybot(ctx context.Context, id uuid.UUID) error {
 }
 
 const getRaybot = `-- name: GetRaybot :one
-SELECT id, name, token, status, created_at, updated_at FROM raybots
+SELECT id, name, token, status, ip_address, last_connected_at, created_at, updated_at FROM raybots
 WHERE id = $1
 `
 
@@ -75,6 +75,8 @@ func (q *Queries) GetRaybot(ctx context.Context, id uuid.UUID) (*Raybot, error) 
 		&i.Name,
 		&i.Token,
 		&i.Status,
+		&i.IpAddress,
+		&i.LastConnectedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -94,7 +96,7 @@ func (q *Queries) GetRaybotStatus(ctx context.Context, id uuid.UUID) (string, er
 }
 
 const listRaybots = `-- name: ListRaybots :many
-SELECT id, name, token, status, created_at, updated_at FROM raybots
+SELECT id, name, token, status, ip_address, last_connected_at, created_at, updated_at FROM raybots
 ORDER BY created_at DESC
 `
 
@@ -112,6 +114,8 @@ func (q *Queries) ListRaybots(ctx context.Context) ([]*Raybot, error) {
 			&i.Name,
 			&i.Token,
 			&i.Status,
+			&i.IpAddress,
+			&i.LastConnectedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -125,32 +129,50 @@ func (q *Queries) ListRaybots(ctx context.Context) ([]*Raybot, error) {
 	return items, nil
 }
 
-const updateRaybot = `-- name: UpdateRaybot :exec
+const updateRaybot = `-- name: UpdateRaybot :one
 UPDATE raybots
 SET name = $1,
     token = $2,
     status = $3,
-    updated_at = $4
-WHERE id = $5
+    ip_address = $4,
+    last_connected_at = $5,
+    updated_at = $6
+WHERE id = $7
+RETURNING id, name, token, status, ip_address, last_connected_at, created_at, updated_at
 `
 
 type UpdateRaybotParams struct {
-	Name      string
-	Token     string
-	Status    string
-	UpdatedAt pgtype.Timestamptz
-	ID        uuid.UUID
+	Name            string
+	Token           string
+	Status          string
+	IpAddress       *string
+	LastConnectedAt pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	ID              uuid.UUID
 }
 
-func (q *Queries) UpdateRaybot(ctx context.Context, arg UpdateRaybotParams) error {
-	_, err := q.db.Exec(ctx, updateRaybot,
+func (q *Queries) UpdateRaybot(ctx context.Context, arg UpdateRaybotParams) (*Raybot, error) {
+	row := q.db.QueryRow(ctx, updateRaybot,
 		arg.Name,
 		arg.Token,
 		arg.Status,
+		arg.IpAddress,
+		arg.LastConnectedAt,
 		arg.UpdatedAt,
 		arg.ID,
 	)
-	return err
+	var i Raybot
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Token,
+		&i.Status,
+		&i.IpAddress,
+		&i.LastConnectedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
 }
 
 const updateRaybotStatus = `-- name: UpdateRaybotStatus :exec
