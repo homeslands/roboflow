@@ -1,0 +1,24 @@
+get:
+  summary: Get workflow execution by id
+  operationId: getWorkflowExecutionById
+  description: Get workflow execution by id
+  tags:
+    - workflowExecution
+  parameters:
+    - $ref: "../components/workflow-execution.yml#/parameters/WorkflowExecutionId"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/workflow-execution.yml#/schemas/WorkflowExecutionResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Workflow execution not found"

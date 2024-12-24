@@ -1,0 +1,85 @@
+get:
+  summary: Get QR location by id
+  operationId: getQRLocationById
+  description: Get QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - $ref: "../components/qr-location.yml#/parameters/QRLocationId"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/qr-location.yml#/schemas/QRLocationResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Not found"
+
+put:
+  summary: Update QR location by id
+  operationId: updateQRLocationById
+  description: Update QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - $ref: "../components/qr-location.yml#/parameters/QRLocationId"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/qr-location.yml#/schemas/UpdateQRLocationRequest"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/qr-location.yml#/schemas/QRLocationResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Not found"
+
+delete:
+  summary: Delete QR location by id
+  operationId: deleteQRLocationById
+  description: Delete QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - $ref: "../components/qr-location.yml#/parameters/QRLocationId"
+  responses:
+    '204':
+      description: Expected response to a valid request
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Not found"

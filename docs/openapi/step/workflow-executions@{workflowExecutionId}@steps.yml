@@ -1,0 +1,29 @@
+get:
+  summary: List steps by workflow execution id
+  operationId: listStepsByWorkflowExecutionId
+  description: List steps by workflow execution id
+  tags:
+    - step
+  parameters:
+    - $ref: "../components/workflow-execution.yml#/parameters/WorkflowExecutionId"
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+          - Separate multiple columns with a comma (e.g., created_at,-updated_at).
+
+        Allowed columns: `status`, `started_at`, `completed_at`.
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/step.yml#/schemas/StepResponse"

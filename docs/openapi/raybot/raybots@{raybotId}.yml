@@ -1,0 +1,45 @@
+get:
+  summary: Get raybot by id
+  operationId: getRaybotById
+  description: Get raybot by id
+  tags:
+    - raybot
+  parameters:
+    - $ref: "../components/raybot.yml#/parameters/RaybotId"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/raybot.yml#/schemas/RaybotResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Raybot not found"
+
+delete:
+  summary: Delete raybot by id
+  operationId: deleteRaybotById
+  description: Delete raybot by id
+  tags:
+    - raybot
+  parameters:
+    - $ref: "../components/raybot.yml#/parameters/RaybotId"
+  responses:
+    '204':
+      description: Expected response to a valid request
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Raybot not found"

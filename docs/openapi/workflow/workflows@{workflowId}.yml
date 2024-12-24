@@ -1,0 +1,76 @@
+get:
+  summary: Get workflow by id
+  operationId: getWorkflowById
+  description: Get workflow by id
+  tags:
+    - workflow
+  parameters:
+    - $ref: "../components/workflow.yml#/parameters/WorkflowId"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/workflow.yml#/schemas/WorkflowResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Workflow not found"
+
+put:
+  summary: Update workflow by id
+  operationId: updateWorkflowById
+  description: Update workflow by id
+  tags:
+    - workflow
+  parameters:
+    - $ref: "../components/workflow.yml#/parameters/WorkflowId"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/workflow.yml#/schemas/UpdateWorkflowRequest"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/workflow.yml#/schemas/WorkflowResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "bad_request"
+            message: "Bad request"
+
+delete:
+  summary: Delete workflow by id
+  operationId: deleteWorkflowById
+  description: Delete workflow by id
+  tags:
+    - workflow
+  parameters:
+    - $ref: "../components/workflow.yml#/parameters/WorkflowId"
+  responses:
+    '204':
+      description: Expected response to a valid request
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Workflow not found"

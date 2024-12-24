@@ -1,0 +1,27 @@
+get:
+  summary: Get workflow execution status by id
+  operationId: getWorkflowExecutionStatusById
+  description: Get workflow execution status by id
+  tags:
+    - workflowExecution
+  parameters:
+    - $ref: "../components/workflow-execution.yml#/parameters/WorkflowExecutionId"
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "../components/workflow-execution.yml#/schemas/WorkflowExecutionStatus"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../components/error.yml#/schemas/Error"
+          example:
+            code: "not_found"
+            message: "Workflow execution not found"

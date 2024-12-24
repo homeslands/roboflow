@@ -1,0 +1,77 @@
+parameters:
+  RaybotId:
+    name: raybotId
+    description: The ID of the raybot
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  RaybotResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      token:
+        type: string
+      status:
+        $ref: "#/schemas/RaybotStatus"
+      ipAddress:
+        type: string
+        format: ipv4
+        nullable: true
+      lastConnectedAt:
+        type: string
+        format: date-time
+        nullable: true
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - name
+      - token
+      - status
+      - ipAddress
+      - lastConnectedAt
+      - createdAt
+      - updatedAt
+  PagingRaybotResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/RaybotResponse"
+    required:
+      - totalItems
+      - items
+  CreateRaybotRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9 ]+$"
+        example: "my raybot"
+    required:
+      - name
+  RaybotStatus:
+    type: string
+    enum:
+      - OFFLINE
+      - IDLE
+      - BUSY
+    x-go-type: string

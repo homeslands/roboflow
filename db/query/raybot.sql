@@ -28,13 +28,16 @@ VALUES (
     $6
 );
 
--- name: UpdateRaybot :exec
+-- name: UpdateRaybot :one
 UPDATE raybots
 SET name = $1,
     token = $2,
     status = $3,
-    updated_at = $4
-WHERE id = $5;
+    ip_address = $4,
+    last_connected_at = $5,
+    updated_at = $6
+WHERE id = $7
+RETURNING *;
 
 -- name: UpdateRaybotStatus :exec
 UPDATE raybots

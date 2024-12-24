@@ -1,0 +1,71 @@
+parameters:
+  WorkflowExecutionId:
+    name: workflowExecutionId
+    description: The ID of the workflow execution
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  WorkflowExecutionResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      workflowId:
+        type: string
+        format: uuid
+      status:
+        $ref: "#/schemas/WorkflowExecutionStatus"
+      env:
+        type: object
+        additionalProperties:
+          type: string
+        x-go-type: map[string]string
+      definition:
+        $ref: "./workflow.yml#/schemas/WorkflowDefinition"
+      createdAt:
+        type: string
+        format: date-time
+      startedAt:
+        type: string
+        format: date-time
+        nullable: true
+      completedAt:
+        type: string
+        format: date-time
+        nullable: true
+    required:
+      - id
+      - workflowId
+      - status
+      - env
+      - definition
+      - createdAt
+      - startedAt
+      - completedAt
+  PagingWorkflowExecutionResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/WorkflowExecutionResponse"
+    required:
+      - totalItems
+      - items
+  WorkflowExecutionStatus:
+    type: string
+    enum:
+      - PENDING
+      - RUNNING
+      - COMPLETED
+      - FAILED
+      - CANCELLED
+    x-go-type: string

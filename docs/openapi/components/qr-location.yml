@@ -1,0 +1,99 @@
+parameters:
+  QRLocationId:
+    name: qrLocationId
+    in: path
+    required: true
+    schema:
+      type: string
+      format: uuid
+
+schemas:
+  QRLocationResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      qrCode:
+        type: string
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - name
+      - qrCode
+      - metadata
+      - createdAt
+      - updatedAt
+  PagingQRLocationResponse:
+    type: object
+    properties:
+      totalItems:
+        type: integer
+        format: int64
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/QRLocationResponse"
+    required:
+      - totalItems
+      - items
+  CreateQRLocationRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9 ]+$"
+        example: "my raybot"
+      qrCode:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9_-]+$"
+        example: "my-raybot"
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+    required:
+      - name
+      - qrCode
+      - metadata
+  UpdateQRLocationRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9 ]+$"
+        example: "my raybot"
+      qrCode:
+        type: string
+        minLength: 1
+        maxLength: 100
+        pattern: "^[a-zA-Z0-9_-]+$"
+        example: "my-raybot"
+      metadata:
+        type: object
+        additionalProperties: true
+        example:
+          key: value
+    required:
+      - name
+      - qrCode
+      - metadata
