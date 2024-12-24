@@ -64,7 +64,7 @@ post:
       - **CHECK_QR**: The following input is **required**:
         ```json
         {
-          "qrCode": "string"
+          "qr_code": "string"
         }
         ```
 

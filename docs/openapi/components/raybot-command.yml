@@ -23,8 +23,10 @@ schemas:
         $ref: "#/schemas/RaybotCommandStatus"
       input:
         type: object
+        x-go-type: interface{}
       output:
         type: object
+        x-go-type: interface{}
       createdAt:
         type: string
         format: date-time
@@ -60,6 +62,7 @@ schemas:
         $ref: "#/schemas/RaybotCommandType"
       input:
         type: object
+        x-go-type: interface{}
     required:
       - type
       - input
