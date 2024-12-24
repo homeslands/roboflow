@@ -68,16 +68,16 @@ const (
 )
 
 type MoveToLocationInput struct {
-	Location  string `json:"location" validate:"required"`
-	Direction string `json:"direction" validate:"required,oneof=FORWARD BACKWARD"`
+	Location  string `json:"location"`
+	Direction string `json:"direction"`
 }
 
 type CheckQRCodeInput struct {
-	QRCode string `json:"qr_code" validate:"required"`
+	QRCode string `json:"qr_code"`
 }
 
 type LiftDropBoxInput struct {
-	Distance *int32 `json:"distance" validate:"omitempty gte=300 lte=2000"`
+	Distance *int32 `json:"distance"`
 }
 
 type RaybotCommand struct {
