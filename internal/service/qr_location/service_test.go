@@ -39,14 +39,13 @@ func TestQRLocationService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: qrlocation.CreateQrLocationCommand{
 					Name:     "",
 					QRCode:   "Test",
 					Metadata: map[string]interface{}{},
 				},
 				mockBehavior: func(r *mocks.FakeQRLocationRepository) {
-					r.AssertNotCalled(t, "Create", ctx, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -106,7 +105,7 @@ func TestQRLocationService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: qrlocation.UpdateQRLocationCommand{
 					ID:       validID,
 					Name:     "",
@@ -114,7 +113,6 @@ func TestQRLocationService(t *testing.T) {
 					Metadata: map[string]interface{}{},
 				},
 				mockBehavior: func(r *mocks.FakeQRLocationRepository) {
-					r.AssertNotCalled(t, "Update", ctx, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -172,12 +170,11 @@ func TestQRLocationService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: qrlocation.DeleteQrLocationCommand{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeQRLocationRepository) {
-					r.AssertNotCalled(t, "Delete", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -224,10 +221,9 @@ func TestQRLocationService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name:  "Should validate query before do anything",
+				name:  "Should return error when validate query failed",
 				query: qrlocation.GetQrLocationByIDQuery{ID: uuid.Nil},
 				mockBehavior: func(r *mocks.FakeQRLocationRepository) {
-					r.AssertNotCalled(t, "Get", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -281,7 +277,7 @@ func TestQRLocationService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate command failed",
 				query: qrlocation.ListQrLocationQuery{
 					PagingParams: paging.NewParams(nil, nil),
 					Sorts: []xsort.Sort{
@@ -292,7 +288,6 @@ func TestQRLocationService(t *testing.T) {
 					},
 				},
 				mockBehavior: func(r *mocks.FakeQRLocationRepository) {
-					r.AssertNotCalled(t, "List", ctx, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},

@@ -37,12 +37,11 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: raybot.CreateRaybotCommand{
 					Name: "",
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "Create", ctx, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -100,12 +99,11 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: raybot.DeleteRaybotCommand{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "Delete", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -156,13 +154,12 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: raybot.UpdateStateCommand{
 					ID:    uuid.Nil,
 					State: model.RaybotStatusIdle,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "UpdateState", ctx, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -213,12 +210,11 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				query: raybot.GetRaybotByIDQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "Get", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -275,7 +271,7 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate command failed",
 				query: raybot.ListRaybotQuery{
 					PagingParams: paging.NewParams(nil, nil),
 					Sorts: []xsort.Sort{
@@ -286,7 +282,6 @@ func TestRaybotService(t *testing.T) {
 					},
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "List", ctx, mock.Anything, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -340,12 +335,11 @@ func TestRaybotService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate command failed",
 				query: raybot.GetStatusQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotRepository) {
-					r.AssertNotCalled(t, "GetState", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},

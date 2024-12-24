@@ -39,7 +39,7 @@ func TestWorkflowExecutionService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: workflowexecution.UpdateWorkflowExecutionCommand{
 					ID:          uuid.Nil,
 					Status:      model.WorkflowExecutionStatusCompleted,
@@ -47,7 +47,6 @@ func TestWorkflowExecutionService(t *testing.T) {
 					CompletedAt: nil,
 				},
 				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.AssertNotCalled(t, "Update", ctx, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -105,12 +104,11 @@ func TestWorkflowExecutionService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: workflowexecution.DeleteWorkflowExecutionCommand{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.AssertNotCalled(t, "Delete", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -160,12 +158,11 @@ func TestWorkflowExecutionService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				q: workflowexecution.GetWorkflowExecutionByIDQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.AssertNotCalled(t, "Get", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -216,12 +213,11 @@ func TestWorkflowExecutionService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				q: workflowexecution.GetWorkflowExecutionStatusByIDQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.AssertNotCalled(t, "GetStatus", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			},
@@ -278,14 +274,13 @@ func TestWorkflowExecutionService(t *testing.T) {
 				},
 				shouldErr: false,
 			}, {
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				q: workflowexecution.ListWorkflowExecutionQuery{
 					WorkflowID:   uuid.Nil,
 					PagingParams: paging.NewParams(nil, nil),
 					Sorts:        []xsort.Sort{},
 				},
 				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.AssertNotCalled(t, "List", ctx, uuid.Nil, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},

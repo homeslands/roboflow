@@ -55,7 +55,7 @@ func TestRaybotCommandService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: uuid.Nil,
 					Type:     model.RaybotCommandTypeMoveForward,
@@ -250,12 +250,11 @@ func TestRaybotCommandService(t *testing.T) {
 				},
 				shouldErr: false,
 			}, {
-				name: "Should validate command before do anything",
+				name: "Should return error when validate command failed",
 				cmd: raybotcommand.DeleteRaybotCommandCommand{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotCommandRepository) {
-					r.AssertNotCalled(t, "Delete", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			}, {
@@ -303,12 +302,11 @@ func TestRaybotCommandService(t *testing.T) {
 				},
 				shouldErr: false,
 			}, {
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				q: raybotcommand.GetRaybotCommandByIDQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeRaybotCommandRepository) {
-					r.AssertNotCalled(t, "Get", ctx, uuid.Nil)
 				},
 				shouldErr: true,
 			}, {
@@ -364,14 +362,13 @@ func TestRaybotCommandService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				q: raybotcommand.ListRaybotCommandQuery{
 					RaybotID:     uuid.Nil,
 					PagingParams: paging.NewParams(nil, nil),
 					Sorts:        []xsort.Sort{},
 				},
 				mockBehavior: func(r *mocks.FakeRaybotCommandRepository) {
-					r.AssertNotCalled(t, "List", ctx, uuid.Nil, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},

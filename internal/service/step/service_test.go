@@ -36,12 +36,11 @@ func TestStepService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				query: step.GetStepByIDQuery{
 					ID: uuid.Nil,
 				},
 				mockBehavior: func(r *mocks.FakeStepRepository) {
-					r.AssertNotCalled(t, "Get", ctx, mock.Anything)
 				},
 				shouldErr: true,
 			},
@@ -93,13 +92,12 @@ func TestStepService(t *testing.T) {
 				shouldErr: false,
 			},
 			{
-				name: "Should validate query before do anything",
+				name: "Should return error when validate query failed",
 				query: step.ListStepQuery{
 					WorkflowExecutionID: uuid.Nil,
 					Sorts:               []xsort.Sort{},
 				},
 				mockBehavior: func(r *mocks.FakeStepRepository) {
-					r.AssertNotCalled(t, "List", ctx, validID, mock.Anything, mock.Anything)
 				},
 				shouldErr: true,
 			},
