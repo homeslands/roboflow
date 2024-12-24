@@ -15,6 +15,7 @@ import (
 	"github.com/tuanvumaihuynh/roboflow/internal/model/mocks"
 	raybotcommand "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command"
 	"github.com/tuanvumaihuynh/roboflow/pkg/paging"
+	pubsubmocks "github.com/tuanvumaihuynh/roboflow/pkg/pubsub/mocks"
 	"github.com/tuanvumaihuynh/roboflow/pkg/xsort"
 )
 
@@ -22,165 +23,216 @@ func TestRaybotCommandService(t *testing.T) {
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	ctx := context.Background()
 
-	// t.Run("Create", func(t *testing.T) {
-	// 	type testCase struct {
-	// 		name              string
-	// 		cmd               raybotcommand.CreateRaybotCommandCommand
-	// 		raybotCommandRepo *mocks.FakeRaybotCommandRepository
-	// 		raybotRepo        *mocks.FakeRaybotRepository
-	// 		qrLocationRepo    *mocks.FakeQRLocationRepository
-	// 		eventPublisher    *pubsubmocks.FakePublisher
-	// 		mockBehavior      func(*testCase)
-	// 		shouldErr         bool
-	// 	}
+	t.Run("Create", func(t *testing.T) {
+		type testCase struct {
+			name              string
+			cmd               raybotcommand.CreateRaybotCommandCommand
+			raybotCommandRepo *mocks.FakeRaybotCommandRepository
+			raybotRepo        *mocks.FakeRaybotRepository
+			qrLocationRepo    *mocks.FakeQRLocationRepository
+			eventPublisher    *pubsubmocks.FakePublisher
+			mockBehavior      func(*testCase)
+			shouldErr         bool
+		}
 
-	// 	testCases := []testCase{
-	// 		{
-	// 			name: "Should create successfully",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatusIdle, nil)
-	// 				tc.raybotCommandRepo.On("Create", ctx, mock.Anything).Return(nil)
-	// 				tc.eventPublisher.On("Publish", "raybot.command.created", mock.Anything).Return(nil)
-	// 			},
-	// 			shouldErr: false,
-	// 		},
-	// 		{
-	// 			name: "Should validate command before do anything",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: uuid.Nil,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.AssertNotCalled(t, "GetState", ctx, uuid.Nil)
-	// 				tc.raybotCommandRepo.AssertNotCalled(t, "Create", ctx, mock.Anything)
-	// 				tc.eventPublisher.AssertNotCalled(t, "Publish", "raybot.command.created", mock.Anything)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 		{
-	// 			name: "Should return error when get state fails",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatus(""), assert.AnError)
-	// 				tc.raybotCommandRepo.AssertNotCalled(t, "Create", ctx, mock.Anything)
-	// 				tc.eventPublisher.AssertNotCalled(t, "Publish", "raybot.command.created", mock.Anything)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 		{
-	// 			name: "Should return error when raybot is OFFLINE",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatusOffline, nil)
-	// 				tc.raybotCommandRepo.AssertNotCalled(t, "Create", ctx, mock.Anything)
-	// 				tc.eventPublisher.AssertNotCalled(t, "Publish", "raybot.command.created", mock.Anything)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 		{
-	// 			name: "Should return error when raybot is BUSY and command is not STOP",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatusBusy, nil)
-	// 				tc.raybotCommandRepo.AssertNotCalled(t, "Create", ctx, mock.Anything)
-	// 				tc.eventPublisher.AssertNotCalled(t, "Publish", "raybot.command.created", mock.Anything)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 		{
-	// 			name: "Should return error when repository fails to create",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatusIdle, nil)
-	// 				tc.raybotCommandRepo.On("Create", ctx, mock.Anything).Return(assert.AnError)
-	// 				tc.eventPublisher.AssertNotCalled(t, "Publish", "raybot.command.created", mock.Anything)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 		{
-	// 			name: "Should return error when event publisher fails to publish",
-	// 			cmd: raybotcommand.CreateRaybotCommandCommand{
-	// 				RaybotID: validID,
-	// 				Type:     model.RaybotCommandTypeMoveForward,
-	// 				Input:    map[string]interface{}{},
-	// 			},
-	// 			raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-	// 			raybotRepo:        mocks.NewFakeRaybotRepository(t),
-	// 			qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-	// 			eventPublisher:    pubsubmocks.NewFakePublisher(t),
-	// 			mockBehavior: func(tc *testCase) {
-	// 				tc.raybotRepo.On("GetState", ctx, validID).Return(model.RaybotStatusIdle, nil)
-	// 				tc.raybotCommandRepo.On("Create", ctx, mock.Anything).Return(nil)
-	// 				tc.eventPublisher.On("Publish", "raybot.command.created", mock.Anything).Return(assert.AnError)
-	// 			},
-	// 			shouldErr: true,
-	// 		},
-	// 	}
+		testCases := []testCase{
+			{
+				name: "Should create successfully",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    struct{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
+					tc.eventPublisher.EXPECT().Publish("raybot.command.created", mock.Anything).Return(nil)
+				},
+				shouldErr: false,
+			},
+			{
+				name: "Should validate command before do anything",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: uuid.Nil,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when get state fails",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatus(""), assert.AnError)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when raybot is OFFLINE",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusOffline, nil)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when raybot is BUSY and command is not STOP",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusBusy, nil)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when repository fails to create",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(assert.AnError)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when event publisher fails to publish",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveForward,
+					Input:    map[string]interface{}{},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
+					tc.eventPublisher.EXPECT().Publish("raybot.command.created", mock.Anything).Return(assert.AnError)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should check QR code if command type is MOVE_TO_LOCATION",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveToLocation,
+					Input: map[string]interface{}{
+						"location":  "qr_code",
+						"direction": "FORWARD",
+					},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
+					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(true, nil)
+					tc.eventPublisher.EXPECT().Publish("raybot.command.created", mock.Anything).Return(nil)
+				},
+				shouldErr: false,
+			},
+			{
+				name: "Should return error when check QR code fails",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveToLocation,
+					Input: map[string]interface{}{
+						"location":  "qr_code",
+						"direction": "FORWARD",
+					},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(false, assert.AnError)
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error when QR code does not exist",
+				cmd: raybotcommand.CreateRaybotCommandCommand{
+					RaybotID: validID,
+					Type:     model.RaybotCommandTypeMoveToLocation,
+					Input: map[string]interface{}{
+						"location":  "qr_code",
+						"direction": "FORWARD",
+					},
+				},
+				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
+				raybotRepo:        mocks.NewFakeRaybotRepository(t),
+				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
+				eventPublisher:    pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
+					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(false, nil)
+				},
+				shouldErr: true,
+			},
+		}
 
-	// 	for _, tc := range testCases {
-	// 		t.Run(tc.name, func(t *testing.T) {
-	// 			tc.mockBehavior(&tc)
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				tc.mockBehavior(&tc)
 
-	// 			s := raybotcommand.NewService(tc.raybotCommandRepo, tc.raybotRepo, tc.qrLocationRepo, tc.eventPublisher, log)
-	// 			result, err := s.Create(ctx, tc.cmd)
+				s := raybotcommand.NewService(tc.raybotCommandRepo, tc.raybotRepo, tc.qrLocationRepo, tc.eventPublisher, log)
+				result, err := s.Create(ctx, tc.cmd)
 
-	// 			if tc.shouldErr {
-	// 				assert.Error(t, err)
-	// 			} else {
-	// 				assert.Equal(t, tc.cmd.RaybotID, result.RaybotID)
-	// 				assert.Equal(t, tc.cmd.Type, result.Type)
-	// 				assert.Equal(t, tc.cmd.Input, result.Input)
-	// 				assert.NoError(t, err)
-	// 			}
-	// 		})
-	// 	}
-	// })
+				if tc.shouldErr {
+					assert.Error(t, err)
+				} else {
+					assert.Equal(t, tc.cmd.RaybotID, result.RaybotID)
+					assert.Equal(t, tc.cmd.Type, result.Type)
+					assert.NoError(t, err)
+				}
+			})
+		}
+	})
 	t.Run("Delete", func(t *testing.T) {
 		testCases := []struct {
 			name         string

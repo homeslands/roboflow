@@ -104,7 +104,7 @@ func validateCommandInput(commandType model.RaybotCommandType, input any) (any, 
 		model.RaybotCommandTypeCloseBox,
 		model.RaybotCommandTypeWaitGetItem:
 		// No input required
-		if len(inputBytes) != 0 {
+		if string(inputBytes) != "{}" {
 			return nil, xerrors.ThrowInvalidArgument(nil, "no input expected for this command type")
 		}
 		return nil, nil
