@@ -32,8 +32,8 @@ func Logging(log *slog.Logger) func(next http.Handler) http.Handler {
 				log.Info("HTTP request",
 					slog.Int("status", ww.Status()),
 					slog.String("path", r.URL.Path),
-					slog.String("reqId", middleware.GetReqID(r.Context())),
-					slog.Duration("latency", time.Since(t1)))
+					slog.Duration("latency", time.Since(t1)),
+					slog.String("req_id", GetReqID(r.Context())))
 			}()
 			next.ServeHTTP(ww, r)
 		}
