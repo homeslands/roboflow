@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
+	"go.uber.org/zap"
 )
 
 // ref: https://github.com/moul/chizap/blob/main/chizap.go
@@ -20,8 +20,8 @@ type Opts struct {
 }
 
 // Logging returns a logger middleware for chi, that implements the http.Handler interface.
-func Logging(log *slog.Logger) func(next http.Handler) http.Handler {
-	if log == nil {
+func Logging(logger *zap.Logger) func(next http.Handler) http.Handler {
+	if logger == nil {
 		return func(next http.Handler) http.Handler { return next }
 	}
 	return func(next http.Handler) http.Handler {
@@ -29,11 +29,13 @@ func Logging(log *slog.Logger) func(next http.Handler) http.Handler {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			t1 := time.Now()
 			defer func() {
-				log.Info("HTTP request",
-					slog.Int("status", ww.Status()),
-					slog.String("path", r.URL.Path),
-					slog.Duration("latency", time.Since(t1)),
-					slog.String("req_id", GetReqID(r.Context())))
+				reqLogger := logger.With(
+					zap.Int("status", ww.Status()),
+					zap.String("path", r.URL.Path),
+					zap.String("reqId", middleware.GetReqID(r.Context())),
+					zap.Duration("latency", time.Since(t1)),
+				)
+				reqLogger.Info("HTTP request")
 			}()
 			next.ServeHTTP(ww, r)
 		}

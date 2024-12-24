@@ -17,7 +17,6 @@ INSERT INTO qr_locations (
     id,
     name,
     qr_code,
-	metadata,
     created_at,
     updated_at
 )
@@ -26,8 +25,7 @@ VALUES (
     $2,
     $3,
     $4,
-    $5,
-	$6
+    $5
 )
 `
 
@@ -35,7 +33,6 @@ type CreateQRLocationParams struct {
 	ID        uuid.UUID
 	Name      string
 	QrCode    string
-	Metadata  map[string]interface{}
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 }
@@ -45,7 +42,6 @@ func (q *Queries) CreateQRLocation(ctx context.Context, arg CreateQRLocationPara
 		arg.ID,
 		arg.Name,
 		arg.QrCode,
-		arg.Metadata,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -62,23 +58,8 @@ func (q *Queries) DeleteQRLocation(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const existsQRLocationByQRCode = `-- name: ExistsQRLocationByQRCode :one
-SELECT EXISTS(
-	SELECT 1
-	FROM qr_locations
-	WHERE qr_code = $1
-)
-`
-
-func (q *Queries) ExistsQRLocationByQRCode(ctx context.Context, qrCode string) (bool, error) {
-	row := q.db.QueryRow(ctx, existsQRLocationByQRCode, qrCode)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
-}
-
 const getQRLocation = `-- name: GetQRLocation :one
-SELECT id, name, qr_code, metadata, created_at, updated_at FROM qr_locations
+SELECT id, name, qr_code, created_at, updated_at FROM qr_locations
 WHERE id = $1
 `
 
@@ -89,47 +70,64 @@ func (q *Queries) GetQRLocation(ctx context.Context, id uuid.UUID) (*QrLocation,
 		&i.ID,
 		&i.Name,
 		&i.QrCode,
-		&i.Metadata,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return &i, err
 }
 
-const updateQRLocation = `-- name: UpdateQRLocation :one
+const listQRLocations = `-- name: ListQRLocations :many
+SELECT id, name, qr_code, created_at, updated_at FROM qr_locations
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListQRLocations(ctx context.Context) ([]*QrLocation, error) {
+	rows, err := q.db.Query(ctx, listQRLocations)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*QrLocation{}
+	for rows.Next() {
+		var i QrLocation
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.QrCode,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateQRLocation = `-- name: UpdateQRLocation :exec
 UPDATE qr_locations
 SET name = $1,
     qr_code = $2,
-	metadata = $3,
-    updated_at = $4
-WHERE id = $5
-RETURNING id, name, qr_code, metadata, created_at, updated_at
+    updated_at = $3
+WHERE id = $4
 `
 
 type UpdateQRLocationParams struct {
 	Name      string
 	QrCode    string
-	Metadata  map[string]interface{}
 	UpdatedAt pgtype.Timestamptz
 	ID        uuid.UUID
 }
 
-func (q *Queries) UpdateQRLocation(ctx context.Context, arg UpdateQRLocationParams) (*QrLocation, error) {
-	row := q.db.QueryRow(ctx, updateQRLocation,
+func (q *Queries) UpdateQRLocation(ctx context.Context, arg UpdateQRLocationParams) error {
+	_, err := q.db.Exec(ctx, updateQRLocation,
 		arg.Name,
 		arg.QrCode,
-		arg.Metadata,
 		arg.UpdatedAt,
 		arg.ID,
 	)
-	var i QrLocation
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.QrCode,
-		&i.Metadata,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return &i, err
+	return err
 }

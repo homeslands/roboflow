@@ -13,61 +13,15 @@ type QrLocation struct {
 	ID        uuid.UUID
 	Name      string
 	QrCode    string
-	Metadata  map[string]interface{}
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 }
 
 type Raybot struct {
-	ID              uuid.UUID
-	Name            string
-	Token           string
-	Status          string
-	IpAddress       *string
-	LastConnectedAt pgtype.Timestamptz
-	CreatedAt       pgtype.Timestamptz
-	UpdatedAt       pgtype.Timestamptz
-}
-
-type RaybotCommand struct {
-	ID          uuid.UUID
-	RaybotID    uuid.UUID
-	Type        string
-	Status      string
-	Input       []byte
-	Output      map[string]interface{}
-	CreatedAt   pgtype.Timestamptz
-	CompletedAt pgtype.Timestamptz
-}
-
-type Step struct {
-	ID                  uuid.UUID
-	WorkflowExecutionID uuid.UUID
-	Env                 map[string]string
-	Node                []byte
-	Inputs              []byte
-	Outputs             []byte
-	Status              string
-	StartedAt           pgtype.Timestamptz
-	CompletedAt         pgtype.Timestamptz
-}
-
-type Workflow struct {
-	ID          uuid.UUID
-	Name        string
-	Description *string
-	Definition  []byte
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
-}
-
-type WorkflowExecution struct {
-	ID          uuid.UUID
-	WorkflowID  uuid.UUID
-	Status      string
-	Env         map[string]string
-	Definition  []byte
-	CreatedAt   pgtype.Timestamptz
-	StartedAt   pgtype.Timestamptz
-	CompletedAt pgtype.Timestamptz
+	ID        uuid.UUID
+	Name      string
+	Token     string
+	Status    string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
 }
