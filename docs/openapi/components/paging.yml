@@ -1,0 +1,22 @@
+parameters:
+  Page:
+    name: page
+    in: query
+    description: The page number to retrieve (starting from 1).
+    required: false
+    schema:
+      type: integer
+      format: int32
+      minimum: 1
+      default: 1
+  PageSize:
+    name: pageSize
+    in: query
+    description: The number of items per page.
+    required: false
+    schema:
+      type: integer
+      format: int32
+      minimum: 1
+      maximum: 100
+      default: 10

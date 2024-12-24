@@ -20,3 +20,5 @@ coverage.out
 coverage.html
 
 .env
+
+/docs/openapi/build
