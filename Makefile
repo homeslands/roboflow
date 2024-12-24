@@ -17,8 +17,9 @@ test-coverage:
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report generated in coverage.html"
 
+.PHONY: mock
 mock:
-	go generate ./...
+	mockery --all
 
 .PHONY: server
 server:

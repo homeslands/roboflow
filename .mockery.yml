@@ -1,0 +1,18 @@
+with-expecter: true
+outpkg: "mocks"
+dir: "{{.InterfaceDir}}/mocks/"
+mockname: "Fake{{.InterfaceName}}"
+filename: "{{.InterfaceName | snakecase}}.gen.go"
+
+# Flags for future v3 compatibility.
+# See https://github.com/vektra/mockery/issues/848
+issue-845-fix: true
+resolve-type-alias: false
+
+packages:
+  github.com/tuanvumaihuynh/roboflow/internal/model:
+    config:
+      all: true
+  github.com/tuanvumaihuynh/roboflow/pkg/pubsub:
+    config:
+      all: true
