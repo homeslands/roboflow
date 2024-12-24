@@ -78,14 +78,14 @@ func InitilizeRaybotClient(
 
 	err = raybotSvc.UpdateState(ctx, raybotService.UpdateStateCommand{
 		ID:    raybotID,
-		State: model.RaybotStateIdle,
+		State: model.RaybotStatusIdle,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error updating raybot status: %w", err)
 	}
 
 	return NewRaybotClient(
-		raybot,
+		&raybot,
 		raybotSvc,
 		cmdSvc,
 		conn,
@@ -100,7 +100,7 @@ func (c RaybotClient) ID() string {
 func (c *RaybotClient) Close() {
 	err := c.raybotSvc.UpdateState(context.Background(), raybotService.UpdateStateCommand{
 		ID:    c.raybot.ID,
-		State: model.RaybotStateOffline,
+		State: model.RaybotStatusOffline,
 	})
 
 	if err != nil {
