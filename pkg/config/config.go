@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	prodEnvVal = "production"
+	ProdEnvVal = "production"
 )
 
 type Config struct {
-	Env         string `env:"ENV" envDefault:"development"`
-	Port        int    `env:"PORT" envDefault:"8000"`
-	PostgresDsn string `env:"POSTGRES_DSN"`
+	Env         string `env:"ROBOFLOW_ENV" envDefault:"development"`
+	Port        int    `env:"ROBOFLOW_PORT" envDefault:"8000"`
+	PostgresDsn string `env:"ROBOFLOW_POSTGRES_DSN"`
 }
 
 func (c *Config) IsProd() bool {
-	return c.Env == prodEnvVal
+	return c.Env == ProdEnvVal
 }
 
 func MustLoadConfig() *Config {

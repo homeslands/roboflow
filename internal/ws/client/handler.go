@@ -3,12 +3,11 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 
-	raybotcommand "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command"
 	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
 
@@ -40,22 +39,22 @@ func handlePublish(c *RaybotClient, msg InboundMsg) {
 }
 
 func handleResponse(c *RaybotClient, msg InboundMsg) {
-	c.logger.Debug("Received msg", slog.Any("msg", msg))
-	id, err := uuid.Parse(*msg.Id)
+	c.logger.Debug("Received msg", zap.Any("msg", msg))
+	ID, err := uuid.Parse(*msg.Id)
 	if err != nil {
-		c.logger.Error("Error parsing id", slog.Any("error", err))
+		c.logger.Error("Error parsing id", zap.Error(err))
 		closeConn(c, websocket.CloseInvalidFramePayloadData, "failed to parse id")
 		return
 	}
 
-	cmd, err := c.cmdSvc.GetByID(context.Background(), raybotcommand.GetRaybotCommandByIDQuery{ID: id})
+	cmd, err := c.cmdSvc.GetCommand(context.Background(), ID)
 	if err != nil {
 		if xerrors.IsNotFound(err) {
-			c.logger.Error("Command not found", slog.Any("error", err))
+			c.logger.Error("Command not found", zap.Error(err))
 			closeConn(c, websocket.CloseInvalidFramePayloadData, "command not found")
 			return
 		}
-		c.logger.Error("Error getting command", slog.Any("error", err))
+		c.logger.Error("Error getting command", zap.Error(err))
 		closeConn(c, websocket.CloseInternalServerErr, "failed to get command")
 		return
 	}

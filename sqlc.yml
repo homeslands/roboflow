@@ -15,21 +15,46 @@ sql:
           - db_type: "uuid"
             go_type: "github.com/google/uuid.UUID"
 
-          # Workflow execution
-          - column: "workflow_executions.env"
+          # Custom types
+          # Workflow
+          - column: "workflows.definition"
             go_type:
-              type: "map[string]string"
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Definition"
+
+          # Workflow execution
+          - column: "workflow_executions.runtime_config"
+            go_type:
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Config"
+              slice: true
+          - column: "workflow_executions.definition"
+            go_type:
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Definition"
 
           # Step node
-          - column: "steps.env"
+          - column: "steps.node"
             go_type:
-              type: "map[string]string"
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Node"
 
           # QR Location
           - column: "qr_locations.metadata"
             go_type:
               type: "map[string]interface{}"
 
-          - column: "raybot_commands.output"
+          # Workflow execution view
+          - column: "workflow_execution_view.runtime_config"
             go_type:
-              type: "map[string]interface{}"
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Config"
+              slice: true
+          - column: "workflow_execution_view.definition"
+            go_type:
+              import: "github.com/tuanvumaihuynh/roboflow/pkg/vueflow"
+              type: "Definition"
+          - column: "workflow_execution_view.steps"
+            go_type:
+              type: "Step"
+              slice: true

@@ -3,7 +3,8 @@ package client
 import (
 	"encoding/json"
 
-	"github.com/tuanvumaihuynh/roboflow/internal/model"
+	cmdModel "github.com/tuanvumaihuynh/roboflow/internal/command/model"
+	raybotModel "github.com/tuanvumaihuynh/roboflow/internal/raybot/model"
 )
 
 type Operation string
@@ -22,15 +23,15 @@ type InboundMsg struct {
 
 // OutboundCommandMsg is the message sent to the client when a command is received
 type OutboundCommandMsg struct {
-	ID   string                  `json:"id"`
-	Type model.RaybotCommandType `json:"type"`
-	Data map[string]interface{}  `json:"data"`
+	ID   string                 `json:"id"`
+	Type cmdModel.CommandType   `json:"type"`
+	Data map[string]interface{} `json:"data"`
 }
 
 // Publish event data
 
 type PublishUpdateStatus struct {
-	Status model.RaybotStatus `json:"status"`
+	Status raybotModel.RaybotStatus `json:"status"`
 }
 
 type PublishUpdateRamCpu struct {
@@ -41,5 +42,5 @@ type PublishUpdateRamCpu struct {
 // Response event data
 
 type ResponseStatus struct {
-	Status model.RaybotStatus `json:"status"`
+	Status raybotModel.RaybotStatus `json:"status"`
 }
