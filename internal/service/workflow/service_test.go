@@ -219,7 +219,78 @@ func TestWorkflowService(t *testing.T) {
 			})
 		}
 	})
-	t.Run("Run", func(t *testing.T) {})
+	t.Run("Run", func(t *testing.T) {
+		type testCase struct {
+			name                  string
+			cmd                   workflow.RunWorkflowCommand
+			workflowRepo          *mocks.FakeWorkflowRepository
+			workflowExecutionRepo *mocks.FakeWorkflowExecutionRepository
+			eventPublisher        *pubsubmocks.FakePublisher
+			mockBehavior          func(*testCase)
+			shouldErr             bool
+		}
+
+		testCases := []testCase{
+			{
+				name: "Should run successfully",
+				cmd: workflow.RunWorkflowCommand{
+					ID:  validID,
+					Env: map[string]string{},
+				},
+				workflowRepo:          mocks.NewFakeWorkflowRepository(t),
+				workflowExecutionRepo: mocks.NewFakeWorkflowExecutionRepository(t),
+				eventPublisher:        pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.workflowRepo.EXPECT().Get(ctx, validID).Return(validWorkflow, nil)
+					tc.workflowExecutionRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
+					tc.eventPublisher.EXPECT().Publish("workflow.execution.run", mock.Anything).Return(nil)
+				},
+				shouldErr: false,
+			},
+			{
+				name: "Should return error when validate command failed",
+				cmd: workflow.RunWorkflowCommand{
+					ID:  uuid.Nil,
+					Env: map[string]string{},
+				},
+				workflowRepo:          mocks.NewFakeWorkflowRepository(t),
+				workflowExecutionRepo: mocks.NewFakeWorkflowExecutionRepository(t),
+				eventPublisher:        pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+				},
+				shouldErr: true,
+			},
+			{
+				name: "Should return error if workflow not found",
+				cmd: workflow.RunWorkflowCommand{
+					ID:  validID,
+					Env: map[string]string{},
+				},
+				workflowRepo:          mocks.NewFakeWorkflowRepository(t),
+				workflowExecutionRepo: mocks.NewFakeWorkflowExecutionRepository(t),
+				eventPublisher:        pubsubmocks.NewFakePublisher(t),
+				mockBehavior: func(tc *testCase) {
+					tc.workflowRepo.EXPECT().Get(ctx, validID).Return(model.Workflow{}, assert.AnError)
+				},
+				shouldErr: true,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				tc.mockBehavior(&tc)
+
+				s := workflow.NewService(tc.workflowRepo, tc.workflowExecutionRepo, tc.eventPublisher, log)
+				_, err := s.Run(ctx, tc.cmd)
+
+				if tc.shouldErr {
+					assert.Error(t, err)
+				} else {
+					assert.NoError(t, err)
+				}
+			})
+		}
+	})
 	t.Run("GetByID", func(t *testing.T) {
 		testCases := []struct {
 			name         string
