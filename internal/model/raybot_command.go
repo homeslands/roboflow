@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,12 +17,12 @@ type RaybotCommandStatus string
 
 func (s RaybotCommandStatus) Validate() error {
 	switch s {
-	case RaybotCommandStatusPending:
-	case RaybotCommandStatusInProgress:
-	case RaybotCommandStatusSuccess:
-	case RaybotCommandStatusFailed:
+	case RaybotCommandStatusPending,
+		RaybotCommandStatusInProgress,
+		RaybotCommandStatusSuccess,
+		RaybotCommandStatusFailed:
 	default:
-		return xerrors.ThrowInvalidArgument(nil, "invalid command state")
+		return xerrors.ThrowInvalidArgument(nil, fmt.Sprintf("invalid command status: %s", s))
 	}
 	return nil
 }
@@ -38,18 +39,18 @@ type RaybotCommandType string
 
 func (c RaybotCommandType) Validate() error {
 	switch c {
-	case RaybotCommandTypeStop:
-	case RaybotCommandTypeMoveForward:
-	case RaybotCommandTypeMoveBackward:
-	case RaybotCommandTypeMoveToLocation:
-	case RaybotCommandTypeOpenBox:
-	case RaybotCommandTypeCloseBox:
-	case RaybotCommandTypeLiftBox:
-	case RaybotCommandTypeDropBox:
-	case RaybotCommandTypeCheckQrCode:
-	case RaybotCommandTypeWaitGetItem:
+	case RaybotCommandTypeStop,
+		RaybotCommandTypeMoveForward,
+		RaybotCommandTypeMoveBackward,
+		RaybotCommandTypeMoveToLocation,
+		RaybotCommandTypeOpenBox,
+		RaybotCommandTypeCloseBox,
+		RaybotCommandTypeLiftBox,
+		RaybotCommandTypeDropBox,
+		RaybotCommandTypeCheckQrCode,
+		RaybotCommandTypeWaitGetItem:
 	default:
-		return xerrors.ThrowInvalidArgument(nil, "invalid command type")
+		return xerrors.ThrowInvalidArgument(nil, fmt.Sprintf("invalid command type: %s", c))
 	}
 	return nil
 }
