@@ -240,17 +240,17 @@ func (_c *FakeRaybotCommandRepository_List_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// Update provides a mock function with given fields: ctx, cmd
-func (_m *FakeRaybotCommandRepository) Update(ctx context.Context, cmd model.RaybotCommand) error {
-	ret := _m.Called(ctx, cmd)
+// Update provides a mock function with given fields: ctx, cmdID, raybotStatus, fn
+func (_m *FakeRaybotCommandRepository) Update(ctx context.Context, cmdID uuid.UUID, raybotStatus model.RaybotStatus, fn func(*model.RaybotCommand) error) error {
+	ret := _m.Called(ctx, cmdID, raybotStatus, fn)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.RaybotCommand) error); ok {
-		r0 = rf(ctx, cmd)
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, model.RaybotStatus, func(*model.RaybotCommand) error) error); ok {
+		r0 = rf(ctx, cmdID, raybotStatus, fn)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -265,14 +265,16 @@ type FakeRaybotCommandRepository_Update_Call struct {
 
 // Update is a helper method to define mock.On call
 //   - ctx context.Context
-//   - cmd model.RaybotCommand
-func (_e *FakeRaybotCommandRepository_Expecter) Update(ctx interface{}, cmd interface{}) *FakeRaybotCommandRepository_Update_Call {
-	return &FakeRaybotCommandRepository_Update_Call{Call: _e.mock.On("Update", ctx, cmd)}
+//   - cmdID uuid.UUID
+//   - raybotStatus model.RaybotStatus
+//   - fn func(*model.RaybotCommand) error
+func (_e *FakeRaybotCommandRepository_Expecter) Update(ctx interface{}, cmdID interface{}, raybotStatus interface{}, fn interface{}) *FakeRaybotCommandRepository_Update_Call {
+	return &FakeRaybotCommandRepository_Update_Call{Call: _e.mock.On("Update", ctx, cmdID, raybotStatus, fn)}
 }
 
-func (_c *FakeRaybotCommandRepository_Update_Call) Run(run func(ctx context.Context, cmd model.RaybotCommand)) *FakeRaybotCommandRepository_Update_Call {
+func (_c *FakeRaybotCommandRepository_Update_Call) Run(run func(ctx context.Context, cmdID uuid.UUID, raybotStatus model.RaybotStatus, fn func(*model.RaybotCommand) error)) *FakeRaybotCommandRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(model.RaybotCommand))
+		run(args[0].(context.Context), args[1].(uuid.UUID), args[2].(model.RaybotStatus), args[3].(func(*model.RaybotCommand) error))
 	})
 	return _c
 }
@@ -282,7 +284,7 @@ func (_c *FakeRaybotCommandRepository_Update_Call) Return(_a0 error) *FakeRaybot
 	return _c
 }
 
-func (_c *FakeRaybotCommandRepository_Update_Call) RunAndReturn(run func(context.Context, model.RaybotCommand) error) *FakeRaybotCommandRepository_Update_Call {
+func (_c *FakeRaybotCommandRepository_Update_Call) RunAndReturn(run func(context.Context, uuid.UUID, model.RaybotStatus, func(*model.RaybotCommand) error) error) *FakeRaybotCommandRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

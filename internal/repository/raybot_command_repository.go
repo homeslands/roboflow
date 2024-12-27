@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -85,20 +86,45 @@ func (r raybotCommandRepository) Create(ctx context.Context, cmd model.RaybotCom
 	return nil
 }
 
-func (r raybotCommandRepository) Update(ctx context.Context, cmd model.RaybotCommand) error {
-	param := db.UpdateRaybotCommandParams{
-		ID:     cmd.ID,
-		Status: string(cmd.Status),
-		Output: cmd.Output.(map[string]interface{}),
-	}
-	if cmd.CompletedAt != nil {
-		param.CompletedAt = pgtype.Timestamptz{Time: *cmd.CompletedAt, Valid: true}
-	}
-	if err := r.store.UpdateRaybotCommand(ctx, param); err != nil {
-		return err
-	}
+func (r raybotCommandRepository) Update(
+	ctx context.Context,
+	cmdID uuid.UUID,
+	raybotStatus model.RaybotStatus,
+	fn func(raybotCmd *model.RaybotCommand) error,
+) error {
+	return r.store.WithTx(ctx, func(s db.Store) error {
+		row, err := r.store.GetRaybotCommandForUpdate(ctx, cmdID)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return xerrors.ThrowNotFound(err, "command not found")
+			}
+			return err
+		}
 
-	return nil
+		cmd, err := rowRaybotCommandToModel(*row)
+		if err != nil {
+			return err
+		}
+
+		err = fn(&cmd)
+		if err != nil {
+			return err
+		}
+
+		err = r.store.UpdateRaybotStatus(ctx, db.UpdateRaybotStatusParams{
+			ID:        cmd.RaybotID,
+			Status:    string(raybotStatus),
+			UpdatedAt: pgtype.Timestamptz{Time: time.Now(), Valid: true},
+		})
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return xerrors.ThrowNotFound(err, "raybot not found")
+			}
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (r raybotCommandRepository) Delete(ctx context.Context, id uuid.UUID) error {

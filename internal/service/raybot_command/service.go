@@ -20,6 +20,9 @@ var _ Service = (*service)(nil)
 type Service interface {
 	Create(ctx context.Context, cmd CreateRaybotCommandCommand) (model.RaybotCommand, error)
 	Delete(ctx context.Context, cmd DeleteRaybotCommandCommand) error
+	SetStatusInProgess(ctx context.Context, cmd SetStatusInProgessCommand) error
+	SetStatusSuccess(ctx context.Context, cmd SetStatusSuccessCommand) error
+	SetStatusFailed(ctx context.Context, cmd SetStatusFailedCommand) error
 
 	GetByID(ctx context.Context, q GetRaybotCommandByIDQuery) (model.RaybotCommand, error)
 	List(ctx context.Context, q ListRaybotCommandQuery) (*paging.List[model.RaybotCommand], error)
@@ -104,6 +107,75 @@ func (s service) Delete(ctx context.Context, cmd DeleteRaybotCommandCommand) err
 	}
 
 	return s.raybotCommandRepo.Delete(ctx, cmd.ID)
+}
+
+func (s service) SetStatusInProgess(ctx context.Context, cmd SetStatusInProgessCommand) error {
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	// When raybot receives the command in progress, raybot stautus will be BUSY
+	return s.raybotCommandRepo.Update(
+		ctx,
+		cmd.ID,
+		model.RaybotStatusBusy,
+		func(raybotCmd *model.RaybotCommand) error {
+			if raybotCmd.Status != model.RaybotCommandStatusPending {
+				return xerrors.ThrowPreconditionFailed(nil, "command status is not PENDING")
+			}
+			raybotCmd.Status = model.RaybotCommandStatusInProgress
+
+			return nil
+		},
+	)
+}
+
+func (s service) SetStatusSuccess(ctx context.Context, cmd SetStatusSuccessCommand) error {
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	// When raybot completes the command, raybot status will be IDLE
+	return s.raybotCommandRepo.Update(
+		ctx,
+		cmd.ID,
+		model.RaybotStatusIdle,
+		func(raybotCmd *model.RaybotCommand) error {
+			if raybotCmd.Status != model.RaybotCommandStatusInProgress {
+				return xerrors.ThrowPreconditionFailed(nil, "command status is not IN_PROGRESS")
+			}
+			raybotCmd.Status = model.RaybotCommandStatusSuccess
+			now := time.Now()
+			raybotCmd.CompletedAt = &now
+			raybotCmd.Output = cmd.Output
+
+			return nil
+		},
+	)
+}
+
+func (s service) SetStatusFailed(ctx context.Context, cmd SetStatusFailedCommand) error {
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	// When raybot fails to complete the command, raybot status will be IDLE
+	return s.raybotCommandRepo.Update(
+		ctx,
+		cmd.ID,
+		model.RaybotStatusIdle,
+		func(raybotCmd *model.RaybotCommand) error {
+			if raybotCmd.Status != model.RaybotCommandStatusInProgress {
+				return xerrors.ThrowPreconditionFailed(nil, "command status is not IN_PROGRESS")
+			}
+			raybotCmd.Status = model.RaybotCommandStatusFailed
+			now := time.Now()
+			raybotCmd.CompletedAt = &now
+			raybotCmd.Output = cmd.Output
+
+			return nil
+		},
+	)
 }
 
 func (s service) GetByID(ctx context.Context, q GetRaybotCommandByIDQuery) (model.RaybotCommand, error) {

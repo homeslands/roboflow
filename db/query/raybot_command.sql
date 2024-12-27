@@ -2,6 +2,10 @@
 SELECT * FROM raybot_commands
 WHERE id = $1;
 
+-- name: GetRaybotCommandForUpdate :one
+SELECT * FROM raybot_commands
+WHERE id = $1 FOR UPDATE;
+
 -- name: CreateRaybotCommand :exec
 INSERT INTO raybot_commands (
     id,
@@ -22,10 +26,16 @@ VALUES (
 
 -- name: UpdateRaybotCommand :exec
 UPDATE raybot_commands
-SET status = $1,
-    output = $2,
-    completed_at = $3
-WHERE id = $4;
+SET
+	id = $1,
+	raybot_id = $2,
+	type = $3,
+	status = $4,
+	input = $5,
+	output = $6,
+	created_at = $7,
+	completed_at = $8
+WHERE id = $1;
 
 -- name: DeleteRaybotCommand :exec
 DELETE FROM raybot_commands

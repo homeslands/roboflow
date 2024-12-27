@@ -68,6 +68,32 @@ func (c DeleteRaybotCommandCommand) Validate() error {
 	return validator.Validate(c)
 }
 
+type SetStatusInProgessCommand struct {
+	ID uuid.UUID `validate:"required,uuid"`
+}
+
+func (c SetStatusInProgessCommand) Validate() error {
+	return validator.Validate(c)
+}
+
+type SetStatusSuccessCommand struct {
+	ID     uuid.UUID `validate:"required,uuid"`
+	Output any       `validate:"omitempty"`
+}
+
+func (c SetStatusSuccessCommand) Validate() error {
+	return validator.Validate(c)
+}
+
+type SetStatusFailedCommand struct {
+	ID     uuid.UUID `validate:"required,uuid"`
+	Output any       `validate:"omitempty"`
+}
+
+func (c SetStatusFailedCommand) Validate() error {
+	return validator.Validate(c)
+}
+
 func validateCommandInput(commandType model.RaybotCommandType, input any) (any, error) {
 	inputBytes, err := json.Marshal(input)
 	if err != nil {

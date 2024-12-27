@@ -35,7 +35,7 @@ type RaybotCommand struct {
 	Type        string
 	Status      string
 	Input       []byte
-	Output      map[string]interface{}
+	Output      []byte
 	CreatedAt   pgtype.Timestamptz
 	CompletedAt pgtype.Timestamptz
 }

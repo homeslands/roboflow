@@ -48,7 +48,8 @@ func (c RaybotCommandType) Validate() error {
 		RaybotCommandTypeLiftBox,
 		RaybotCommandTypeDropBox,
 		RaybotCommandTypeCheckQrCode,
-		RaybotCommandTypeWaitGetItem:
+		RaybotCommandTypeWaitGetItem,
+		RaybotCommandTypeScanLocation:
 	default:
 		return xerrors.ThrowInvalidArgument(nil, fmt.Sprintf("invalid command type: %s", c))
 	}
@@ -66,6 +67,9 @@ const (
 	RaybotCommandTypeDropBox        RaybotCommandType = "DROP_BOX"
 	RaybotCommandTypeCheckQrCode    RaybotCommandType = "CHECK_QR"
 	RaybotCommandTypeWaitGetItem    RaybotCommandType = "WAIT_GET_ITEM"
+
+	// Command that has response data
+	RaybotCommandTypeScanLocation RaybotCommandType = "SCAN_LOCATION"
 )
 
 type MoveToLocationInput struct {
@@ -96,6 +100,13 @@ type RaybotCommandRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (RaybotCommand, error)
 	List(ctx context.Context, raybotId uuid.UUID, p paging.Params, sorts []xsort.Sort) (*paging.List[RaybotCommand], error)
 	Create(ctx context.Context, cmd RaybotCommand) error
-	Update(ctx context.Context, cmd RaybotCommand) error
+
+	// Update updates both the raybot command and its associated raybot's status
+	Update(
+		ctx context.Context,
+		cmdID uuid.UUID,
+		raybotStatus RaybotStatus,
+		fn func(raybotCmd *RaybotCommand) error,
+	) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }

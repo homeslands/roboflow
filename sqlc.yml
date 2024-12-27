@@ -30,6 +30,3 @@ sql:
             go_type:
               type: "map[string]interface{}"
 
-          - column: "raybot_commands.output"
-            go_type:
-              type: "map[string]interface{}"

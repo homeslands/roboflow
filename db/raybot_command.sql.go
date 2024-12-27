@@ -83,27 +83,62 @@ func (q *Queries) GetRaybotCommand(ctx context.Context, id uuid.UUID) (*RaybotCo
 	return &i, err
 }
 
+const getRaybotCommandForUpdate = `-- name: GetRaybotCommandForUpdate :one
+SELECT id, raybot_id, type, status, input, output, created_at, completed_at FROM raybot_commands
+WHERE id = $1 FOR UPDATE
+`
+
+func (q *Queries) GetRaybotCommandForUpdate(ctx context.Context, id uuid.UUID) (*RaybotCommand, error) {
+	row := q.db.QueryRow(ctx, getRaybotCommandForUpdate, id)
+	var i RaybotCommand
+	err := row.Scan(
+		&i.ID,
+		&i.RaybotID,
+		&i.Type,
+		&i.Status,
+		&i.Input,
+		&i.Output,
+		&i.CreatedAt,
+		&i.CompletedAt,
+	)
+	return &i, err
+}
+
 const updateRaybotCommand = `-- name: UpdateRaybotCommand :exec
 UPDATE raybot_commands
-SET status = $1,
-    output = $2,
-    completed_at = $3
-WHERE id = $4
+SET
+	id = $1,
+	raybot_id = $2,
+	type = $3,
+	status = $4,
+	input = $5,
+	output = $6,
+	created_at = $7,
+	completed_at = $8
+WHERE id = $1
 `
 
 type UpdateRaybotCommandParams struct {
-	Status      string
-	Output      map[string]interface{}
-	CompletedAt pgtype.Timestamptz
 	ID          uuid.UUID
+	RaybotID    uuid.UUID
+	Type        string
+	Status      string
+	Input       []byte
+	Output      []byte
+	CreatedAt   pgtype.Timestamptz
+	CompletedAt pgtype.Timestamptz
 }
 
 func (q *Queries) UpdateRaybotCommand(ctx context.Context, arg UpdateRaybotCommandParams) error {
 	_, err := q.db.Exec(ctx, updateRaybotCommand,
-		arg.Status,
-		arg.Output,
-		arg.CompletedAt,
 		arg.ID,
+		arg.RaybotID,
+		arg.Type,
+		arg.Status,
+		arg.Input,
+		arg.Output,
+		arg.CreatedAt,
+		arg.CompletedAt,
 	)
 	return err
 }
