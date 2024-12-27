@@ -84,13 +84,18 @@ func (r raybotRepository) Create(ctx context.Context, raybot model.Raybot) error
 }
 
 func (r raybotRepository) Update(ctx context.Context, raybot model.Raybot) (model.Raybot, error) {
-	row, err := r.store.UpdateRaybot(ctx, db.UpdateRaybotParams{
+	params := db.UpdateRaybotParams{
 		ID:        raybot.ID,
 		Name:      raybot.Name,
 		Token:     raybot.Token,
+		IpAddress: raybot.IpAddress,
 		Status:    string(raybot.Status),
 		UpdatedAt: pgtype.Timestamptz{Time: raybot.UpdatedAt, Valid: true},
-	})
+	}
+	if raybot.LastConnectedAt != nil {
+		params.LastConnectedAt = pgtype.Timestamptz{Time: *raybot.LastConnectedAt, Valid: true}
+	}
+	row, err := r.store.UpdateRaybot(ctx, params)
 
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == "23505" && strings.Contains(pgErr.ConstraintName, "name") {
