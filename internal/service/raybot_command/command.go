@@ -53,7 +53,7 @@ func (i CheckQRCodeInput) Validate() error {
 }
 
 type LiftDropBoxInput struct {
-	Distance *int32 `json:"distance" validate:"omitempty gte=300 lte=2000"`
+	Distance *int32 `json:"distance" validate:"omitempty,gte=300,lte=2000"`
 }
 
 func (i LiftDropBoxInput) Validate() error {
