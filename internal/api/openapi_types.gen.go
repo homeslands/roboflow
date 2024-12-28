@@ -4,6 +4,7 @@
 package api
 
 import (
+	"encoding/json"
 	"time"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -18,7 +19,7 @@ type CreateQRLocationRequest struct {
 
 // CreateRaybotCommandRequest defines model for CreateRaybotCommandRequest.
 type CreateRaybotCommandRequest struct {
-	Input interface{}       `json:"input"`
+	Input json.RawMessage   `json:"input"`
 	Type  RaybotCommandType `json:"type"`
 }
 
@@ -112,14 +113,14 @@ type QRLocationResponse struct {
 
 // RaybotCommandResponse defines model for RaybotCommandResponse.
 type RaybotCommandResponse struct {
-	CompletedAt *time.Time          `json:"completedAt"`
-	CreatedAt   time.Time           `json:"createdAt"`
-	Id          openapi_types.UUID  `json:"id"`
-	Input       interface{}         `json:"input"`
-	Output      interface{}         `json:"output"`
-	RaybotId    openapi_types.UUID  `json:"raybotId"`
-	Status      RaybotCommandStatus `json:"status"`
-	Type        RaybotCommandType   `json:"type"`
+	CompletedAt *time.Time             `json:"completedAt"`
+	CreatedAt   time.Time              `json:"createdAt"`
+	Id          openapi_types.UUID     `json:"id"`
+	Input       map[string]interface{} `json:"input"`
+	Output      map[string]interface{} `json:"output"`
+	RaybotId    openapi_types.UUID     `json:"raybotId"`
+	Status      RaybotCommandStatus    `json:"status"`
+	Type        RaybotCommandType      `json:"type"`
 }
 
 // RaybotCommandStatus defines model for RaybotCommandStatus.

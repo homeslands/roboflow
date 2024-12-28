@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -67,18 +69,22 @@ func (r raybotCommandRepository) List(ctx context.Context, raybotId uuid.UUID, p
 }
 
 func (r raybotCommandRepository) Create(ctx context.Context, cmd model.RaybotCommand) error {
-	inputBytes, err := json.Marshal(cmd.Input)
-	if err != nil {
-		return xerrors.ThrowInvalidArgument(err, "failed to marshal input")
-	}
 	param := db.CreateRaybotCommandParams{
 		ID:        cmd.ID,
 		RaybotID:  cmd.RaybotID,
 		Type:      string(cmd.Type),
 		Status:    string(cmd.Status),
-		Input:     inputBytes,
 		CreatedAt: pgtype.Timestamptz{Time: cmd.CreatedAt, Valid: true},
 	}
+	if cmd.Input != nil {
+		// Compact input to save space
+		var buffer bytes.Buffer
+		if err := json.Compact(&buffer, cmd.Input); err != nil {
+			return fmt.Errorf("failed to compact input: %w", err)
+		}
+		param.Input = buffer.Bytes()
+	}
+
 	if err := r.store.CreateRaybotCommand(ctx, param); err != nil {
 		return err
 	}
@@ -111,6 +117,29 @@ func (r raybotCommandRepository) Update(
 			return err
 		}
 
+		// Update raybot command
+		params := db.UpdateRaybotCommandParams{
+			ID:        cmd.ID,
+			RaybotID:  cmd.RaybotID,
+			Type:      string(cmd.Type),
+			Status:    string(cmd.Status),
+			Input:     cmd.Input,
+			Output:    cmd.Output,
+			CreatedAt: pgtype.Timestamptz{Time: cmd.CreatedAt, Valid: true},
+		}
+		if cmd.CompletedAt != nil {
+			params.CompletedAt = pgtype.Timestamptz{Time: *cmd.CompletedAt, Valid: true}
+		}
+
+		err = r.store.UpdateRaybotCommand(ctx, params)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return xerrors.ThrowNotFound(err, "command not found")
+			}
+			return err
+		}
+
+		// Update raybot status
 		err = r.store.UpdateRaybotStatus(ctx, db.UpdateRaybotStatusParams{
 			ID:        cmd.RaybotID,
 			Status:    string(raybotStatus),
@@ -137,17 +166,12 @@ func (r raybotCommandRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 func rowRaybotCommandToModel(row db.RaybotCommand) (model.RaybotCommand, error) {
-	input, err := unmarshalCommandInput(row.Input, model.RaybotCommandType(row.Type))
-	if err != nil {
-		return model.RaybotCommand{}, err
-	}
-
 	m := model.RaybotCommand{
 		ID:        row.ID,
 		RaybotID:  row.RaybotID,
 		Status:    model.RaybotCommandStatus(row.Status),
 		Type:      model.RaybotCommandType(row.Type),
-		Input:     input,
+		Input:     row.Input,
 		Output:    row.Output,
 		CreatedAt: row.CreatedAt.Time,
 	}
@@ -156,36 +180,4 @@ func rowRaybotCommandToModel(row db.RaybotCommand) (model.RaybotCommand, error) 
 	}
 
 	return m, nil
-}
-
-func unmarshalCommandInput(input []byte, t model.RaybotCommandType) (any, error) {
-	switch t {
-	case model.RaybotCommandTypeMoveToLocation:
-		var v model.MoveToLocationInput
-		if err := json.Unmarshal(input, &v); err != nil {
-			return nil, err
-		}
-		return v, nil
-	case model.RaybotCommandTypeCheckQrCode:
-		var v model.CheckQRCodeInput
-		if err := json.Unmarshal(input, &v); err != nil {
-			return nil, err
-		}
-		return v, nil
-	case model.RaybotCommandTypeLiftBox, model.RaybotCommandTypeDropBox:
-		var v model.LiftDropBoxInput
-		if err := json.Unmarshal(input, &v); err != nil {
-			return nil, err
-		}
-		return v, nil
-	case model.RaybotCommandTypeStop,
-		model.RaybotCommandTypeMoveForward,
-		model.RaybotCommandTypeMoveBackward,
-		model.RaybotCommandTypeOpenBox,
-		model.RaybotCommandTypeCloseBox,
-		model.RaybotCommandTypeWaitGetItem:
-		return nil, nil
-	default:
-		return nil, xerrors.ThrowInvalidArgument(nil, "invalid command type")
-	}
 }

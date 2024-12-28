@@ -12,6 +12,7 @@ import (
 	"github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command/event"
 	"github.com/tuanvumaihuynh/roboflow/pkg/paging"
 	"github.com/tuanvumaihuynh/roboflow/pkg/pubsub"
+	"github.com/tuanvumaihuynh/roboflow/pkg/validator"
 	"github.com/tuanvumaihuynh/roboflow/pkg/xerrors"
 )
 
@@ -63,21 +64,9 @@ func (s service) Create(ctx context.Context, cmd CreateRaybotCommandCommand) (mo
 	}
 
 	// Build command input
-	input, err := buildCommandInput(cmd)
+	err := validateCommandInput(cmd.Type, cmd.Input)
 	if err != nil {
 		return model.RaybotCommand{}, err
-	}
-
-	if cmd.Type == model.RaybotCommandTypeMoveToLocation {
-		// Check if the location exists
-		loc := input.(model.MoveToLocationInput).Location
-		exists, err := s.qrLoccationRepo.ExistByQRCode(ctx, loc)
-		if err != nil {
-			return model.RaybotCommand{}, err
-		}
-		if !exists {
-			return model.RaybotCommand{}, xerrors.ThrowNotFound(nil, "location not found")
-		}
 	}
 
 	// Create raybot command
@@ -86,7 +75,7 @@ func (s service) Create(ctx context.Context, cmd CreateRaybotCommandCommand) (mo
 		RaybotID:  cmd.RaybotID,
 		Type:      cmd.Type,
 		Status:    model.RaybotCommandStatusPending,
-		Input:     input,
+		Input:     cmd.Input,
 		CreatedAt: time.Now(),
 	}
 	if err := s.raybotCommandRepo.Create(ctx, modelRaybotCommand); err != nil {
@@ -165,8 +154,9 @@ func (s service) SetStatusFailed(ctx context.Context, cmd SetStatusFailedCommand
 		cmd.ID,
 		model.RaybotStatusIdle,
 		func(raybotCmd *model.RaybotCommand) error {
-			if raybotCmd.Status != model.RaybotCommandStatusInProgress {
-				return xerrors.ThrowPreconditionFailed(nil, "command status is not IN_PROGRESS")
+			if raybotCmd.Status != model.RaybotCommandStatusInProgress &&
+				raybotCmd.Status != model.RaybotCommandStatusPending {
+				return xerrors.ThrowPreconditionFailed(nil, "command status is not IN_PROGRESS or PENDING")
 			}
 			raybotCmd.Status = model.RaybotCommandStatusFailed
 			now := time.Now()
@@ -212,24 +202,28 @@ func (s service) validateCommandState(ctx context.Context, cmd CreateRaybotComma
 }
 
 // Build the appropriate input for the command type
-func buildCommandInput(cmd CreateRaybotCommandCommand) (any, error) {
-	switch cmd.Type {
+func validateCommandInput(cmdType model.RaybotCommandType, input []byte) error {
+	switch cmdType {
 	case model.RaybotCommandTypeMoveToLocation:
-		input := cmd.Input.(MoveToLocationInput)
-		return model.MoveToLocationInput{
-			Location:  input.Location,
-			Direction: input.Direction,
-		}, nil
+		var i model.MoveToLocationInput
+		if err := json.Unmarshal(input, &i); err != nil {
+			return xerrors.ThrowInvalidArgument(err, "invalid input")
+		}
+		return validator.Validate(i)
 
 	case model.RaybotCommandTypeCheckQrCode:
-		return model.CheckQRCodeInput{
-			QRCode: cmd.Input.(CheckQRCodeInput).QRCode,
-		}, nil
+		var i model.CheckQRCodeInput
+		if err := json.Unmarshal(input, &i); err != nil {
+			return xerrors.ThrowInvalidArgument(err, "invalid input")
+		}
+		return validator.Validate(i)
 
 	case model.RaybotCommandTypeLiftBox, model.RaybotCommandTypeDropBox:
-		return model.LiftDropBoxInput{
-			Distance: cmd.Input.(LiftDropBoxInput).Distance,
-		}, nil
+		var i model.LiftDropBoxInput
+		if err := json.Unmarshal(input, &i); err != nil {
+			return xerrors.ThrowInvalidArgument(err, "invalid input")
+		}
+		return validator.Validate(i)
 
 	case model.RaybotCommandTypeStop,
 		model.RaybotCommandTypeMoveForward,
@@ -238,13 +232,14 @@ func buildCommandInput(cmd CreateRaybotCommandCommand) (any, error) {
 		model.RaybotCommandTypeCloseBox,
 		model.RaybotCommandTypeWaitGetItem:
 		// No input required
-		if cmd.Input != nil {
-			return nil, xerrors.ThrowInvalidArgument(nil, "no input expected for this command type")
+		if len(input) != 0 {
+			return xerrors.ThrowInvalidArgument(nil, "input is not required for this command type")
 		}
-		return nil, nil
+
+		return nil
 
 	default:
-		return nil, xerrors.ThrowInvalidArgument(nil, "unknown command type")
+		return xerrors.ThrowInvalidArgument(nil, "unknown command type")
 	}
 }
 

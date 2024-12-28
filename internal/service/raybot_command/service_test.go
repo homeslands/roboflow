@@ -42,7 +42,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    struct{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -60,7 +60,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: uuid.Nil,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -75,7 +75,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -91,7 +91,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -107,7 +107,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -123,7 +123,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -140,7 +140,7 @@ func TestRaybotCommandService(t *testing.T) {
 				cmd: raybotcommand.CreateRaybotCommandCommand{
 					RaybotID: validID,
 					Type:     model.RaybotCommandTypeMoveForward,
-					Input:    map[string]interface{}{},
+					Input:    []byte{},
 				},
 				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
 				raybotRepo:        mocks.NewFakeRaybotRepository(t),
@@ -150,68 +150,6 @@ func TestRaybotCommandService(t *testing.T) {
 					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
 					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
 					tc.eventPublisher.EXPECT().Publish("raybot.command.created", mock.Anything).Return(assert.AnError)
-				},
-				shouldErr: true,
-			},
-			{
-				name: "Should check QR code if command type is MOVE_TO_LOCATION",
-				cmd: raybotcommand.CreateRaybotCommandCommand{
-					RaybotID: validID,
-					Type:     model.RaybotCommandTypeMoveToLocation,
-					Input: map[string]interface{}{
-						"location":  "qr_code",
-						"direction": "FORWARD",
-					},
-				},
-				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-				raybotRepo:        mocks.NewFakeRaybotRepository(t),
-				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-				eventPublisher:    pubsubmocks.NewFakePublisher(t),
-				mockBehavior: func(tc *testCase) {
-					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
-					tc.raybotCommandRepo.EXPECT().Create(ctx, mock.Anything).Return(nil)
-					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(true, nil)
-					tc.eventPublisher.EXPECT().Publish("raybot.command.created", mock.Anything).Return(nil)
-				},
-				shouldErr: false,
-			},
-			{
-				name: "Should return error when check QR code fails",
-				cmd: raybotcommand.CreateRaybotCommandCommand{
-					RaybotID: validID,
-					Type:     model.RaybotCommandTypeMoveToLocation,
-					Input: map[string]interface{}{
-						"location":  "qr_code",
-						"direction": "FORWARD",
-					},
-				},
-				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-				raybotRepo:        mocks.NewFakeRaybotRepository(t),
-				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-				eventPublisher:    pubsubmocks.NewFakePublisher(t),
-				mockBehavior: func(tc *testCase) {
-					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
-					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(false, assert.AnError)
-				},
-				shouldErr: true,
-			},
-			{
-				name: "Should return error when QR code does not exist",
-				cmd: raybotcommand.CreateRaybotCommandCommand{
-					RaybotID: validID,
-					Type:     model.RaybotCommandTypeMoveToLocation,
-					Input: map[string]interface{}{
-						"location":  "qr_code",
-						"direction": "FORWARD",
-					},
-				},
-				raybotCommandRepo: mocks.NewFakeRaybotCommandRepository(t),
-				raybotRepo:        mocks.NewFakeRaybotRepository(t),
-				qrLocationRepo:    mocks.NewFakeQRLocationRepository(t),
-				eventPublisher:    pubsubmocks.NewFakePublisher(t),
-				mockBehavior: func(tc *testCase) {
-					tc.raybotRepo.EXPECT().GetState(ctx, validID).Return(model.RaybotStatusIdle, nil)
-					tc.qrLocationRepo.EXPECT().ExistByQRCode(ctx, "qr_code").Return(false, nil)
 				},
 				shouldErr: true,
 			},
@@ -483,7 +421,7 @@ func TestRaybotCommandService(t *testing.T) {
 				shoudErr: true,
 			},
 			{
-				name: "Should return error when current command status is not IN_PROGRESS",
+				name: "Should return error when current command status is not IN_PROGRESS or PENDING",
 				cmd: raybotcommand.SetStatusFailedCommand{
 					ID: validID,
 				},
@@ -496,7 +434,7 @@ func TestRaybotCommandService(t *testing.T) {
 							func(fn func(*model.RaybotCommand) error) bool {
 								cmd := model.RaybotCommand{
 									// Mock current command status is not IN_PROGRESS
-									Status: model.RaybotCommandStatusPending,
+									Status: model.RaybotCommandStatusSuccess,
 								}
 								err := fn(&cmd)
 								return err != nil && xerrors.IsPreconditionFailed(err)
@@ -649,8 +587,8 @@ var (
 		ID:          validID,
 		Type:        model.RaybotCommandTypeCheckQrCode,
 		Status:      model.RaybotCommandStatusPending,
-		Input:       map[string]interface{}{},
-		Output:      map[string]interface{}{},
+		Input:       []byte{},
+		Output:      []byte{},
 		CreatedAt:   time.Now(),
 		CompletedAt: nil,
 	}

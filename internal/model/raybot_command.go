@@ -73,16 +73,24 @@ const (
 )
 
 type MoveToLocationInput struct {
-	Location  string `json:"location"`
-	Direction string `json:"direction"`
+	Location  string `json:"location" validate:"required"`
+	Direction string `json:"direction" validate:"required,oneof=FORWARD BACKWARD"`
 }
 
 type CheckQRCodeInput struct {
-	QRCode string `json:"qr_code"`
+	QRCode string `json:"qr_code" validate:"required,qrcode"`
 }
 
 type LiftDropBoxInput struct {
-	Distance *int32 `json:"distance"`
+	Distance *int32 `json:"distance" validate:"omitempty,gte=300,lte=2000"`
+}
+
+type FailedOutput struct {
+	Reason string `json:"reason"`
+}
+
+type ScanLocationOutput struct {
+	Locations []string `json:"locations"`
 }
 
 type RaybotCommand struct {
@@ -90,8 +98,8 @@ type RaybotCommand struct {
 	ID          uuid.UUID
 	Type        RaybotCommandType
 	Status      RaybotCommandStatus
-	Input       any
-	Output      any
+	Input       []byte
+	Output      []byte
 	CreatedAt   time.Time
 	CompletedAt *time.Time
 }
