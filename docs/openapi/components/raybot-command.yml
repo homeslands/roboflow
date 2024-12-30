@@ -23,10 +23,10 @@ schemas:
         $ref: "#/schemas/RaybotCommandStatus"
       input:
         type: object
-        x-go-type: interface{}
+        x-go-type: map[string]interface{}
       output:
         type: object
-        x-go-type: interface{}
+        x-go-type: map[string]interface{}
       createdAt:
         type: string
         format: date-time
@@ -62,7 +62,9 @@ schemas:
         $ref: "#/schemas/RaybotCommandType"
       input:
         type: object
-        x-go-type: interface{}
+        x-go-type: "json.RawMessage"
+        # x-go-type-import:
+        #   path: "encoding/json"
     required:
       - type
       - input

@@ -21,11 +21,11 @@ import (
 	qrLocationSvc "github.com/tuanvumaihuynh/roboflow/internal/service/qr_location"
 	raybotSvc "github.com/tuanvumaihuynh/roboflow/internal/service/raybot"
 	raybotCommandSvc "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command"
-	raybotCommandEvent "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command/event"
+	"github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command/event"
 	stepSvc "github.com/tuanvumaihuynh/roboflow/internal/service/step"
 	workflowSvc "github.com/tuanvumaihuynh/roboflow/internal/service/workflow"
 	workflowexecution "github.com/tuanvumaihuynh/roboflow/internal/service/workflow_execution"
-	"github.com/tuanvumaihuynh/roboflow/internal/ws/hub"
+	raybotclient "github.com/tuanvumaihuynh/roboflow/internal/ws/raybot_client"
 	"github.com/tuanvumaihuynh/roboflow/pkg/config"
 	"github.com/tuanvumaihuynh/roboflow/pkg/middleware"
 	"github.com/tuanvumaihuynh/roboflow/pkg/pubsub"
@@ -42,6 +42,8 @@ type application struct {
 	workflowSvc          workflowSvc.Service
 	workflowExecutionSvc workflowexecution.Service
 	stepSvc              stepSvc.Service
+
+	wsRaybot *raybotclient.WebSocket
 }
 
 type CleanupFunc func(ctx context.Context)
@@ -49,7 +51,12 @@ type CleanupFunc func(ctx context.Context)
 func Run(cfg config.Config, conn *pgxpool.Pool, logger *slog.Logger) CleanupFunc {
 	// Setup pubsub
 	pubsubLogger := watermill.NewSlogLogger(logger.With(slog.String("service", "pubsub")))
-	gChan := gochannel.NewGoChannel(gochannel.Config{}, pubsubLogger)
+	gChan := gochannel.NewGoChannel(
+		gochannel.Config{
+			BlockPublishUntilSubscriberAck: false,
+		},
+		pubsubLogger,
+	)
 	publisher := pubsub.NewPublisher(gChan)
 	pubsubRouter, _ := message.NewRouter(message.RouterConfig{}, pubsubLogger)
 	pubsubRouter.AddMiddleware(
@@ -72,32 +79,30 @@ func Run(cfg config.Config, conn *pgxpool.Pool, logger *slog.Logger) CleanupFunc
 
 	// Setup services
 	raybotSvc := raybotSvc.NewService(raybotRepo)
-	raybotCommandSvc := raybotCommandSvc.NewService(raybotCommandRepo,
-		raybotRepo, qrLocationRepo, publisher, logger)
+	raybotCommandSvc := raybotCommandSvc.NewService(raybotCommandRepo, raybotRepo, qrLocationRepo, publisher, logger)
 	qrLocationSvc := qrLocationSvc.NewService(qrLocationRepo)
-	workflowSvc := workflowSvc.NewService(workflowRepo,
-		workflowExecutionRepo, publisher, logger)
+	workflowSvc := workflowSvc.NewService(workflowRepo, workflowExecutionRepo, publisher, logger)
 	workflowExecutionSvc := workflowexecution.NewService(workflowExecutionRepo)
 	stepSvc := stepSvc.NewService(stepRepo)
 
+	// Setup websocket
+	raybotWs := raybotclient.NewWebSocket(raybotRepo, raybotCommandSvc, logger)
+
 	// Setup application
 	app := application{
-		cfg:                  cfg,
-		log:                  logger,
-		eventPublisher:       publisher,
+		cfg:            cfg,
+		log:            logger,
+		eventPublisher: publisher,
+
 		raybotSvc:            raybotSvc,
 		raybotCommandSvc:     raybotCommandSvc,
 		qrLocationSvc:        qrLocationSvc,
 		workflowSvc:          workflowSvc,
 		workflowExecutionSvc: workflowExecutionSvc,
 		stepSvc:              stepSvc,
+
+		wsRaybot: raybotWs,
 	}
-
-	// Setup websocket hub
-	hub := hub.NewHub(hub.HubConfig{Logger: logger})
-
-	// Setup event handler
-	pubsubRouter = setupEventHandler(pubsubRouter, gChan, hub)
 
 	// Setup server
 	srv := &http.Server{
@@ -106,6 +111,7 @@ func Run(cfg config.Config, conn *pgxpool.Pool, logger *slog.Logger) CleanupFunc
 	}
 
 	// Run pubsub router
+	setupEventHandler(pubsubRouter, gChan, app)
 	go func() {
 		if err := pubsubRouter.Run(context.Background()); err != nil {
 			logger.Error("Error running pubsub router", slog.Any("error", err))
@@ -199,6 +205,9 @@ func setupAPIHandler(
 
 	// api.HandlerFromMuxWithBaseURL(httpServer, r, "/api/v1")
 
+	// Setup websocket
+	app.wsRaybot.RegisterHandlers(r)
+
 	return r
 }
 
@@ -222,18 +231,15 @@ func setupOpenapiDocs(r chi.Router) {
 
 func setupEventHandler(
 	r *message.Router,
-	gChan *gochannel.GoChannel,
-	hub *hub.Hub,
-) *message.Router {
-	// Note: Default gochannel will make subscriber block until Message is acked
+	pubsub *gochannel.GoChannel,
+	app application,
+) {
 	r.AddNoPublisherHandler(
-		"command-to-ws-hub",
-		raybotCommandEvent.TopicRaybotCommandCreated,
-		gChan,
+		"raybot_command_to_ws_raybot_client",
+		event.TopicRaybotCommandCreated,
+		pubsub,
 		func(msg *message.Message) error {
-			return hub.HandleCommandCreated(msg)
+			return app.wsRaybot.HandleRaybotCommandCreated(msg.Payload)
 		},
 	)
-
-	return r
 }

@@ -11,16 +11,20 @@ import (
 	"github.com/tuanvumaihuynh/roboflow/pkg/xsort"
 )
 
-func (s HTTPServer) GetRaybotCommandById(w http.ResponseWriter, r *http.Request, raybotCommandId RaybotCommandId) {
+func (s *HTTPServer) GetRaybotCommandById(w http.ResponseWriter, r *http.Request, raybotCommandId RaybotCommandId) {
 	modelRaybotCommand, err := s.raybotCommandSvc.GetByID(r.Context(), raybotcommand.GetRaybotCommandByIDQuery{ID: raybotCommandId})
 	if err != nil {
 		s.respondError(w, r, err)
 		return
 	}
 
-	s.respondJSON(w, http.StatusOK, modelRaybotCommandToDTO(modelRaybotCommand))
+	res, err := modelRaybotCommandToDTO(modelRaybotCommand)
+	if err != nil {
+		s.respondError(w, r, err)
+	}
+	s.respondJSON(w, http.StatusOK, res)
 }
-func (s HTTPServer) ListRaybotCommands(w http.ResponseWriter, r *http.Request, raybotId RaybotId, params ListRaybotCommandsParams) {
+func (s *HTTPServer) ListRaybotCommands(w http.ResponseWriter, r *http.Request, raybotId RaybotId, params ListRaybotCommandsParams) {
 	pagingParams := paging.NewParams(
 		params.PageSize,
 		params.Page,
@@ -42,8 +46,13 @@ func (s HTTPServer) ListRaybotCommands(w http.ResponseWriter, r *http.Request, r
 	}
 
 	items := make([]RaybotCommandResponse, 0, len(raybotCommandList.Items))
-	for _, r := range raybotCommandList.Items {
-		items = append(items, modelRaybotCommandToDTO(r))
+	for _, item := range raybotCommandList.Items {
+		res, err := modelRaybotCommandToDTO(item)
+		if err != nil {
+			s.respondError(w, r, err)
+			return
+		}
+		items = append(items, res)
 	}
 
 	s.respondJSON(w, http.StatusOK, PagingRaybotCommandResponse{
@@ -52,7 +61,7 @@ func (s HTTPServer) ListRaybotCommands(w http.ResponseWriter, r *http.Request, r
 	})
 }
 
-func (s HTTPServer) CreateRaybotCommand(w http.ResponseWriter, r *http.Request, raybotId RaybotId) {
+func (s *HTTPServer) CreateRaybotCommand(w http.ResponseWriter, r *http.Request, raybotId RaybotId) {
 	var req CreateRaybotCommandRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		s.respondError(w, r, err)
@@ -69,18 +78,37 @@ func (s HTTPServer) CreateRaybotCommand(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	s.respondJSON(w, http.StatusCreated, modelRaybotCommandToDTO(modelRaybotCommand))
+	res, err := modelRaybotCommandToDTO(modelRaybotCommand)
+	if err != nil {
+		s.respondError(w, r, err)
+		return
+	}
+	s.respondJSON(w, http.StatusCreated, res)
 }
 
-func modelRaybotCommandToDTO(r model.RaybotCommand) RaybotCommandResponse {
-	return RaybotCommandResponse{
+func modelRaybotCommandToDTO(r model.RaybotCommand) (RaybotCommandResponse, error) {
+	res := RaybotCommandResponse{
 		Id:          r.ID,
 		RaybotId:    r.RaybotID,
 		Type:        string(r.Type),
 		Status:      string(r.Status),
-		Input:       r.Input,
-		Output:      r.Output,
 		CreatedAt:   r.CreatedAt,
 		CompletedAt: r.CompletedAt,
 	}
+	if r.Input != nil {
+		var input map[string]interface{}
+		if err := json.Unmarshal(r.Input, &input); err != nil {
+			return RaybotCommandResponse{}, err
+		}
+		res.Input = input
+	}
+	if r.Output != nil {
+		var output map[string]interface{}
+		if err := json.Unmarshal(r.Output, &output); err != nil {
+			return RaybotCommandResponse{}, err
+		}
+		res.Output = output
+	}
+
+	return res, nil
 }
