@@ -106,6 +106,7 @@ type RaybotCommand struct {
 
 type RaybotCommandRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (RaybotCommand, error)
+	GetStatus(ctx context.Context, id uuid.UUID) (RaybotCommandStatus, error)
 	List(ctx context.Context, raybotId uuid.UUID, p paging.Params, sorts []xsort.Sort) (*paging.List[RaybotCommand], error)
 	Create(ctx context.Context, cmd RaybotCommand) error
 

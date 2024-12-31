@@ -44,4 +44,5 @@ type Step struct {
 type StepRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (Step, error)
 	List(ctx context.Context, workflowExecutionID uuid.UUID, sorts []xsort.Sort) ([]Step, error)
+	Update(ctx context.Context, step Step) error
 }

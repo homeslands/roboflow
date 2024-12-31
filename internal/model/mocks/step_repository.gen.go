@@ -143,6 +143,53 @@ func (_c *FakeStepRepository_List_Call) RunAndReturn(run func(context.Context, u
 	return _c
 }
 
+// Update provides a mock function with given fields: ctx, step
+func (_m *FakeStepRepository) Update(ctx context.Context, step model.Step) error {
+	ret := _m.Called(ctx, step)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.Step) error); ok {
+		r0 = rf(ctx, step)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// FakeStepRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type FakeStepRepository_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - ctx context.Context
+//   - step model.Step
+func (_e *FakeStepRepository_Expecter) Update(ctx interface{}, step interface{}) *FakeStepRepository_Update_Call {
+	return &FakeStepRepository_Update_Call{Call: _e.mock.On("Update", ctx, step)}
+}
+
+func (_c *FakeStepRepository_Update_Call) Run(run func(ctx context.Context, step model.Step)) *FakeStepRepository_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(model.Step))
+	})
+	return _c
+}
+
+func (_c *FakeStepRepository_Update_Call) Return(_a0 error) *FakeStepRepository_Update_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *FakeStepRepository_Update_Call) RunAndReturn(run func(context.Context, model.Step) error) *FakeStepRepository_Update_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewFakeStepRepository creates a new instance of FakeStepRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewFakeStepRepository(t interface {

@@ -438,7 +438,7 @@ var (
 					Y: 1,
 				},
 				Definition: model.NodeDefinition{
-					Type:   model.TaskRaybotCheckQrCode,
+					Type:   model.TaskRaybotCheckQRCode,
 					Fields: map[string]model.NodeField{},
 				},
 			},

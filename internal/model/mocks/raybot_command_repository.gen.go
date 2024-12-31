@@ -179,6 +179,63 @@ func (_c *FakeRaybotCommandRepository_Get_Call) RunAndReturn(run func(context.Co
 	return _c
 }
 
+// GetStatus provides a mock function with given fields: ctx, id
+func (_m *FakeRaybotCommandRepository) GetStatus(ctx context.Context, id uuid.UUID) (model.RaybotCommandStatus, error) {
+	ret := _m.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetStatus")
+	}
+
+	var r0 model.RaybotCommandStatus
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (model.RaybotCommandStatus, error)); ok {
+		return rf(ctx, id)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) model.RaybotCommandStatus); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(model.RaybotCommandStatus)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FakeRaybotCommandRepository_GetStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetStatus'
+type FakeRaybotCommandRepository_GetStatus_Call struct {
+	*mock.Call
+}
+
+// GetStatus is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id uuid.UUID
+func (_e *FakeRaybotCommandRepository_Expecter) GetStatus(ctx interface{}, id interface{}) *FakeRaybotCommandRepository_GetStatus_Call {
+	return &FakeRaybotCommandRepository_GetStatus_Call{Call: _e.mock.On("GetStatus", ctx, id)}
+}
+
+func (_c *FakeRaybotCommandRepository_GetStatus_Call) Run(run func(ctx context.Context, id uuid.UUID)) *FakeRaybotCommandRepository_GetStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *FakeRaybotCommandRepository_GetStatus_Call) Return(_a0 model.RaybotCommandStatus, _a1 error) *FakeRaybotCommandRepository_GetStatus_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *FakeRaybotCommandRepository_GetStatus_Call) RunAndReturn(run func(context.Context, uuid.UUID) (model.RaybotCommandStatus, error)) *FakeRaybotCommandRepository_GetStatus_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // List provides a mock function with given fields: ctx, raybotId, p, sorts
 func (_m *FakeRaybotCommandRepository) List(ctx context.Context, raybotId uuid.UUID, p paging.Params, sorts []xsort.Sort) (*paging.List[model.RaybotCommand], error) {
 	ret := _m.Called(ctx, raybotId, p, sorts)

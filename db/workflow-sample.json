@@ -1,0 +1,586 @@
+{
+  "nodes": [
+      {
+          "id": "7a8c4391-832b-4205-87e3-7766acd94f32",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -300,
+              "y": 75
+          },
+          "definition": {
+            "type": "VALIDATE_STATE",
+            "timeoutSec": 10,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "1c304aee-80dc-4e7c-bb38-14aa951dbeb9",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 465,
+              "y": 855
+          },
+          "definition": {
+            "type": "MOVE_TO_LOCATION",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "location": {
+                    "useEnv": false,
+                    "value": "table_1"
+                },
+                "direction": {
+                    "useEnv": false,
+                    "value": "FORWARD"
+                }
+            }
+          }
+      },
+      {
+          "id": "a72776ae-99f1-491e-9a59-3815ec14e06f",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 270,
+              "y": 315
+          },
+          "definition": {
+            "type": "DROP_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "distance_analog": {
+                    "useEnv": false,
+                    "value": "500"
+                }
+            }
+          }
+      },
+      {
+          "id": "9ce3abac-c767-445f-878f-1b8c95dcd597",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 300,
+              "y": 405
+          },
+          "definition": {
+            "type": "CHECK_QR",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "qr_code": {
+                    "useEnv": true,
+                    "key": "order_code"
+                }
+            }
+          }
+      },
+      {
+          "id": "c5a56d5e-c129-4dd5-a208-f14740d51058",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 330,
+              "y": 495
+          },
+          "definition": {
+            "type": "OPEN_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "65a8c9eb-c104-4c71-996e-13e89abe9a7b",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -135,
+              "y": 525
+          },
+          "definition": {
+            "type": "CHECK_QR",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "qr_code": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "6b43bee1-f112-4024-9163-7532055161ea",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -105,
+              "y": 615
+          },
+          "definition": {
+            "type": "CLOSE_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "2302a41b-d41b-41a1-94b1-975c62099f82",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -60,
+              "y": 705
+          },
+          "definition": {
+            "type": "LIFT_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "33d9c956-6eeb-40d4-94bc-8c3639c32c9a",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 240,
+              "y": 225
+          },
+          "definition": {
+            "type": "MOVE_TO_LOCATION",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "location": {
+                    "useEnv": true,
+                    "key": "dest_table"
+                },
+                "direction": {
+                    "useEnv": false,
+                    "value": "FORWARD"
+                }
+            }
+          }
+      },
+      {
+          "id": "b5693bb2-a831-494e-98fe-4c0909815df5",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -195,
+              "y": 255
+          },
+          "definition": {
+            "type": "DROP_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "distance_analog": {
+                    "useEnv": false,
+                    "value": "1300"
+                }
+            }
+          }
+      },
+      {
+          "id": "0e91e3ba-e675-487e-b9d5-4e76d93d5685",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -165,
+              "y": 345
+          },
+          "definition": {
+            "type": "CHECK_QR",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "qr_code": {
+                    "useEnv": true,
+                    "key": "order_code"
+                }
+            }
+          }
+      },
+      {
+          "id": "bc191e4d-1c9b-4fd9-ad49-d85dcc2294f9",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -150,
+              "y": 435
+          },
+          "definition": {
+            "type": "OPEN_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "554bc622-c6e3-4c97-adde-73cd5c686904",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 360,
+              "y": 585
+          },
+          "definition": {
+            "type": "WAIT_GET_ITEM",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "d7648bbb-a5f7-4ac1-9cdb-211897f7110a",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 390,
+              "y": 675
+          },
+          "definition": {
+            "type": "CLOSE_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "c705c857-9aff-467e-ab60-79bea7a52663",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": 435,
+              "y": 765
+          },
+          "definition": {
+            "type": "LIFT_BOX",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                }
+            }
+          }
+      },
+      {
+          "id": "0599538d-6b96-4cec-8148-254fd2f327c6",
+          "type": "RaybotNode",
+          "initialized": false,
+          "position": {
+              "x": -240,
+              "y": 165
+          },
+          "definition": {
+            "type": "MOVE_TO_LOCATION",
+            "timeoutSec": 180,
+            "fields": {
+                "raybot_id": {
+                    "useEnv": true,
+                    "key": "raybot_id"
+                },
+                "location": {
+                    "useEnv": false,
+                    "value": "table_1"
+                },
+                "direction": {
+                    "useEnv": false,
+                    "value": "FORWARD"
+                }
+            }
+          }
+      }
+  ],
+  "edges": [
+      {
+          "id": "vueflow__edge-7a8c4391-832b-4205-87e3-7766acd94f32source-success-0599538d-6b96-4cec-8148-254fd2f327c6target",
+          "type": "default",
+          "source": "7a8c4391-832b-4205-87e3-7766acd94f32",
+          "target": "0599538d-6b96-4cec-8148-254fd2f327c6",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": -44.00058653331047,
+          "sourceY": 107.99988802648922,
+          "targetX": -245.99999760380572,
+          "targetY": 194.99993981990463
+      },
+      {
+          "id": "vueflow__edge-0599538d-6b96-4cec-8148-254fd2f327c6source-success-b5693bb2-a831-494e-98fe-4c0909815df5target",
+          "type": "default",
+          "source": "0599538d-6b96-4cec-8148-254fd2f327c6",
+          "target": "b5693bb2-a831-494e-98fe-4c0909815df5",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 15.999413466689532,
+          "sourceY": 194.99993981990463,
+          "targetX": -200.99999760380572,
+          "targetY": 284.9999398199046
+      },
+      {
+          "id": "vueflow__edge-b5693bb2-a831-494e-98fe-4c0909815df5source-success-0e91e3ba-e675-487e-b9d5-4e76d93d5685target",
+          "type": "default",
+          "source": "b5693bb2-a831-494e-98fe-4c0909815df5",
+          "target": "0e91e3ba-e675-487e-b9d5-4e76d93d5685",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 60.99941346668953,
+          "sourceY": 284.9999398199046,
+          "targetX": -170.99999760380572,
+          "targetY": 374.9999398199046
+      },
+      {
+          "id": "vueflow__edge-0e91e3ba-e675-487e-b9d5-4e76d93d5685source-success-bc191e4d-1c9b-4fd9-ad49-d85dcc2294f9target",
+          "type": "default",
+          "source": "0e91e3ba-e675-487e-b9d5-4e76d93d5685",
+          "target": "bc191e4d-1c9b-4fd9-ad49-d85dcc2294f9",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 90.99941346668953,
+          "sourceY": 374.9999398199046,
+          "targetX": -155.99999760380572,
+          "targetY": 464.9999398199046
+      },
+      {
+          "id": "vueflow__edge-bc191e4d-1c9b-4fd9-ad49-d85dcc2294f9source-success-65a8c9eb-c104-4c71-996e-13e89abe9a7btarget",
+          "type": "default",
+          "source": "bc191e4d-1c9b-4fd9-ad49-d85dcc2294f9",
+          "target": "65a8c9eb-c104-4c71-996e-13e89abe9a7b",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 105.99941346668953,
+          "sourceY": 464.9999398199046,
+          "targetX": -140.99999760380572,
+          "targetY": 554.9999398199046
+      },
+      {
+          "id": "vueflow__edge-65a8c9eb-c104-4c71-996e-13e89abe9a7bsource-success-6b43bee1-f112-4024-9163-7532055161eatarget",
+          "type": "default",
+          "source": "65a8c9eb-c104-4c71-996e-13e89abe9a7b",
+          "target": "6b43bee1-f112-4024-9163-7532055161ea",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 120.99941346668953,
+          "sourceY": 554.9999398199046,
+          "targetX": -110.99999760380572,
+          "targetY": 644.9999398199046
+      },
+      {
+          "id": "vueflow__edge-6b43bee1-f112-4024-9163-7532055161easource-success-2302a41b-d41b-41a1-94b1-975c62099f82target",
+          "type": "default",
+          "source": "6b43bee1-f112-4024-9163-7532055161ea",
+          "target": "2302a41b-d41b-41a1-94b1-975c62099f82",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 150.99941346668953,
+          "sourceY": 644.9999398199046,
+          "targetX": -65.99999760380572,
+          "targetY": 734.9999398199046
+      },
+      {
+          "id": "vueflow__edge-2302a41b-d41b-41a1-94b1-975c62099f82source-success-33d9c956-6eeb-40d4-94bc-8c3639c32c9atarget",
+          "type": "default",
+          "source": "2302a41b-d41b-41a1-94b1-975c62099f82",
+          "target": "33d9c956-6eeb-40d4-94bc-8c3639c32c9a",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 195.99941346668953,
+          "sourceY": 734.9999398199046,
+          "targetX": 234.00000239619428,
+          "targetY": 254.99993981990463
+      },
+      {
+          "id": "vueflow__edge-33d9c956-6eeb-40d4-94bc-8c3639c32c9asource-success-a72776ae-99f1-491e-9a59-3815ec14e06ftarget",
+          "type": "default",
+          "source": "33d9c956-6eeb-40d4-94bc-8c3639c32c9a",
+          "target": "a72776ae-99f1-491e-9a59-3815ec14e06f",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 495.99941346668953,
+          "sourceY": 254.99993981990463,
+          "targetX": 264.00000239619425,
+          "targetY": 344.9999398199046
+      },
+      {
+          "id": "vueflow__edge-a72776ae-99f1-491e-9a59-3815ec14e06fsource-success-9ce3abac-c767-445f-878f-1b8c95dcd597target",
+          "type": "default",
+          "source": "a72776ae-99f1-491e-9a59-3815ec14e06f",
+          "target": "9ce3abac-c767-445f-878f-1b8c95dcd597",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 525.9994134666895,
+          "sourceY": 344.9999398199046,
+          "targetX": 294.00000239619425,
+          "targetY": 434.9999398199046
+      },
+      {
+          "id": "vueflow__edge-9ce3abac-c767-445f-878f-1b8c95dcd597source-success-c5a56d5e-c129-4dd5-a208-f14740d51058target",
+          "type": "default",
+          "source": "9ce3abac-c767-445f-878f-1b8c95dcd597",
+          "target": "c5a56d5e-c129-4dd5-a208-f14740d51058",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 555.9994134666895,
+          "sourceY": 434.9999398199046,
+          "targetX": 324.00000239619425,
+          "targetY": 524.9999398199046
+      },
+      {
+          "id": "vueflow__edge-c5a56d5e-c129-4dd5-a208-f14740d51058source-success-554bc622-c6e3-4c97-adde-73cd5c686904target",
+          "type": "default",
+          "source": "c5a56d5e-c129-4dd5-a208-f14740d51058",
+          "target": "554bc622-c6e3-4c97-adde-73cd5c686904",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 585.9994134666895,
+          "sourceY": 524.9999398199046,
+          "targetX": 354.00000239619425,
+          "targetY": 614.9999398199046
+      },
+      {
+          "id": "vueflow__edge-554bc622-c6e3-4c97-adde-73cd5c686904source-success-d7648bbb-a5f7-4ac1-9cdb-211897f7110atarget",
+          "type": "default",
+          "source": "554bc622-c6e3-4c97-adde-73cd5c686904",
+          "target": "d7648bbb-a5f7-4ac1-9cdb-211897f7110a",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 615.9994134666895,
+          "sourceY": 614.9999398199046,
+          "targetX": 384.00000239619425,
+          "targetY": 704.9999398199046
+      },
+      {
+          "id": "vueflow__edge-d7648bbb-a5f7-4ac1-9cdb-211897f7110asource-success-c705c857-9aff-467e-ab60-79bea7a52663target",
+          "type": "default",
+          "source": "d7648bbb-a5f7-4ac1-9cdb-211897f7110a",
+          "target": "c705c857-9aff-467e-ab60-79bea7a52663",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 645.9994134666895,
+          "sourceY": 704.9999398199046,
+          "targetX": 429.00000239619425,
+          "targetY": 794.9999398199046
+      },
+      {
+          "id": "vueflow__edge-c705c857-9aff-467e-ab60-79bea7a52663source-success-1c304aee-80dc-4e7c-bb38-14aa951dbeb9target",
+          "type": "default",
+          "source": "c705c857-9aff-467e-ab60-79bea7a52663",
+          "target": "1c304aee-80dc-4e7c-bb38-14aa951dbeb9",
+          "sourceHandle": "source-success",
+          "targetHandle": "target",
+          "data": {},
+          "label": "",
+          "animated": true,
+          "sourceX": 690.9993628713712,
+          "sourceY": 794.9999398199046,
+          "targetX": 459.00000239619425,
+          "targetY": 884.9999398199046
+      }
+  ],
+  "position": [332.39219776828907, 48.21869663933438],
+  "zoom": 0.7323641998972109,
+  "viewport": {
+      "x": 332.39219776828907,
+      "y": 48.21869663933438,
+      "zoom": 0.7323641998972109
+  }
+}

@@ -105,24 +105,56 @@ func (r workflowExecutionRepository) Create(ctx context.Context, workflowExecuti
 
 	return nil
 }
-func (r workflowExecutionRepository) Update(ctx context.Context, workflowExecution model.WorkflowExecution) (model.WorkflowExecution, error) {
-	params := db.UpdateWorkflowExecutionParams{
-		ID:     workflowExecution.ID,
-		Status: string(workflowExecution.Status),
-	}
-	if workflowExecution.StartedAt != nil {
-		params.StartedAt = pgtype.Timestamptz{Time: *workflowExecution.StartedAt, Valid: true}
-	}
-	if workflowExecution.CompletedAt != nil {
-		params.CompletedAt = pgtype.Timestamptz{Time: *workflowExecution.CompletedAt, Valid: true}
-	}
+func (r workflowExecutionRepository) Update(
+	ctx context.Context,
+	id uuid.UUID,
+	fn func(wfe *model.WorkflowExecution) error,
+) error {
+	return r.store.WithTx(ctx, func(s db.Store) error {
+		wfeRow, err := s.GetWorkflowExecutionForUpdate(ctx, id)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return xerrors.ThrowNotFound(err, "workflow execution not found")
+			}
+			return err
+		}
 
-	row, err := r.store.UpdateWorkflowExecution(ctx, params)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return model.WorkflowExecution{}, xerrors.ThrowNotFound(err, "workflow execution not found")
-	}
+		wfe, err := rowWorkflowExecutionToModel(*wfeRow)
+		if err != nil {
+			return err
+		}
 
-	return rowWorkflowExecutionToModel(*row)
+		if err := fn(&wfe); err != nil {
+			return err
+		}
+
+		def, err := json.Marshal(wfe.Definition)
+		if err != nil {
+			return xerrors.ThrowInternal(err, "failed to marshal workflow definition")
+		}
+
+		updateWfeParams := db.UpdateWorkflowExecutionParams{
+			ID:         wfe.ID,
+			WorkflowID: wfe.WorkflowID,
+			Status:     string(wfe.Status),
+			Env:        wfe.Env,
+			Definition: def,
+			CreatedAt:  pgtype.Timestamptz{Time: wfe.CreatedAt, Valid: true},
+		}
+		if wfe.StartedAt != nil {
+			updateWfeParams.StartedAt = pgtype.Timestamptz{Time: *wfe.StartedAt, Valid: true}
+		}
+		if wfe.CompletedAt != nil {
+			updateWfeParams.CompletedAt = pgtype.Timestamptz{Time: *wfe.CompletedAt, Valid: true}
+		}
+
+		err = s.UpdateWorkflowExecution(ctx, updateWfeParams)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 func (r workflowExecutionRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.store.DeleteWorkflowExecution(ctx, id)

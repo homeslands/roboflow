@@ -196,8 +196,9 @@ func modelWorkflowNodeToDTO(n model.WorkflowNode) WorkflowNode {
 			n.Position.Y,
 		},
 		Definition: NodeDefinition{
-			Type:   TaskType(n.Definition.Type),
-			Fields: modelNodeFieldsToDTO(n.Definition.Fields),
+			Type:       TaskType(n.Definition.Type),
+			TimeoutSec: n.Definition.TimeoutSec,
+			Fields:     modelNodeFieldsToDTO(n.Definition.Fields),
 		},
 	}
 }
@@ -257,8 +258,9 @@ func dtoWorkflowNodeToModel(n WorkflowNode) model.WorkflowNode {
 			Y: n.Position.Y,
 		},
 		Definition: model.NodeDefinition{
-			Type:   model.TaskType(n.Definition.Type),
-			Fields: dtoNodeFieldsToModel(n.Definition.Fields),
+			Type:       model.TaskType(n.Definition.Type),
+			TimeoutSec: n.Definition.TimeoutSec,
+			Fields:     dtoNodeFieldsToModel(n.Definition.Fields),
 		},
 	}
 }
@@ -268,6 +270,7 @@ func modelNodeFieldsToDTO(fields map[string]model.NodeField) map[string]NodeFiel
 	for k, f := range fields {
 		m[k] = NodeField{
 			UseEnv: f.UseEnv,
+			Key:    f.Key,
 			Value:  f.Value,
 		}
 	}
@@ -280,6 +283,7 @@ func dtoNodeFieldsToModel(fields map[string]NodeField) map[string]model.NodeFiel
 	for k, f := range fields {
 		m[k] = model.NodeField{
 			UseEnv: f.UseEnv,
+			Key:    f.Key,
 			Value:  f.Value,
 		}
 	}

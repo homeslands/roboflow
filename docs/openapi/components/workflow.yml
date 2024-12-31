@@ -143,11 +143,6 @@ schemas:
       zoom:
         type: number
         format: float
-      env:
-        type: object
-        additionalProperties:
-          type: string
-        x-go-type: map[string]string
     required:
       - nodes
       - edges
@@ -179,23 +174,31 @@ schemas:
     properties:
       type:
         $ref: "#/schemas/TaskType"
+      timeoutSec:
+        type: integer
+        format: uint16
       fields:
         type: object
         additionalProperties:
           $ref: "#/schemas/NodeField"
     required:
       - type
+      - timeoutSec
       - fields
   NodeField:
     type: object
     properties:
       useEnv:
         type: boolean
+      key:
+        type: string
+        nullable: true
       value:
         type: string
         nullable: true
     required:
       - useEnv
+      - key
       - value
   NodeType:
     type: string

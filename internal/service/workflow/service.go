@@ -121,7 +121,7 @@ func (s service) Run(ctx context.Context, cmd RunWorkflowCommand) (uuid.UUID, er
 	}
 
 	// Create workflow execution
-	err = s.workflowExecutionRepo.Create(ctx, model.WorkflowExecution{
+	wfe := model.WorkflowExecution{
 		ID:         wfeID,
 		WorkflowID: wf.ID,
 		Status:     model.WorkflowExecutionStatusPending,
@@ -129,7 +129,8 @@ func (s service) Run(ctx context.Context, cmd RunWorkflowCommand) (uuid.UUID, er
 		Definition: *wf.Definition,
 		CreatedAt:  time.Now(),
 		Steps:      &steps,
-	})
+	}
+	err = s.workflowExecutionRepo.Create(ctx, wfe)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -137,7 +138,8 @@ func (s service) Run(ctx context.Context, cmd RunWorkflowCommand) (uuid.UUID, er
 	// Publish event
 	s.log.DebugContext(ctx, "Publish workflow run event",
 		slog.String("workflow_execution_id", wfeID.String()))
-	msgJSON, err := createWorkflowRunEvent(wfeID, steps)
+
+	msgJSON, err := json.Marshal(wfe)
 	if err != nil {
 		s.log.ErrorContext(ctx, "Failed to create workflow run event",
 			slog.String("workflow_execution_id", wfeID.String()),
@@ -173,18 +175,23 @@ func (s service) createSteps(ctx context.Context, nodes []model.WorkflowNode, en
 	steps := make([]model.Step, 0, len(nodes))
 	for _, node := range nodes {
 		stepEnv := make(map[string]string)
-		for key, field := range node.Definition.Fields {
+		for sysKey, field := range node.Definition.Fields {
 			if field.UseEnv {
-				val, exists := env[key]
+				if field.Key == nil {
+					return nil, xerrors.ThrowInternal(nil,
+						fmt.Sprintf("env key field is required when use env in node id %s", node.ID),
+					)
+				}
+				val, exists := env[*field.Key]
 				if !exists {
 					return nil, xerrors.ThrowInvalidArgument(nil,
-						fmt.Sprintf("env key %s not found in node id %s", key, node.ID),
-						xerrors.WithCode("workflow_execution_missing_env"),
+						fmt.Sprintf("env key %s not found in environment variable", *field.Key),
+						xerrors.WithCode("missing_env"),
 					)
 				}
 				field.Value = &val
-				node.Definition.Fields[key] = field
-				stepEnv[key] = val
+				node.Definition.Fields[sysKey] = field
+				stepEnv[sysKey] = val
 			}
 		}
 
@@ -202,29 +209,4 @@ func (s service) createSteps(ctx context.Context, nodes []model.WorkflowNode, en
 			slog.Any("env", stepEnv))
 	}
 	return steps, nil
-}
-
-func createWorkflowRunEvent(wfeID uuid.UUID, steps []model.Step) ([]byte, error) {
-	stepJSONs := make([]event.Step, 0, len(steps))
-	for _, step := range steps {
-		fields := make(map[string]string, len(step.Node.Definition.Fields))
-		for key, field := range step.Node.Definition.Fields {
-			fields[key] = *field.Value
-		}
-		stepJSONs = append(stepJSONs, event.Step{
-			ID:     step.ID,
-			Type:   step.Node.Definition.Type,
-			Fields: fields,
-		})
-	}
-
-	msgJSON, err := json.Marshal(event.WorkflowExecutionRun{
-		WorkflowExecutionID: wfeID,
-		Steps:               stepJSONs,
-	})
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return msgJSON, nil
 }

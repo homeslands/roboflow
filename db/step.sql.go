@@ -21,7 +21,7 @@ type BulkInsertStepsParams struct {
 }
 
 const getStepByID = `-- name: GetStepByID :one
-SELECT id, workflow_execution_id, env, node, inputs, outputs, status, started_at, completed_at FROM steps
+SELECT id, workflow_execution_id, env, node, status, started_at, completed_at FROM steps
 WHERE id = $1
 `
 
@@ -33,8 +33,6 @@ func (q *Queries) GetStepByID(ctx context.Context, id uuid.UUID) (*Step, error) 
 		&i.WorkflowExecutionID,
 		&i.Env,
 		&i.Node,
-		&i.Inputs,
-		&i.Outputs,
 		&i.Status,
 		&i.StartedAt,
 		&i.CompletedAt,
@@ -43,7 +41,7 @@ func (q *Queries) GetStepByID(ctx context.Context, id uuid.UUID) (*Step, error) 
 }
 
 const listSteps = `-- name: ListSteps :many
-SELECT id, workflow_execution_id, env, node, inputs, outputs, status, started_at, completed_at FROM steps
+SELECT id, workflow_execution_id, env, node, status, started_at, completed_at FROM steps
 WHERE workflow_execution_id = $1
 `
 
@@ -61,8 +59,6 @@ func (q *Queries) ListSteps(ctx context.Context, workflowExecutionID uuid.UUID) 
 			&i.WorkflowExecutionID,
 			&i.Env,
 			&i.Node,
-			&i.Inputs,
-			&i.Outputs,
 			&i.Status,
 			&i.StartedAt,
 			&i.CompletedAt,
@@ -80,22 +76,32 @@ func (q *Queries) ListSteps(ctx context.Context, workflowExecutionID uuid.UUID) 
 const updateStep = `-- name: UpdateStep :exec
 UPDATE steps
 SET
-    status = $2,
-    started_at = $3,
-    completed_at = $4
+	id = $1,
+	workflow_execution_id = $2,
+	env = $3,
+	node = $4,
+	status = $5,
+	started_at = $6,
+	completed_at = $7
 WHERE id = $1
 `
 
 type UpdateStepParams struct {
-	ID          uuid.UUID
-	Status      string
-	StartedAt   pgtype.Timestamptz
-	CompletedAt pgtype.Timestamptz
+	ID                  uuid.UUID
+	WorkflowExecutionID uuid.UUID
+	Env                 map[string]string
+	Node                []byte
+	Status              string
+	StartedAt           pgtype.Timestamptz
+	CompletedAt         pgtype.Timestamptz
 }
 
 func (q *Queries) UpdateStep(ctx context.Context, arg UpdateStepParams) error {
 	_, err := q.db.Exec(ctx, updateStep,
 		arg.ID,
+		arg.WorkflowExecutionID,
+		arg.Env,
+		arg.Node,
 		arg.Status,
 		arg.StartedAt,
 		arg.CompletedAt,

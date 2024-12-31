@@ -297,32 +297,22 @@ func (_c *FakeWorkflowExecutionRepository_List_Call) RunAndReturn(run func(conte
 	return _c
 }
 
-// Update provides a mock function with given fields: ctx, workflowExecution
-func (_m *FakeWorkflowExecutionRepository) Update(ctx context.Context, workflowExecution model.WorkflowExecution) (model.WorkflowExecution, error) {
-	ret := _m.Called(ctx, workflowExecution)
+// Update provides a mock function with given fields: ctx, id, fn
+func (_m *FakeWorkflowExecutionRepository) Update(ctx context.Context, id uuid.UUID, fn func(*model.WorkflowExecution) error) error {
+	ret := _m.Called(ctx, id, fn)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
-	var r0 model.WorkflowExecution
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.WorkflowExecution) (model.WorkflowExecution, error)); ok {
-		return rf(ctx, workflowExecution)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.WorkflowExecution) model.WorkflowExecution); ok {
-		r0 = rf(ctx, workflowExecution)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, func(*model.WorkflowExecution) error) error); ok {
+		r0 = rf(ctx, id, fn)
 	} else {
-		r0 = ret.Get(0).(model.WorkflowExecution)
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, model.WorkflowExecution) error); ok {
-		r1 = rf(ctx, workflowExecution)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // FakeWorkflowExecutionRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
@@ -332,24 +322,25 @@ type FakeWorkflowExecutionRepository_Update_Call struct {
 
 // Update is a helper method to define mock.On call
 //   - ctx context.Context
-//   - workflowExecution model.WorkflowExecution
-func (_e *FakeWorkflowExecutionRepository_Expecter) Update(ctx interface{}, workflowExecution interface{}) *FakeWorkflowExecutionRepository_Update_Call {
-	return &FakeWorkflowExecutionRepository_Update_Call{Call: _e.mock.On("Update", ctx, workflowExecution)}
+//   - id uuid.UUID
+//   - fn func(*model.WorkflowExecution) error
+func (_e *FakeWorkflowExecutionRepository_Expecter) Update(ctx interface{}, id interface{}, fn interface{}) *FakeWorkflowExecutionRepository_Update_Call {
+	return &FakeWorkflowExecutionRepository_Update_Call{Call: _e.mock.On("Update", ctx, id, fn)}
 }
 
-func (_c *FakeWorkflowExecutionRepository_Update_Call) Run(run func(ctx context.Context, workflowExecution model.WorkflowExecution)) *FakeWorkflowExecutionRepository_Update_Call {
+func (_c *FakeWorkflowExecutionRepository_Update_Call) Run(run func(ctx context.Context, id uuid.UUID, fn func(*model.WorkflowExecution) error)) *FakeWorkflowExecutionRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(model.WorkflowExecution))
+		run(args[0].(context.Context), args[1].(uuid.UUID), args[2].(func(*model.WorkflowExecution) error))
 	})
 	return _c
 }
 
-func (_c *FakeWorkflowExecutionRepository_Update_Call) Return(_a0 model.WorkflowExecution, _a1 error) *FakeWorkflowExecutionRepository_Update_Call {
-	_c.Call.Return(_a0, _a1)
+func (_c *FakeWorkflowExecutionRepository_Update_Call) Return(_a0 error) *FakeWorkflowExecutionRepository_Update_Call {
+	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *FakeWorkflowExecutionRepository_Update_Call) RunAndReturn(run func(context.Context, model.WorkflowExecution) (model.WorkflowExecution, error)) *FakeWorkflowExecutionRepository_Update_Call {
+func (_c *FakeWorkflowExecutionRepository_Update_Call) RunAndReturn(run func(context.Context, uuid.UUID, func(*model.WorkflowExecution) error) error) *FakeWorkflowExecutionRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

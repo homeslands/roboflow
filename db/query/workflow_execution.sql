@@ -1,6 +1,9 @@
 -- name: GetWorkflowExecution :one
 SELECT * FROM workflow_executions WHERE id = $1;
 
+-- name: GetWorkflowExecutionForUpdate :one
+SELECT * FROM workflow_executions WHERE id = $1 FOR UPDATE;
+
 -- name: GetWorkflowExecutionStatus :one
 SELECT status FROM workflow_executions WHERE id = $1;
 
@@ -21,13 +24,18 @@ INSERT INTO workflow_executions (
     $6
 );
 
--- name: UpdateWorkflowExecution :one
+-- name: UpdateWorkflowExecution :exec
 UPDATE workflow_executions
-SET	status = $2,
-	started_at = $3,
-	completed_at = $4
-WHERE id = $1
-RETURNING *;
+SET
+	id = $1,
+	workflow_id = $2,
+	status = $3,
+	env = $4,
+	definition = $5,
+	created_at = $6,
+	started_at = $7,
+	completed_at = $8
+WHERE id = $1;
 
 
 -- name: DeleteWorkflowExecution :exec
