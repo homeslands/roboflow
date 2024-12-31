@@ -81,9 +81,9 @@ type WorkflowNode struct {
 }
 
 type NodeDefinition struct {
-	Type   TaskType             `json:"type" validate:"required"`
-	Fields map[string]NodeField `json:"fields" validate:"required"`
-	// TimeoutSec uint16               `json:"timeout_sec" validate:"required,gte=1"`
+	Type       TaskType             `json:"type" validate:"required"`
+	Fields     map[string]NodeField `json:"fields" validate:"required"`
+	TimeoutSec uint16               `json:"timeout_sec" validate:"required,gte=1"`
 }
 
 const (

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -71,8 +72,6 @@ func (e RaybotMoveToLocationTaskHandler) Handle(ctx context.Context, step model.
 		Location:  *location,
 		Direction: *direction,
 	}
-	fmt.Printf("input: %v\n", input)
-	fmt.Printf("ID: %v\n", *raybotID)
 	inputBytes, err := json.Marshal(input)
 	if err != nil {
 		return fmt.Errorf("failed to marshal input: %w", err)
@@ -86,6 +85,9 @@ func (e RaybotMoveToLocationTaskHandler) Handle(ctx context.Context, step model.
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -111,6 +113,9 @@ func (e RaybotMoveForwardTaskHandler) Handle(ctx context.Context, step model.Ste
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -136,6 +141,9 @@ func (e RaybotMoveBackwardTaskHandler) Handle(ctx context.Context, step model.St
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -161,6 +169,9 @@ func (e RaybotOpenBoxTaskHandler) Handle(ctx context.Context, step model.Step) e
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -186,6 +197,9 @@ func (e RaybotCloseBoxTaskHandler) Handle(ctx context.Context, step model.Step) 
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -211,6 +225,9 @@ func (e RaybotLiftBoxTaskHandler) Handle(ctx context.Context, step model.Step) e
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -236,6 +253,9 @@ func (e RaybotDropBoxTaskHandler) Handle(ctx context.Context, step model.Step) e
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -261,6 +281,9 @@ func (e RaybotCheckQRCodeTaskHandler) Handle(ctx context.Context, step model.Ste
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }
 
@@ -286,5 +309,8 @@ func (e RaybotWaitGetItemTaskHandler) Handle(ctx context.Context, step model.Ste
 		return fmt.Errorf("failed to create raybot command: %w", err)
 	}
 
+	timeOutSec := step.Node.Definition.TimeoutSec
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeOutSec)*time.Second)
+	defer cancel()
 	return e.poller.pollRaybotCommandStatus(ctx, cmd.ID)
 }

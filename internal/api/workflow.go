@@ -196,8 +196,9 @@ func modelWorkflowNodeToDTO(n model.WorkflowNode) WorkflowNode {
 			n.Position.Y,
 		},
 		Definition: NodeDefinition{
-			Type:   TaskType(n.Definition.Type),
-			Fields: modelNodeFieldsToDTO(n.Definition.Fields),
+			Type:       TaskType(n.Definition.Type),
+			TimeoutSec: n.Definition.TimeoutSec,
+			Fields:     modelNodeFieldsToDTO(n.Definition.Fields),
 		},
 	}
 }
@@ -257,8 +258,9 @@ func dtoWorkflowNodeToModel(n WorkflowNode) model.WorkflowNode {
 			Y: n.Position.Y,
 		},
 		Definition: model.NodeDefinition{
-			Type:   model.TaskType(n.Definition.Type),
-			Fields: dtoNodeFieldsToModel(n.Definition.Fields),
+			Type:       model.TaskType(n.Definition.Type),
+			TimeoutSec: n.Definition.TimeoutSec,
+			Fields:     dtoNodeFieldsToModel(n.Definition.Fields),
 		},
 	}
 }

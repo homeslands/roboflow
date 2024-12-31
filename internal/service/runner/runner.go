@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -55,9 +56,12 @@ func (r *Runner) HandleRunWorkflowExecution(msg *message.Message) (err error) {
 	defer func() {
 		if err != nil {
 			r.log.Error("Failed to handle run workflow execution", slog.Any("error", err))
-			err = r.workflowExecutionSvc.SetFailed(msg.Context(), workflowexecution.SetWorkflowExecutionFailedCommand{
-				ID: wfe.ID,
-			})
+			err = r.workflowExecutionSvc.SetFailed(
+				msg.Context(),
+				workflowexecution.SetWorkflowExecutionFailedCommand{
+					ID: wfe.ID,
+				},
+			)
 			if err != nil {
 				r.log.Error("Failed to set workflow execution status to FAILED", slog.Any("error", err))
 			}
@@ -88,6 +92,11 @@ func (r *Runner) HandleRunWorkflowExecution(msg *message.Message) (err error) {
 			r.log.Info("Executing step", slog.String("step_id", step.ID.String()))
 			err = r.executeStep(msg.Context(), step, *r)
 			if err != nil {
+				if errors.Is(err, context.DeadlineExceeded) {
+					r.log.Warn("Step execution timeout",
+						slog.String("step_id", step.ID.String()))
+					return
+				}
 				r.log.Error("Failed to execute step",
 					slog.String("step_id", step.ID.String()),
 					slog.Any("error", err))

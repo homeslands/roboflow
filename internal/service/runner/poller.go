@@ -15,7 +15,7 @@ type RaybotCommandStatusPoller struct {
 	raybotCommandRepo model.RaybotCommandRepository
 }
 
-func (e RaybotCommandStatusPoller) pollRaybotCommandStatus(ctx context.Context, raybotCommandID uuid.UUID)  error {
+func (e RaybotCommandStatusPoller) pollRaybotCommandStatus(ctx context.Context, raybotCommandID uuid.UUID) error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -31,7 +31,7 @@ func (e RaybotCommandStatusPoller) pollRaybotCommandStatus(ctx context.Context, 
 
 			switch status {
 			case model.RaybotCommandStatusSuccess:
-				return  nil
+				return nil
 			case model.RaybotCommandStatusFailed:
 				return errors.New("raybot command failed")
 			}

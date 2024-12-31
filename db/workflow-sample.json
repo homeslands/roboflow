@@ -10,7 +10,7 @@
           },
           "definition": {
             "type": "VALIDATE_STATE",
-            "timeout_sec": 10,
+            "timeoutSec": 10,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -29,7 +29,7 @@
           },
           "definition": {
             "type": "MOVE_TO_LOCATION",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -56,7 +56,7 @@
           },
           "definition": {
             "type": "DROP_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -79,7 +79,7 @@
           },
           "definition": {
             "type": "CHECK_QR",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -102,7 +102,7 @@
           },
           "definition": {
             "type": "OPEN_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -121,7 +121,7 @@
           },
           "definition": {
             "type": "CHECK_QR",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -144,7 +144,7 @@
           },
           "definition": {
             "type": "CLOSE_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -163,7 +163,7 @@
           },
           "definition": {
             "type": "LIFT_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -182,7 +182,7 @@
           },
           "definition": {
             "type": "MOVE_TO_LOCATION",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -209,7 +209,7 @@
           },
           "definition": {
             "type": "DROP_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -232,7 +232,7 @@
           },
           "definition": {
             "type": "CHECK_QR",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -255,7 +255,7 @@
           },
           "definition": {
             "type": "OPEN_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -274,7 +274,7 @@
           },
           "definition": {
             "type": "WAIT_GET_ITEM",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -293,7 +293,7 @@
           },
           "definition": {
             "type": "CLOSE_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -312,7 +312,7 @@
           },
           "definition": {
             "type": "LIFT_BOX",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -331,7 +331,7 @@
           },
           "definition": {
             "type": "MOVE_TO_LOCATION",
-            "timeout_sec": 180,
+            "timeoutSec": 180,
             "fields": {
                 "raybot_id": {
                     "useEnv": true,
@@ -582,9 +582,5 @@
       "x": 332.39219776828907,
       "y": 48.21869663933438,
       "zoom": 0.7323641998972109
-  },
-  "env": {
-    "key":"order_code",
-    "default_value":"QR-ORDER-12312"
   }
 }

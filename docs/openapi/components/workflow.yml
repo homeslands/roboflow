@@ -174,12 +174,16 @@ schemas:
     properties:
       type:
         $ref: "#/schemas/TaskType"
+      timeoutSec:
+        type: integer
+        format: uint16
       fields:
         type: object
         additionalProperties:
           $ref: "#/schemas/NodeField"
     required:
       - type
+      - timeoutSec
       - fields
   NodeField:
     type: object

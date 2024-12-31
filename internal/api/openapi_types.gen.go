@@ -43,8 +43,9 @@ type Error struct {
 
 // NodeDefinition defines model for NodeDefinition.
 type NodeDefinition struct {
-	Fields map[string]NodeField `json:"fields"`
-	Type   TaskType             `json:"type"`
+	Fields     map[string]NodeField `json:"fields"`
+	TimeoutSec uint16               `json:"timeoutSec"`
+	Type       TaskType             `json:"type"`
 }
 
 // NodeField defines model for NodeField.
