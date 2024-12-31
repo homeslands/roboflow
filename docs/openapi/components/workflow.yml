@@ -143,11 +143,6 @@ schemas:
       zoom:
         type: number
         format: float
-      env:
-        type: object
-        additionalProperties:
-          type: string
-        x-go-type: map[string]string
     required:
       - nodes
       - edges
@@ -191,11 +186,15 @@ schemas:
     properties:
       useEnv:
         type: boolean
+      key:
+        type: string
+        nullable: true
       value:
         type: string
         nullable: true
     required:
       - useEnv
+      - key
       - value
   NodeType:
     type: string

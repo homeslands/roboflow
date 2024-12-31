@@ -22,8 +22,10 @@ import (
 	raybotSvc "github.com/tuanvumaihuynh/roboflow/internal/service/raybot"
 	raybotCommandSvc "github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command"
 	"github.com/tuanvumaihuynh/roboflow/internal/service/raybot_command/event"
+	"github.com/tuanvumaihuynh/roboflow/internal/service/runner"
 	stepSvc "github.com/tuanvumaihuynh/roboflow/internal/service/step"
 	workflowSvc "github.com/tuanvumaihuynh/roboflow/internal/service/workflow"
+	workflowEvent "github.com/tuanvumaihuynh/roboflow/internal/service/workflow/event"
 	workflowexecution "github.com/tuanvumaihuynh/roboflow/internal/service/workflow_execution"
 	raybotclient "github.com/tuanvumaihuynh/roboflow/internal/ws/raybot_client"
 	"github.com/tuanvumaihuynh/roboflow/pkg/config"
@@ -44,6 +46,7 @@ type application struct {
 	stepSvc              stepSvc.Service
 
 	wsRaybot *raybotclient.WebSocket
+	runner   *runner.Runner
 }
 
 type CleanupFunc func(ctx context.Context)
@@ -88,6 +91,9 @@ func Run(cfg config.Config, conn *pgxpool.Pool, logger *slog.Logger) CleanupFunc
 	// Setup websocket
 	raybotWs := raybotclient.NewWebSocket(raybotRepo, raybotCommandSvc, logger)
 
+	// Setup runner
+	runner := runner.NewRunner(stepRepo, raybotCommandRepo, raybotSvc, raybotCommandSvc, workflowExecutionSvc, logger)
+
 	// Setup application
 	app := application{
 		cfg:            cfg,
@@ -102,6 +108,7 @@ func Run(cfg config.Config, conn *pgxpool.Pool, logger *slog.Logger) CleanupFunc
 		stepSvc:              stepSvc,
 
 		wsRaybot: raybotWs,
+		runner:   runner,
 	}
 
 	// Setup server
@@ -241,5 +248,11 @@ func setupEventHandler(
 		func(msg *message.Message) error {
 			return app.wsRaybot.HandleRaybotCommandCreated(msg.Payload)
 		},
+	)
+	r.AddNoPublisherHandler(
+		"workflow_service_to_runner",
+		workflowEvent.TopicWorkflowExecutionRun,
+		pubsub,
+		app.runner.HandleRunWorkflowExecution,
 	)
 }

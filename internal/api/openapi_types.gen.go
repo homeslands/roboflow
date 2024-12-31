@@ -49,6 +49,7 @@ type NodeDefinition struct {
 
 // NodeField defines model for NodeField.
 type NodeField struct {
+	Key    *string `json:"key"`
 	UseEnv bool    `json:"useEnv"`
 	Value  *string `json:"value"`
 }
@@ -191,12 +192,11 @@ type ViewPort struct {
 
 // WorkflowDefinition defines model for WorkflowDefinition.
 type WorkflowDefinition struct {
-	Edges    []WorkflowEdge    `json:"edges"`
-	Env      map[string]string `json:"env"`
-	Nodes    []WorkflowNode    `json:"nodes"`
-	Position []float32         `json:"position"`
-	Viewport ViewPort          `json:"viewport"`
-	Zoom     float32           `json:"zoom"`
+	Edges    []WorkflowEdge `json:"edges"`
+	Nodes    []WorkflowNode `json:"nodes"`
+	Position []float32      `json:"position"`
+	Viewport ViewPort       `json:"viewport"`
+	Zoom     float32        `json:"zoom"`
 }
 
 // WorkflowEdge defines model for WorkflowEdge.
