@@ -51,6 +51,10 @@ type WorkflowExecutionRepository interface {
 	GetStatus(ctx context.Context, id uuid.UUID) (WorkflowExecutionStatus, error)
 	List(ctx context.Context, workflowID uuid.UUID, p paging.Params, sorts []xsort.Sort) (*paging.List[WorkflowExecution], error)
 	Create(ctx context.Context, workflowExecution WorkflowExecution) error
-	Update(ctx context.Context, workflowExecution WorkflowExecution) (WorkflowExecution, error)
+	Update(
+		ctx context.Context,
+		id uuid.UUID,
+		fn func(wfe *WorkflowExecution) error,
+	) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }

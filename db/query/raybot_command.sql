@@ -6,6 +6,10 @@ WHERE id = $1;
 SELECT * FROM raybot_commands
 WHERE id = $1 FOR UPDATE;
 
+-- name: GetRaybotCommandStatus :one
+SELECT status FROM raybot_commands
+WHERE id = $1;
+
 -- name: CreateRaybotCommand :exec
 INSERT INTO raybot_commands (
     id,

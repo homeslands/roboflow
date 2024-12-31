@@ -18,74 +18,7 @@ import (
 
 func TestWorkflowExecutionService(t *testing.T) {
 	ctx := context.Background()
-	t.Run("Update", func(t *testing.T) {
-		testCases := []struct {
-			name         string
-			cmd          workflowexecution.UpdateWorkflowExecutionCommand
-			mockBehavior func(*mocks.FakeWorkflowExecutionRepository)
-			shouldErr    bool
-		}{
-			{
-				name: "Should update successfully",
-				cmd: workflowexecution.UpdateWorkflowExecutionCommand{
-					ID:          validID,
-					Status:      model.WorkflowExecutionStatusCompleted,
-					StartedAt:   nil,
-					CompletedAt: nil,
-				},
-				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.On("Update", ctx, mock.Anything).Return(validWorkflowExecution, nil)
-				},
-				shouldErr: false,
-			},
-			{
-				name: "Should return error when validate command failed",
-				cmd: workflowexecution.UpdateWorkflowExecutionCommand{
-					ID:          uuid.Nil,
-					Status:      model.WorkflowExecutionStatusCompleted,
-					StartedAt:   nil,
-					CompletedAt: nil,
-				},
-				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-				},
-				shouldErr: true,
-			},
-			{
-				name: "Should return error when repository fails to update",
-				cmd: workflowexecution.UpdateWorkflowExecutionCommand{
-					ID:          validID,
-					Status:      model.WorkflowExecutionStatusCompleted,
-					StartedAt:   nil,
-					CompletedAt: nil,
-				},
-				mockBehavior: func(r *mocks.FakeWorkflowExecutionRepository) {
-					r.On("Update", ctx, mock.Anything).Return(model.WorkflowExecution{}, assert.AnError)
-				},
-				shouldErr: true,
-			},
-		}
 
-		for _, tc := range testCases {
-			t.Run(tc.name, func(t *testing.T) {
-				repo := mocks.NewFakeWorkflowExecutionRepository(t)
-				tc.mockBehavior(repo)
-
-				s := workflowexecution.NewService(repo)
-				result, err := s.Update(ctx, tc.cmd)
-
-				if tc.shouldErr {
-					// assert.Nil(t, err)
-					assert.Error(t, err)
-				} else {
-					assert.Equal(t, tc.cmd.ID, result.ID)
-					assert.Equal(t, tc.cmd.Status, result.Status)
-					assert.Equal(t, tc.cmd.StartedAt, result.StartedAt)
-					assert.Equal(t, tc.cmd.CompletedAt, result.CompletedAt)
-					assert.NoError(t, err)
-				}
-			})
-		}
-	})
 	t.Run("Delete", func(t *testing.T) {
 		testCases := []struct {
 			name         string

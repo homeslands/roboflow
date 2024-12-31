@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	"github.com/tuanvumaihuynh/roboflow/internal/model"
 	"github.com/tuanvumaihuynh/roboflow/pkg/validator"
 )
@@ -28,5 +29,29 @@ type DeleteWorkflowExecutionCommand struct {
 }
 
 func (c DeleteWorkflowExecutionCommand) Validate() error {
+	return validator.Validate(c)
+}
+
+type SetWorkflowExecutionRunningCommand struct {
+	ID uuid.UUID `validate:"required,uuid"`
+}
+
+func (c SetWorkflowExecutionRunningCommand) Validate() error {
+	return validator.Validate(c)
+}
+
+type SetWorkflowExecutionFailedCommand struct {
+	ID uuid.UUID `validate:"required,uuid"`
+}
+
+func (c SetWorkflowExecutionFailedCommand) Validate() error {
+	return validator.Validate(c)
+}
+
+type SetWorkflowExecutionCompletedCommand struct {
+	ID uuid.UUID `validate:"required,uuid"`
+}
+
+func (c SetWorkflowExecutionCompletedCommand) Validate() error {
 	return validator.Validate(c)
 }

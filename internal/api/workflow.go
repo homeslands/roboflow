@@ -268,6 +268,7 @@ func modelNodeFieldsToDTO(fields map[string]model.NodeField) map[string]NodeFiel
 	for k, f := range fields {
 		m[k] = NodeField{
 			UseEnv: f.UseEnv,
+			Key:    f.Key,
 			Value:  f.Value,
 		}
 	}
@@ -280,6 +281,7 @@ func dtoNodeFieldsToModel(fields map[string]NodeField) map[string]model.NodeFiel
 	for k, f := range fields {
 		m[k] = model.NodeField{
 			UseEnv: f.UseEnv,
+			Key:    f.Key,
 			Value:  f.Value,
 		}
 	}

@@ -104,6 +104,18 @@ func (q *Queries) GetRaybotCommandForUpdate(ctx context.Context, id uuid.UUID) (
 	return &i, err
 }
 
+const getRaybotCommandStatus = `-- name: GetRaybotCommandStatus :one
+SELECT status FROM raybot_commands
+WHERE id = $1
+`
+
+func (q *Queries) GetRaybotCommandStatus(ctx context.Context, id uuid.UUID) (string, error) {
+	row := q.db.QueryRow(ctx, getRaybotCommandStatus, id)
+	var status string
+	err := row.Scan(&status)
+	return status, err
+}
+
 const updateRaybotCommand = `-- name: UpdateRaybotCommand :exec
 UPDATE raybot_commands
 SET

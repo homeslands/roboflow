@@ -43,6 +43,18 @@ func (r raybotCommandRepository) Get(ctx context.Context, id uuid.UUID) (model.R
 	return rowRaybotCommandToModel(*row)
 }
 
+func (r raybotCommandRepository) GetStatus(ctx context.Context, id uuid.UUID) (model.RaybotCommandStatus, error) {
+	row, err := r.store.GetRaybotCommandStatus(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", xerrors.ThrowNotFound(err, "command not found")
+		}
+		return "", err
+	}
+
+	return model.RaybotCommandStatus(row), nil
+}
+
 func (r raybotCommandRepository) List(ctx context.Context, raybotId uuid.UUID, p paging.Params, sorts []xsort.Sort) (*paging.List[model.RaybotCommand], error) {
 	params := db.ListRaybotCommandsParams{
 		RaybotID: raybotId,

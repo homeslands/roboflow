@@ -26,8 +26,6 @@ CREATE TABLE steps (
     "workflow_execution_id" UUID NOT NULL,
 	"env" JSON NOT NULL DEFAULT '{}',
     "node" JSON NOT NULL DEFAULT '{}',
-    "inputs" JSON NOT NULL DEFAULT '{}',
-    "outputs" JSON NOT NULL DEFAULT '{}',
     "status" TEXT NOT NULL,
     "started_at" TIMESTAMPTZ,
     "completed_at" TIMESTAMPTZ,

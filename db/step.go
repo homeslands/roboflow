@@ -42,8 +42,6 @@ func (s *Store) ListSteps(ctx context.Context, arg ListStepsParams) ([]Step, err
 			&i.WorkflowExecutionID,
 			&i.Env,
 			&i.Node,
-			&i.Inputs,
-			&i.Outputs,
 			&i.Status,
 			&i.StartedAt,
 			&i.CompletedAt,

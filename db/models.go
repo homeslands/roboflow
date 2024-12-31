@@ -45,8 +45,6 @@ type Step struct {
 	WorkflowExecutionID uuid.UUID
 	Env                 map[string]string
 	Node                []byte
-	Inputs              []byte
-	Outputs             []byte
 	Status              string
 	StartedAt           pgtype.Timestamptz
 	CompletedAt         pgtype.Timestamptz

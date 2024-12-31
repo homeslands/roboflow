@@ -5,8 +5,8 @@ CREATE TABLE raybot_commands (
     "raybot_id" UUID NOT NULL,
     "type" TEXT NOT NULL,
     "status" TEXT NOT NULL,
-    "input" JSON NOT NULL DEFAULT '{}',
-    "output" JSON NOT NULL DEFAULT '{}',
+    "input" JSON,
+    "output" JSON,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "completed_at" TIMESTAMPTZ
 )

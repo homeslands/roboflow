@@ -13,7 +13,11 @@ VALUES ($1, $2, $3, $4, $5);
 -- name: UpdateStep :exec
 UPDATE steps
 SET
-    status = $2,
-    started_at = $3,
-    completed_at = $4
+	id = $1,
+	workflow_execution_id = $2,
+	env = $3,
+	node = $4,
+	status = $5,
+	started_at = $6,
+	completed_at = $7
 WHERE id = $1;

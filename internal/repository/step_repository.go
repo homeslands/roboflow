@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 
 	"github.com/tuanvumaihuynh/roboflow/db"
 	"github.com/tuanvumaihuynh/roboflow/internal/model"
@@ -53,6 +54,32 @@ func (r StepRepository) List(ctx context.Context, workflowExecutionID uuid.UUID,
 	}
 
 	return items, nil
+}
+
+func (r StepRepository) Update(ctx context.Context, step model.Step) error {
+	param := db.UpdateStepParams{
+		ID:                  step.ID,
+		WorkflowExecutionID: step.WorkflowExecutionID,
+		Env:                 step.Env,
+		Status:              string(step.Status),
+	}
+	nodeBytes, err := json.Marshal(step.Node)
+	if err != nil {
+		return xerrors.ThrowInternal(err, "failed to marshal node")
+	}
+	param.Node = nodeBytes
+	if step.StartedAt != nil {
+		param.StartedAt = pgtype.Timestamptz{Time: *step.StartedAt, Valid: true}
+	}
+	if step.CompletedAt != nil {
+		param.CompletedAt = pgtype.Timestamptz{Time: *step.CompletedAt, Valid: true}
+	}
+
+	if err := r.store.UpdateStep(ctx, param); err != nil {
+		return xerrors.ThrowInternal(err, "failed to update step")
+	}
+
+	return nil
 }
 
 func rowStepToModel(row db.Step) (model.Step, error) {
