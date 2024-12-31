@@ -1,4 +1,4 @@
-POSTGRES_DSN=postgres://postgres:postgres@localhost:5433/postgres?sslmode=disable
+POSTGRES_DSN=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 MIGRATION_DIR=db/migration
 
 .PHONY: docs
