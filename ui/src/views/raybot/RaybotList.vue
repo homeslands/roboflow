@@ -15,9 +15,15 @@ import { RaybotStatusValues } from '@/types/raybot'
 import { RefreshCcwIcon, SearchIcon, XIcon } from 'lucide-vue-next'
 import { columns, RaybotTable } from './components/raybot-table'
 
+type ListRaybotRequiredPagingParams = Omit<ListRaybotParams, 'page' | 'pageSize'> & {
+  page: number
+  pageSize: number
+}
+
 const selectedStatus = ref<RaybotStatus>()
-const params = ref<ListRaybotParams>({
-  status: selectedStatus.value,
+const params = ref<ListRaybotRequiredPagingParams>({
+  page: 1,
+  pageSize: 10,
 })
 
 const { data, isPending, refetch } = useRaybotQuery(params)
@@ -25,11 +31,22 @@ const { data, isPending, refetch } = useRaybotQuery(params)
 function onStatusChange(status: RaybotStatus) {
   selectedStatus.value = status
 }
+
+function handleSearch() {
+  params.value.status = selectedStatus.value
+  refetch()
+}
+
+function handleReset() {
+  selectedStatus.value = undefined
+  params.value.status = undefined
+  refetch()
+}
 </script>
 
 <template>
   <div class="space-y-4">
-    <!-- Top -->
+    <!-- Top search config -->
     <div class="flex items-center space-x-4">
       <Select
         v-model="selectedStatus"
@@ -50,12 +67,15 @@ function onStatusChange(status: RaybotStatus) {
       </Select>
       <Button
         variant="outline"
-        @click="refetch"
+        @click="handleSearch"
       >
         <SearchIcon />
         Search
       </Button>
-      <Button variant="outline">
+      <Button
+        variant="outline"
+        @click="handleReset"
+      >
         <XIcon />
         Reset
       </Button>
@@ -73,9 +93,12 @@ function onStatusChange(status: RaybotStatus) {
 
     <!-- Data table -->
     <RaybotTable
+      v-model:page="params.page"
+      v-model:page-size="params.pageSize"
       :columns="columns"
-      :data="data?.items"
       :is-loading="isPending"
+      :data="data?.items ?? []"
+      :total-items="data?.totalItems ?? 0"
     />
   </div>
 </template>

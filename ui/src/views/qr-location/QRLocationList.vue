@@ -14,8 +14,14 @@ import { PlusIcon, RefreshCcwIcon } from 'lucide-vue-next'
 import { CreateQRLocationForm } from './components/create-qr-location-form'
 import { columns, QRLocationTable } from './components/qr-location-table'
 
-const params = ref<ListQRLocationParams>({
-  sort: ['-created_at'],
+type ListQRLocationRequiredPagingParams = Omit<ListQRLocationParams, 'page' | 'pageSize'> & {
+  page: number
+  pageSize: number
+}
+
+const params = ref<ListQRLocationRequiredPagingParams>({
+  page: 1,
+  pageSize: 10,
 })
 const { data, isPending, refetch } = useQRLocationQuery(params)
 </script>
@@ -53,10 +59,13 @@ const { data, isPending, refetch } = useQRLocationQuery(params)
     </div>
 
     <QRLocationTable
+      v-model:page="params.page"
+      v-model:page-size="params.pageSize"
       class="w-full"
       :columns="columns"
-      :data="data?.items"
       :is-loading="isPending"
+      :data="data?.items ?? []"
+      :total-items="data?.totalItems ?? 0"
     />
   </div>
 </template>

@@ -14,12 +14,19 @@ import { PlusIcon, RefreshCcwIcon } from 'lucide-vue-next'
 import { columns, CommandTable } from './components/command-table'
 import { CreateCommandForm } from './components/create-command-form'
 
+type ListRaybotCommandRequiredPagingParams = Omit<ListRaybotCommandParams, 'page' | 'pageSize'> & {
+  page: number
+  pageSize: number
+}
+
 const route = useRoute()
 const raybotId = computed(() => route.params.id as string)
-const params = ref<ListRaybotCommandParams>({
+const params = ref<ListRaybotCommandRequiredPagingParams>({
+  page: 1,
+  pageSize: 10,
   sort: ['-created_at'],
 })
-const { data, isPending, isRefetching, refetch } = useRaybotCommandQuery(raybotId, params)
+const { data, isPending, refetch } = useRaybotCommandQuery(raybotId, params)
 </script>
 
 <template>
@@ -55,10 +62,13 @@ const { data, isPending, isRefetching, refetch } = useRaybotCommandQuery(raybotI
 
     <!-- Data table -->
     <CommandTable
+      v-model:page="params.page"
+      v-model:page-size="params.pageSize"
       class="w-full"
       :columns="columns"
-      :data="data?.items"
-      :is-loading="isPending || isRefetching"
+      :is-loading="isPending"
+      :data="data?.items ?? []"
+      :total-items="data?.totalItems ?? 0"
     />
   </div>
 </template>
