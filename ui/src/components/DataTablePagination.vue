@@ -20,6 +20,11 @@ const emit = defineEmits<{
 }>()
 
 const totalPages = computed(() => Math.ceil(props.totalItems / props.pageSize))
+const recordRange = computed(() => {
+  const from = (props.currentPage - 1) * props.pageSize + 1
+  const to = Math.min(props.currentPage * props.pageSize, props.totalItems)
+  return `${from} - ${to} of ${props.totalItems}`
+})
 
 function handlePageChange(page: number) {
   emit('pageChange', page)
@@ -29,7 +34,7 @@ function handlePageChange(page: number) {
 <template>
   <div class="flex items-center space-x-4">
     <span class="text-sm font-medium text-muted-foreground">
-      Page {{ currentPage }} of {{ totalPages }}
+      {{ recordRange }}
     </span>
 
     <Pagination>
