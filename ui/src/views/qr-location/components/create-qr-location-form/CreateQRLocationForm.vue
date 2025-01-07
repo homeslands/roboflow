@@ -36,6 +36,7 @@ const onSubmit = handleSubmit((values) => {
     onSuccess: () => {
       toast.success('QR Location created successfully')
       resetForm()
+      metadataPairs.value = [{ key: '', value: '' }]
     },
     onError: (error) => {
       toast.error(error.message)
