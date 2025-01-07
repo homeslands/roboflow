@@ -28,7 +28,7 @@ function handlePageChange(page: number) {
 
 <template>
   <div class="flex items-center space-x-4">
-    <span class="text-sm text-muted-foreground">
+    <span class="text-sm font-medium text-muted-foreground">
       Page {{ currentPage }} of {{ totalPages }}
     </span>
 

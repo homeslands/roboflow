@@ -1,6 +1,14 @@
 <script setup lang="ts" generic="TData, TValue">
 import type { ColumnDef } from '@tanstack/vue-table'
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Table,
   TableBody,
   TableCell,
@@ -21,10 +29,18 @@ interface Props {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   totalItems: number
+  pageSizeOptions?: number[]
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  pageSizeOptions: () => [10, 20, 50, 100],
+})
 const page = defineModel<number>('page', { required: true })
 const pageSize = defineModel<number>('pageSize', { required: true })
+
+const pageSizeStr = computed({
+  get: () => pageSize.value.toString(),
+  set: value => pageSize.value = Number(value),
+})
 
 const table = useVueTable({
   get data() { return props.data },
@@ -103,14 +119,41 @@ const table = useVueTable({
       </Table>
     </div>
 
-    <!-- Pagination -->
-    <DataTablePagination
-      v-if="!props.isLoading"
-      class="ml-auto"
-      :current-page="page"
-      :page-size="pageSize"
-      :total-items="props.totalItems ?? 0"
-      @page-change="page = $event"
-    />
+    <div class="flex ml-auto space-x-6">
+      <!-- Page size selector -->
+      <div class="flex items-center gap-1">
+        <span class="text-sm sr-only text-muted-foreground sm:not-sr-only">
+          Items per page:
+        </span>
+        <Select
+          v-model="pageSizeStr"
+          :disabled="props.isLoading"
+        >
+          <SelectTrigger class="w-20">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem
+                v-for="option in props.pageSizeOptions"
+                :key="option"
+                :value="option.toString()"
+              >
+                {{ option }}
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <!-- Pagination -->
+      <DataTablePagination
+        v-if="!props.isLoading"
+        :current-page="page"
+        :page-size="pageSize"
+        :total-items="props.totalItems ?? 0"
+        @page-change="page = $event"
+      />
+    </div>
   </div>
 </template>
