@@ -12,12 +12,11 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { routes } from '@/router/routes'
-import UserDropdown from './UserDropdown.vue'
 </script>
 
 <template>
   <SidebarProvider>
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" class="bg-popover">
       <SidebarHeader class="flex-row items-center mt-3">
         <img alt="Vue logo" src="@/assets/logo.svg" width="32" height="32">
         <span class="ml-2 font-bold">Roboflow</span>
@@ -36,18 +35,12 @@ import UserDropdown from './UserDropdown.vue'
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <SidebarTrigger class="absolute -right-4 bottom-8" />
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
     <SidebarInset>
-      <header
-        class="flex justify-between h-16 shrink-0 items-center gap-2 px-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
-      >
-        <SidebarTrigger class="-ml-1" />
-        <UserDropdown />
-      </header>
-      <!-- Main content -->
-      <div class="flex flex-col flex-1 gap-4 p-4 pt-0">
+      <div class="flex-1 w-full h-full p-4">
         <RouterView />
       </div>
     </SidebarInset>
