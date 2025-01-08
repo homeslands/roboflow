@@ -23,6 +23,9 @@ module.exports = {
         '4xl': '1920px',
       },
     },
+    fontFamily: {
+      sans: ['InterVariable', 'Inter', 'sans-serif'],
+    },
     extend: {
       screens: {
         '3xl': '1600px',
