@@ -12,14 +12,14 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { routes } from '@/router/routes'
+import Logo from './Logo.vue'
 </script>
 
 <template>
   <SidebarProvider>
     <Sidebar collapsible="icon" class="bg-popover">
       <SidebarHeader class="flex-row items-center mt-3">
-        <img alt="Vue logo" src="@/assets/logo.svg" width="32" height="32">
-        <span class="ml-2 font-bold">Roboflow</span>
+        <Logo />
       </SidebarHeader>
       <SidebarContent class="mx-2 mt-6">
         <SidebarMenu>
