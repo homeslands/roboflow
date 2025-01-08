@@ -1,5 +1,6 @@
-<script setup lang="ts" generic="TData, TValue">
-import type { ColumnDef } from '@tanstack/vue-table'
+<script setup lang="ts" generic="TData, TValue, TSort extends string">
+import type { SortPrefix } from '@/lib/sort'
+import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { convertParamsToSorting, convertSortingToParams } from '@/lib/sort'
 import {
   FlexRender,
   getCoreRowModel,
@@ -30,14 +32,25 @@ interface Props {
   data: TData[]
   totalItems: number
   pageSizeOptions?: number[]
+  sorts?: SortPrefix<TSort>[]
 }
 const props = withDefaults(defineProps<Props>(), {
-  pageSizeOptions: () => [10, 20, 50, 100],
+  pageSizeOptions: () => [10, 20, 30],
+  sorts: () => [],
 })
+
+const emit = defineEmits<{
+  (e: 'sorts', sorts: SortPrefix<TSort>[]): void
+}>()
+
 const page = defineModel<number>('page', { required: true })
 const pageSize = defineModel<number>('pageSize', { required: true })
 
-const pageSizeStr = computed({
+const sorting = computed<SortingState>({
+  get: () => convertParamsToSorting(props.sorts ?? []),
+  set: value => emit('sorts', convertSortingToParams(value)),
+})
+const pageSizeStr = computed<string>({
   get: () => pageSize.value.toString(),
   set: value => pageSize.value = Number(value),
 })
@@ -45,24 +58,36 @@ const pageSizeStr = computed({
 const table = useVueTable({
   get data() { return props.data },
   get columns() { return props.columns },
-  getCoreRowModel: getCoreRowModel(),
-
-  // Server-side pagination
-  manualPagination: true,
-  rowCount: props.totalItems,
   state: {
     pagination: {
       pageIndex: page.value - 1,
       pageSize: pageSize.value,
     },
+    get sorting() { return sorting.value },
   },
-  onPaginationChange: (updater) => {
-    const newState = typeof updater === 'function'
-      ? updater(table.getState().pagination)
-      : updater
+  getCoreRowModel: getCoreRowModel(),
+
+  // Server-side pagination
+  manualPagination: true,
+  rowCount: props.totalItems,
+  onPaginationChange: (updaterOrValue) => {
+    const newState = typeof updaterOrValue === 'function'
+      ? updaterOrValue(table.getState().pagination)
+      : updaterOrValue
 
     page.value = newState.pageIndex
     pageSize.value = newState.pageSize
+  },
+
+  // Server-side sorting
+  manualSorting: true,
+  enableMultiSort: false,
+  onSortingChange: (updaterOrValue) => {
+    const newState = typeof updaterOrValue === 'function'
+      ? updaterOrValue(table.getState().sorting)
+      : updaterOrValue
+
+    sorting.value = newState
   },
 })
 </script>
