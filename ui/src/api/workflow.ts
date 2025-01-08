@@ -1,3 +1,4 @@
+import type { SortPrefix } from '@/lib/sort'
 import type { Paging } from '@/types/paging'
 import type { Workflow, WorkflowDefinition, WorkflowWithoutDefinition } from '@/types/workflow'
 import http from '@/lib/http'
@@ -6,7 +7,7 @@ export type ListWorkflowSort = 'name' | 'created_at' | 'updated_at'
 export interface ListWorkflowParams {
   page?: number
   pageSize?: number
-  sort?: Array<`-${ListWorkflowSort}` | ListWorkflowSort>
+  sort?: SortPrefix<ListWorkflowSort>[]
 }
 
 export interface CreateRaybotParams {

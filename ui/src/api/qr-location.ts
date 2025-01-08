@@ -1,3 +1,4 @@
+import type { SortPrefix } from '@/lib/sort'
 import type { Paging } from '@/types/paging'
 import type { QRLocation } from '@/types/qr-location'
 import http from '@/lib/http'
@@ -6,7 +7,7 @@ export type ListQRLocationSort = 'name' | 'qr_code' | 'created_at' | 'updated_at
 export interface ListQRLocationParams {
   page?: number
   pageSize?: number
-  sort?: Array<`-${ListQRLocationSort}` | ListQRLocationSort>
+  sort?: SortPrefix<ListQRLocationSort>[]
 }
 
 export interface CreateQRLocationParams {

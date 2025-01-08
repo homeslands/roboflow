@@ -1,3 +1,4 @@
+import type { SortPrefix } from '@/lib/sort'
 import type { Paging } from '@/types/paging'
 import type { Raybot, RaybotStatus } from '@/types/raybot'
 import http from '@/lib/http'
@@ -6,7 +7,7 @@ export type ListRaybotSort = 'name' | 'status' | 'last_connected_at' | 'created_
 export interface ListRaybotParams {
   page?: number
   pageSize?: number
-  sort?: Array<`-${ListRaybotSort}` | ListRaybotSort>
+  sort?: SortPrefix<ListRaybotSort>[]
   status?: RaybotStatus
 }
 

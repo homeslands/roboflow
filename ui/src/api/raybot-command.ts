@@ -1,3 +1,4 @@
+import type { SortPrefix } from '@/lib/sort'
 import type { Paging } from '@/types/paging'
 import type { InputMap, RaybotCommand, RaybotCommandType } from '@/types/raybot-command'
 import http from '@/lib/http'
@@ -6,7 +7,7 @@ export type ListRaybotCommandSort = 'status' | 'created_at' | 'completed_at'
 export interface ListRaybotCommandParams {
   page?: number
   pageSize?: number
-  sort?: Array<`-${ListRaybotCommandSort}` | ListRaybotCommandSort>
+  sort?: SortPrefix<ListRaybotCommandSort>[]
 }
 
 export interface CreateRaybotCommandParams<T extends RaybotCommandType> {

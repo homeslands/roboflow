@@ -1,3 +1,4 @@
+import type { SortPrefix } from '@/lib/sort'
 import type { Paging } from '@/types/paging'
 import type { WorkflowExecution } from '@/types/workflow-execution'
 import http from '@/lib/http'
@@ -6,7 +7,7 @@ export type ListWorkflowExecutionSort = 'status' | 'created_at' | 'started_at' |
 export interface ListWorkflowExecutionParams {
   page?: number
   pageSize?: number
-  sort?: Array<`-${ListWorkflowExecutionSort}` | ListWorkflowExecutionSort>
+  sort?: SortPrefix<ListWorkflowExecutionSort>[]
 }
 
 const workflowExecutions = {
