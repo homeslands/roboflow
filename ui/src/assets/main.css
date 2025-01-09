@@ -75,3 +75,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+html {
+  font-size: 14px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1280px) {
+  html {
+    font-size: 18px;
+  }
+}

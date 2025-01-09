@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useSidebar } from '@/components/ui/sidebar'
 
 const { open } = useSidebar()
@@ -11,7 +11,7 @@ const { open } = useSidebar()
   </Transition>
 </template>
 
-<style lang="css">
+<style scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
