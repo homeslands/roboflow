@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ListRaybotCommandParams } from '@/api/raybot-command'
+import type { ListRaybotCommandParams, ListRaybotCommandSort } from '@/api/raybot-command'
+import type { SortPrefix } from '@/lib/sort'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -24,9 +25,17 @@ const raybotId = computed(() => route.params.id as string)
 const params = ref<ListRaybotCommandRequiredPagingParams>({
   page: 1,
   pageSize: 10,
-  sort: ['-created_at'],
 })
+
 const { data, isPending, refetch } = useRaybotCommandQuery(raybotId, params)
+
+function handleSortingChange(sorts: SortPrefix<ListRaybotCommandSort>[]) {
+  params.value = {
+    ...params.value,
+    sort: sorts,
+  }
+  refetch()
+}
 </script>
 
 <template>
@@ -69,6 +78,8 @@ const { data, isPending, refetch } = useRaybotCommandQuery(raybotId, params)
       :is-loading="isPending"
       :data="data?.items ?? []"
       :total-items="data?.totalItems ?? 0"
+      :sorts="params.sort"
+      @sorts="handleSortingChange"
     />
   </div>
 </template>

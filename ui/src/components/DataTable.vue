@@ -2,14 +2,6 @@
 import type { SortPrefix } from '@/lib/sort'
 import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
   Table,
   TableBody,
   TableCell,
@@ -50,32 +42,25 @@ const sorting = computed<SortingState>({
   get: () => convertParamsToSorting(props.sorts ?? []),
   set: value => emit('sorts', convertSortingToParams(value)),
 })
-const pageSizeStr = computed<string>({
-  get: () => pageSize.value.toString(),
-  set: value => pageSize.value = Number(value),
-})
 
 const table = useVueTable({
   get data() { return props.data },
   get columns() { return props.columns },
+  get rowCount() { return props.totalItems },
   state: {
-    pagination: {
-      pageIndex: page.value - 1,
-      pageSize: pageSize.value,
-    },
+    get pagination() { return { pageIndex: page.value - 1, pageSize: pageSize.value } },
     get sorting() { return sorting.value },
   },
   getCoreRowModel: getCoreRowModel(),
 
   // Server-side pagination
   manualPagination: true,
-  rowCount: props.totalItems,
   onPaginationChange: (updaterOrValue) => {
     const newState = typeof updaterOrValue === 'function'
       ? updaterOrValue(table.getState().pagination)
       : updaterOrValue
 
-    page.value = newState.pageIndex
+    page.value = newState.pageIndex + 1
     pageSize.value = newState.pageSize
   },
 
@@ -93,8 +78,8 @@ const table = useVueTable({
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4">
-    <div class="border rounded-md">
+  <div class="flex flex-col justify-end pb-1 space-y-4">
+    <div class="h-full overflow-y-auto border rounded-md">
       <Table>
         <TableHeader class="bg-muted-foreground/10">
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
@@ -125,8 +110,9 @@ const table = useVueTable({
           </template>
           <template v-else-if="table.getRowModel().rows?.length">
             <TableRow
-              v-for="row in table.getRowModel().rows" :key="row.id"
-              :data-state="row.getIsSelected() ? 'selected' : undefined"
+              v-for="row in table.getRowModel().rows"
+              :key="row.id"
+              :data-state="row.getIsSelected() ? 'selected' : 'undefined'"
             >
               <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
@@ -144,41 +130,12 @@ const table = useVueTable({
       </Table>
     </div>
 
-    <div class="flex ml-auto space-x-6">
-      <!-- Page size selector -->
-      <div class="flex items-center gap-1">
-        <span class="text-sm sr-only text-muted-foreground sm:not-sr-only">
-          Items per page:
-        </span>
-        <Select
-          v-model="pageSizeStr"
-          :disabled="props.isLoading"
-        >
-          <SelectTrigger class="w-20">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem
-                v-for="option in props.pageSizeOptions"
-                :key="option"
-                :value="option.toString()"
-              >
-                {{ option }}
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <!-- Pagination -->
-      <DataTablePagination
-        v-if="!props.isLoading"
-        :current-page="page"
-        :page-size="pageSize"
-        :total-items="props.totalItems ?? 0"
-        @page-change="page = $event"
-      />
-    </div>
+    <DataTablePagination
+      v-if="!props.isLoading"
+      v-model:page-size="pageSize"
+      :total-items="props.totalItems ?? 0"
+      :page-size-options="props.pageSizeOptions"
+      :table="table"
+    />
   </div>
 </template>

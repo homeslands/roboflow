@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ListQRLocationParams } from '@/api/qr-location'
+import type { ListQRLocationParams, ListQRLocationSort } from '@/api/qr-location'
+import type { SortPrefix } from '@/lib/sort'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -24,6 +25,14 @@ const params = ref<ListQRLocationRequiredPagingParams>({
   pageSize: 10,
 })
 const { data, isPending, refetch } = useQRLocationQuery(params)
+
+function handleSortingChange(sorts: SortPrefix<ListQRLocationSort>[]) {
+  params.value = {
+    ...params.value,
+    sort: sorts,
+  }
+  refetch()
+}
 </script>
 
 <template>
@@ -66,6 +75,8 @@ const { data, isPending, refetch } = useQRLocationQuery(params)
       :is-loading="isPending"
       :data="data?.items ?? []"
       :total-items="data?.totalItems ?? 0"
+      :sorts="params.sort"
+      @sorts="handleSortingChange"
     />
   </div>
 </template>

@@ -1,26 +1,28 @@
 import type { Raybot } from '@/types/raybot'
 import type { ColumnDef } from '@tanstack/vue-table'
-import RaybotNameBtn from './RaybotNameBtn.vue'
+import DataTableSortableHeader from '@/components/DataTableSortableHeader.vue'
+import RaybotNameLink from './RaybotNameLink.vue'
 
 export const columns: ColumnDef<Raybot>[] = [
   {
     accessorKey: 'name',
-    header: () => h('span', { class: 'text-right' }, 'Name'),
+    header: ({ column }) => h(DataTableSortableHeader<Raybot>, { column, title: 'Name' }),
     cell: ({ row }) => {
       const raybot = row.original
-      return h('span', { class: 'text-right' }, h(RaybotNameBtn, { id: raybot.id, name: raybot.name }))
+      return h('div', { class: 'flex items-center' }, h(RaybotNameLink, { id: raybot.id, name: raybot.name }))
     },
   },
   {
     accessorKey: 'status',
-    header: () => h('span', { class: 'text-right' }, 'Status'),
+    header: ({ column }) => h(DataTableSortableHeader<Raybot>, { column, title: 'Status' }),
     cell: ({ row }) => {
       return h('span', { class: 'text-right' }, row.getValue('status'))
     },
   },
   {
     accessorKey: 'ipAddress',
-    header: () => h('span', { class: 'text-right' }, 'IP Address'),
+    enableSorting: false,
+    header: ({ column }) => h(DataTableSortableHeader<Raybot>, { column, title: 'IP address' }),
     cell: ({ row }) => {
       const ipAddress = row.original.ipAddress ?? 'N/A'
       return h('span', { class: 'text-right' }, ipAddress)
@@ -28,7 +30,7 @@ export const columns: ColumnDef<Raybot>[] = [
   },
   {
     accessorKey: 'lastConnectedAt',
-    header: () => h('span', { class: 'text-right' }, 'Last Connected At'),
+    header: ({ column }) => h(DataTableSortableHeader<Raybot>, { column, title: 'Last connected at' }),
     cell: ({ row }) => {
       const lastConnectedAt = row.original.lastConnectedAt?.toLocaleString() ?? 'N/A'
       return h('span', { class: 'text-right' }, lastConnectedAt)
@@ -36,7 +38,7 @@ export const columns: ColumnDef<Raybot>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: () => h('span', { class: 'text-right' }, 'Created At'),
+    header: ({ column }) => h(DataTableSortableHeader<Raybot>, { column, title: 'Created at' }),
     cell: ({ row }) => {
       return h('span', { class: 'text-right' }, row.getValue('createdAt'))
     },

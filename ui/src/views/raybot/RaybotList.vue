@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ListRaybotParams } from '@/api/raybot'
+import type { ListRaybotParams, ListRaybotSort } from '@/api/raybot'
+import type { SortPrefix } from '@/lib/sort'
 import type { RaybotStatus } from '@/types/raybot'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,7 +40,20 @@ function handleSearch() {
 
 function handleReset() {
   selectedStatus.value = undefined
-  params.value.status = undefined
+  params.value = {
+    page: 1,
+    pageSize: 10,
+    sort: [],
+    status: undefined,
+  }
+  refetch()
+}
+
+function handleSortingChange(sorts: SortPrefix<ListRaybotSort>[]) {
+  params.value = {
+    ...params.value,
+    sort: sorts,
+  }
   refetch()
 }
 </script>
@@ -99,6 +113,8 @@ function handleReset() {
       :is-loading="isPending"
       :data="data?.items ?? []"
       :total-items="data?.totalItems ?? 0"
+      :sorts="params.sort"
+      @sorts="handleSortingChange"
     />
   </div>
 </template>
