@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { useRaybotQuery } from '@/composables/use-raybot'
+import { useListRaybotQuery } from '@/composables/use-raybot'
 import { RaybotStatusValues } from '@/types/raybot'
 import { RefreshCcwIcon, SearchIcon, XIcon } from 'lucide-vue-next'
 import { columns, RaybotTable } from './components/raybot-table'
@@ -27,7 +27,7 @@ const params = ref<ListRaybotRequiredPagingParams>({
   pageSize: 10,
 })
 
-const { data, isPending, refetch } = useRaybotQuery(params)
+const { data, isPending, refetch } = useListRaybotQuery(params)
 
 function onStatusChange(status: RaybotStatus) {
   selectedStatus.value = status

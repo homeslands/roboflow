@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useRaybotCommandQuery } from '@/composables/use-raybot-command'
+import { useListRaybotCommandQuery } from '@/composables/use-raybot-command'
 import { PlusIcon, RefreshCcwIcon } from 'lucide-vue-next'
 import { columns, CommandTable } from './components/command-table'
 import { CreateCommandForm } from './components/create-command-form'
@@ -27,7 +27,7 @@ const params = ref<ListRaybotCommandRequiredPagingParams>({
   pageSize: 10,
 })
 
-const { data, isPending, refetch } = useRaybotCommandQuery(raybotId, params)
+const { data, isPending, refetch } = useListRaybotCommandQuery(raybotId, params)
 
 function handleSortingChange(sorts: SortPrefix<ListRaybotCommandSort>[]) {
   params.value = {

@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useRaybotCommandMutation } from '@/composables/use-raybot-command'
+import { useCreateRaybotCommandMutation } from '@/composables/use-raybot-command'
 import { RaybotCommandTypeValues } from '@/types/raybot-command'
 import { toTypedSchema } from '@vee-validate/zod'
 import { LoaderCircleIcon } from 'lucide-vue-next'
@@ -38,7 +38,7 @@ const { handleSubmit, resetForm } = useForm<CreateRaybotCommandParams<RaybotComm
   },
 })
 
-const { mutate, isPending } = useRaybotCommandMutation(raybotId)
+const { mutate, isPending } = useCreateRaybotCommandMutation(raybotId)
 const onSubmit = handleSubmit((values) => {
   mutate(values, {
     onSuccess: () => {

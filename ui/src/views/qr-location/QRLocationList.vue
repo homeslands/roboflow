@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useQRLocationQuery } from '@/composables/use-qr-location'
+import { useListQRLocationQuery } from '@/composables/use-qr-location'
 import { PlusIcon, RefreshCcwIcon } from 'lucide-vue-next'
 import { CreateQRLocationForm } from './components/create-qr-location-form'
 import { columns, QRLocationTable } from './components/qr-location-table'
@@ -24,7 +24,7 @@ const params = ref<ListQRLocationRequiredPagingParams>({
   page: 1,
   pageSize: 10,
 })
-const { data, isPending, refetch } = useQRLocationQuery(params)
+const { data, isPending, refetch } = useListQRLocationQuery(params)
 
 function handleSortingChange(sorts: SortPrefix<ListQRLocationSort>[]) {
   params.value = {

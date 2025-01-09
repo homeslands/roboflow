@@ -7,14 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useQRLocationQuery } from '@/composables/use-qr-location'
+import { useListQRLocationQuery } from '@/composables/use-qr-location'
 
 const selectedQRLocation = defineModel<string>()
 
 const params: ListQRLocationParams = {
   pageSize: 10000,
 }
-const { data, isPending } = useQRLocationQuery(params)
+const { data, isPending } = useListQRLocationQuery(params)
 </script>
 
 <template>
