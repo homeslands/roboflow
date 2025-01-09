@@ -4,7 +4,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 
 const QUERY_KEY = 'qrLocations'
 
-export function useQRLocationQuery(p: MaybeRef<ListQRLocationParams>) {
+export function useListQRLocationQuery(p: MaybeRef<ListQRLocationParams>) {
   return useQuery({
     queryKey: [QUERY_KEY, toValue(p)],
     queryFn: () => qrLocations.list(toValue(p)),
@@ -12,7 +12,7 @@ export function useQRLocationQuery(p: MaybeRef<ListQRLocationParams>) {
   })
 }
 
-export function useQRLocationMutation() {
+export function useCreateQRLocationMutation() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (body: CreateQRLocationParams) => qrLocations.create(body),
