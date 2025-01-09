@@ -4,6 +4,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 import { notivue } from './notivue'
 import { pinia } from './pinia'
 import { queryPluginOpts } from './vue-query'
+import './vee-validate'
 
 export function registerPlugins(app: App) {
   app

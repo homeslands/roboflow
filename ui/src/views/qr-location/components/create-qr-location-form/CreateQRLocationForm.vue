@@ -22,7 +22,7 @@ interface MetadataPair {
 }
 
 const metadataPairs = ref<MetadataPair[]>([{ key: '', value: '' }])
-const { handleSubmit, resetForm, setFieldValue } = useForm<CreateQRLocationParams>({
+const { handleSubmit, resetForm, setFieldValue, meta } = useForm<CreateQRLocationParams>({
   validationSchema: toTypedSchema(createQRLocationParamsSchema),
   initialValues: {
     name: '',
@@ -32,6 +32,8 @@ const { handleSubmit, resetForm, setFieldValue } = useForm<CreateQRLocationParam
 })
 
 const { mutate, isPending } = useCreateQRLocationMutation()
+const isFormValid = computed(() => meta.value.valid)
+
 const onSubmit = handleSubmit((values) => {
   mutate(values, {
     onSuccess: () => {
@@ -166,9 +168,9 @@ function removePair(index: number) {
     <div class="flex justify-end pr-3 mt-4">
       <Button
         type="submit"
-        :disable="isPending"
+        :disabled="!isFormValid || isPending"
       >
-        <LoaderCircleIcon v-if="isPending" class="w-4 h-4 mr-2 animate-spin" />
+        <LoaderCircleIcon v-if="isPending" class="w-4 h-4 animate-spin" />
         Create
       </Button>
     </div>
