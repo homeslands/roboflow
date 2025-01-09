@@ -60,6 +60,14 @@ export const routes: RouteRecordRaw[] = [
           name: 'Workflows',
         },
       },
+      {
+        path: 'new',
+        name: 'NewWorkflow',
+        component: () => import('@/views/workflow/WorkflowBuilder.vue'),
+        meta: {
+          name: 'Workflow Builder',
+        },
+      },
     ],
   },
 ]
@@ -71,7 +79,9 @@ const router = createRouter({
 const nprogress = useNProgress()
 
 router.beforeEach((to, _, next) => {
-  document.title = `${to?.meta.name ?? ''} | Roboflow`
+  if (to.meta.name) {
+    document.title = `${to.meta.name} | Roboflow`
+  }
   nprogress.start()
 
   next()
