@@ -1,4 +1,4 @@
-import type { FlowExportObject, Node as VueflowNode } from '@vue-flow/core'
+import type { FlowExportObject, Edge as VueflowEdge, Node as VueflowNode } from '@vue-flow/core'
 
 export const TaskTypeValues = [
   'VALIDATE_STATE',
@@ -35,8 +35,11 @@ export type Node = Omit<VueflowNode, 'type'> & {
   definition: NodeDefinition
 }
 
-export type WorkflowDefinition = Omit<FlowExportObject, 'nodes'> & {
+export type Edge = VueflowEdge
+
+export type WorkflowDefinition = Omit<FlowExportObject, 'nodes' | 'edges'> & {
   nodes: Node[]
+  edges: Edge[]
 }
 
 export interface WorkflowWithoutDefinition {
