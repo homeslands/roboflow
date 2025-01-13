@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Edge, Node } from '@vue-flow/core'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,11 +10,21 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { XIcon } from 'lucide-vue-next'
+import { v4 } from 'uuid'
 import { Workflow, WorkflowContainer } from './components/workflow'
+
+const defaultNode: Node = {
+  id: v4(),
+  type: 'EMPTY',
+  position: { x: 0, y: 0 },
+}
 
 const route = useRoute()
 
 const workflowName = ref<string>(route.query.name as string | undefined || 'Untitled Workflow')
+
+const nodes = ref<Node[]>([defaultNode])
+const edges = ref<Edge[]>([])
 </script>
 
 <template>
@@ -51,7 +62,10 @@ const workflowName = ref<string>(route.query.name as string | undefined || 'Unti
 
   <div class="relative flex h-full mt-3">
     <WorkflowContainer>
-      <Workflow />
+      <Workflow
+        :nodes="nodes"
+        :edges="edges"
+      />
     </WorkflowContainer>
   </div>
 </template>

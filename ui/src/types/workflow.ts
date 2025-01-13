@@ -14,7 +14,12 @@ export const TaskTypeValues = [
 ] as const
 export type TaskType = typeof TaskTypeValues[number]
 
-export type NodeType = 'RaybotNode'
+export const NodeTypeValues = [
+  'EMPTY',
+  'TRIGGER',
+  'CONTROL_RAYBOT',
+] as const
+export type NodeType = typeof NodeTypeValues[number]
 
 export interface NodeField {
   useEnv: boolean

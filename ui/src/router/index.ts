@@ -63,7 +63,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: 'new',
         name: 'NewWorkflow',
-        component: () => import('@/views/workflow/WorkflowBuilder.vue'),
+        component: () => import('@/views/workflow/NewWorkflowBuilder.vue'),
         meta: {
           name: 'Workflow Builder',
         },
