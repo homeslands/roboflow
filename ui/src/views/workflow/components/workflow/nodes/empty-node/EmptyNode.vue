@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useVueFlow } from '@vue-flow/core'
-import { PlusIcon } from 'lucide-vue-next'
+import { ClockIcon, PlusIcon, WebhookIcon } from 'lucide-vue-next'
 import { v4 } from 'uuid'
 
 const { setNodes } = useVueFlow()
@@ -42,9 +42,11 @@ function replaceNode(type: NodeType) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem @click="replaceNode('TRIGGER')">
+          <WebhookIcon class="w-4 h-4 p-0.5 rounded text-black bg-white" />
           On demand (Manually run or API call)
         </DropdownMenuItem>
         <DropdownMenuItem disabled>
+          <ClockIcon class="w-4 h-4 p-0.5 rounded text-black bg-white" />
           Schedule (coming soon)
         </DropdownMenuItem>
       </DropdownMenuContent>
