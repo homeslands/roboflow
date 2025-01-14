@@ -42,6 +42,7 @@ const edges = ref<Edge[]>([])
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <Input
+              id="workflow-name"
               type="text"
               placeholder="Enter name"
               :model-value="workflowName"
