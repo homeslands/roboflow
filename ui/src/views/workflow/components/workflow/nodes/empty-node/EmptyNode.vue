@@ -22,6 +22,9 @@ function replaceNode(type: NodeType) {
       id: v4(),
       type,
       position: { x: 0, y: 0 },
+      data: {
+        label: type === 'TRIGGER' ? 'On Demand trigger' : 'Schedule Trigger',
+      },
     }
     return [newNode]
   })
