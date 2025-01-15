@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NodeType } from '@/types/workflow'
+import type { TriggerType } from '@/types/workflow/node/trigger-node-definition'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,14 +16,17 @@ import { v4 } from 'uuid'
 const { setNodes } = useVueFlow()
 
 // Replace current node with a new node
-function replaceNode(type: NodeType) {
+function replaceNode(type: TriggerType) {
   setNodes((_) => {
     const newNode = {
       id: v4(),
-      type,
+      type: 'TRIGGER',
       position: { x: 0, y: 0 },
       data: {
-        label: type === 'TRIGGER' ? 'On Demand trigger' : 'Schedule Trigger',
+        label: type === 'ON_DEMAND' ? 'On Demand' : 'Schedule',
+        definition: {
+          type,
+        },
       },
     }
     return [newNode]
@@ -44,9 +47,9 @@ function replaceNode(type: NodeType) {
           Select a trigger type
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem @click="replaceNode('TRIGGER')">
+        <DropdownMenuItem @click="replaceNode('ON_DEMAND')">
           <WebhookIcon class="w-4 h-4 p-0.5 rounded text-black bg-white" />
-          On demand (Manually run or API call)
+          On demand
         </DropdownMenuItem>
         <DropdownMenuItem disabled>
           <ClockIcon class="w-4 h-4 p-0.5 rounded text-black bg-white" />

@@ -1,26 +1,20 @@
 <script setup lang="ts">
 import { Background } from '@vue-flow/background'
-import { type Node, useVueFlow, VueFlow } from '@vue-flow/core'
+import { type Edge, type Node, useVueFlow, VueFlow } from '@vue-flow/core'
 import { MiniMap } from '@vue-flow/minimap'
-import { v4 } from 'uuid'
 import { WorkflowControls } from './controls'
+import { edgeTypes } from './edge-type'
+import { nodeTypes } from './node-type'
 
 import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 
-const defaultNodes: Node[] = [
-  {
-    id: v4(),
-    data: { label: 'Start' },
-    position: { x: 0, y: 0 },
-    type: 'abc',
-  },
-]
-
+interface Props {
+  nodes: Node[]
+  edges: Edge[]
+}
+const props = defineProps<Props>()
 const { onInit } = useVueFlow()
-
-const nodes = ref(defaultNodes)
-const edges = ref([])
 
 onInit((instance) => {
   instance.fitView()
@@ -30,10 +24,12 @@ onInit((instance) => {
 <template>
   <VueFlow
     class="relative"
-    :nodes="nodes"
-    :edges="edges"
+    :nodes="props.nodes"
+    :edges="props.edges"
     :default-viewport="{ zoom: 1.5 }"
     :min-zoom="0.2"
+    :node-types="nodeTypes"
+    :edge-types="edgeTypes"
   >
     <Background :gap="8" class="opacity-25" />
     <MiniMap
