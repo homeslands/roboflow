@@ -1,48 +1,27 @@
-import type { RaybotCommandType } from '@/types/raybot-command'
-import type { ActionNode, ActionNodeType } from '@/types/workflow'
-import {
-  type NodeProps,
-  useVueFlow,
-  type Edge as VueflowEdge,
-  type Node as VueflowNode,
-} from '@vue-flow/core'
+import type { Node, NodeType } from '@/types/workflow'
+import type { ControlRaybotType } from '@/types/workflow/node/definition/control-raybot-node-definition'
+import type { TriggerType } from '@/types/workflow/node/definition/trigger-node-definition'
+import { useVueFlow, type Edge as VueflowEdge, type Node as VueflowNode } from '@vue-flow/core'
 import { v4 } from 'uuid'
+import { CONTROL_RAYBOT_DEFINITION_REGISTRY, TRIGGER_DEFINITION_REGISTRY } from '../nodes/node-definition-registry'
 
-interface AddActionNodeParams {
-  nodeType: ActionNodeType
-  definition: ActionNode['definition']
-}
-
-type RaybotCommandLabelMap = {
-  [key in RaybotCommandType]: string;
-}
-
-export const raybotCommandLabelMap: RaybotCommandLabelMap = {
-  STOP: 'Stop',
-  MOVE_FORWARD: 'Move To Location',
-  MOVE_BACKWARD: 'Move Backward',
-  MOVE_TO_LOCATION: 'Move To Location',
-  OPEN_BOX: 'Open Box',
-  CLOSE_BOX: 'Close Box',
-  LIFT_BOX: 'Lift Box',
-  DROP_BOX: 'Drop Box',
-  CHECK_QR: 'Check QR Code',
-  WAIT_GET_ITEM: 'Wait Get Item',
-  SCAN_QR_LOCATION: 'Scan QR Location',
-}
-
-function getLabel({ nodeType, definition }: AddActionNodeParams) {
-  if (nodeType === 'RAYBOT_CONTROL') {
-    return raybotCommandLabelMap[definition.type]
-  }
-
-  return nodeType
-}
-
-export function useAddNode(parentNodeId: NodeProps['id']) {
+export function useAddNode(parentNodeId: string) {
   const { setNodes, setEdges, findNode } = useVueFlow()
 
-  function addActionNode({ nodeType, definition }: AddActionNodeParams) {
+  function addTriggerNode(type: TriggerType) {
+    const definition = TRIGGER_DEFINITION_REGISTRY[type]
+    createNodeAndEdge({ nodeType: 'TRIGGER', definition })
+  }
+
+  function addControlRaybotNode(type: ControlRaybotType) {
+    const definition = CONTROL_RAYBOT_DEFINITION_REGISTRY[type]
+    createNodeAndEdge({ nodeType: 'CONTROL_RAYBOT', definition })
+  }
+
+  function createNodeAndEdge({ nodeType, definition }: {
+    nodeType: NodeType
+    definition: Node['definition']
+  }) {
     const parentNode = findNode(parentNodeId)
     if (!parentNode)
       return
@@ -57,7 +36,6 @@ export function useAddNode(parentNodeId: NodeProps['id']) {
         y: parentNode.position.y,
       },
       data: {
-        label: getLabel({ nodeType, definition }),
         definition,
       },
     }
@@ -76,6 +54,7 @@ export function useAddNode(parentNodeId: NodeProps['id']) {
   }
 
   return {
-    addActionNode,
+    addTriggerNode,
+    addControlRaybotNode,
   }
 }

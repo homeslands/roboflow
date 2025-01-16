@@ -8,7 +8,8 @@ export interface TriggerNodeDefinition<
   T extends TriggerType = TriggerType,
 > {
   type: T
-  config: ConfigMap[T]
+  label: string
+  configs: ConfigMap[T]
 }
 
 export interface InputConfig {

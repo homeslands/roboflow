@@ -5,7 +5,7 @@ const inputConfigSchema = z.object({
   inputType: z.enum(['text', 'number'], {
     message: 'Input type must be either "text", "number"',
   }),
-  defaultValue: z.string().min(1, 'Default value must be at least 1 character long'),
+  defaultValue: z.string().optional(),
   required: z.boolean(),
 })
 

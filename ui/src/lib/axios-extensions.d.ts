@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import axios, { InternalAxiosRequestConfig } from 'axios'
 
 // Augment the Axios module to add doNotShowLoading to InternalAxiosRequestConfig

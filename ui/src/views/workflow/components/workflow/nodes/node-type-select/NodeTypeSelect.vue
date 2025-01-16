@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ActionNodeType } from '@/types/workflow'
+import type { ControlRaybotNodeDefinition } from '@/types/workflow/node/definition'
 import type { NodeProps } from '@vue-flow/core'
 import {
   DropdownMenu,
@@ -25,13 +25,13 @@ import { nodeMenuItems, type SubMenuItem } from './node-menu-items'
 
 const props = defineProps<NodeProps>()
 
-const { addActionNode } = useAddNode(props.id)
+const { addControlRaybotNode } = useAddNode(props.id)
 
-function handleNewNode(item: SubMenuItem<ActionNodeType>) {
-  addActionNode({
-    nodeType: item.nodeType,
-    definition: { type: item.subType },
-  })
+function handleNewNode(item: SubMenuItem) {
+  if (item.nodeType === 'CONTROL_RAYBOT') {
+    const definition = item.definition as ControlRaybotNodeDefinition
+    addControlRaybotNode(definition.type)
+  }
 }
 </script>
 

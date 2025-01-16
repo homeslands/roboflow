@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { InputConfig } from '@/types/workflow/node/definition/trigger-node-definition'
+import type { InputConfig, TriggerNodeDefinition } from '@/types/workflow/node/definition/trigger-node-definition'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -18,41 +18,36 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toTypedSchema } from '@vee-validate/zod'
-
+import { useVueFlow } from '@vue-flow/core'
 import { LoaderCircleIcon, PlusIcon, Trash2Icon } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { inputConfigsSchema } from './schema'
 
-const inputConfigs = defineModel<InputConfig[]>('inputConfigs', { required: true })
+interface Props {
+  nodeId: string
+  definition: TriggerNodeDefinition<'ON_DEMAND'>
+}
+
+const props = defineProps<Props>()
+const definition = toRef(props, 'definition')
 const isLoading = ref<boolean>(false)
 
-const { handleSubmit, resetForm, meta, setFieldValue } = useForm<{
-  configs: InputConfig[]
-}>({
+const { handleSubmit, meta, setFieldValue } = useForm<{ configs: InputConfig[] }>({
   validationSchema: toTypedSchema(inputConfigsSchema),
   initialValues: {
-    configs: inputConfigs.value,
+    configs: definition.value.configs,
   },
 })
-const onSubmit = handleSubmit((values) => {
-  isLoading.value = true
-
-  setTimeout(() => {
-    isLoading.value = false
-    inputConfigs.value = values.configs
-    resetForm()
-    inputConfigs.value = []
-  }, 2000)
-})
-
 const isFormValid = computed(() => meta.value.valid)
 
+const { updateNodeData } = useVueFlow()
+
 function updateInputConfigs() {
-  setFieldValue('configs', inputConfigs.value)
+  setFieldValue('configs', definition.value.configs)
 }
 
 function addInput(inputType: InputConfig['inputType']) {
-  inputConfigs.value.push({
+  definition.value.configs.push({
     key: '',
     inputType,
     defaultValue: '',
@@ -62,7 +57,7 @@ function addInput(inputType: InputConfig['inputType']) {
 }
 
 function removeInput(index: number) {
-  inputConfigs.value.splice(index, 1)
+  definition.value.configs.splice(index, 1)
   updateInputConfigs()
 }
 
@@ -87,18 +82,31 @@ function getDefaultValueType(type: InputConfig['inputType']) {
       return 'string'
   }
 }
+
+const onSubmit = handleSubmit((values) => {
+  isLoading.value = true
+  setTimeout(() => {
+    updateNodeData(props.nodeId, {
+      definition: {
+        ...definition.value,
+        configs: values.configs,
+      },
+    })
+    isLoading.value = false
+  }, 500)
+})
 </script>
 
 <template>
-  <form @submit="onSubmit">
+  <form class="space-y-4" @submit="onSubmit">
     <FormField v-slot="{ errorMessage }" name="configs">
       <FormItem>
         <FormControl>
-          <div class="space-y-2">
+          <div class="space-y-4">
             <span class="text-sm font-medium">
               Environment variables
             </span>
-            <div class="flex items-center gap-2">
+            <!-- <div class="flex items-center gap-2">
               <p class="w-1/3 text-sm text-muted-foreground">
                 Key
               </p>
@@ -108,34 +116,54 @@ function getDefaultValueType(type: InputConfig['inputType']) {
               <p class="mr-12 text-sm text-muted-foreground">
                 *
               </p>
+            </div> -->
+            <div class="grid grid-cols-12 gap-2 text-sm text-muted-foreground">
+              <div class="col-span-4">
+                Key
+              </div>
+              <div class="col-span-6">
+                Value
+              </div>
+              <div class="col-span-2 text-center">
+                Required
+              </div>
             </div>
-            <h3 />
-            <div v-for="(config, index) in inputConfigs" :key="index" class="flex items-center gap-2">
+
+            <div
+              v-for="(config, index) in definition.configs "
+              :key="index"
+              class="grid items-center grid-cols-12 gap-2"
+            >
               <Input
+                :id="`key-${index}`"
                 v-model="config.key"
-                class="w-1/3"
+                class="col-span-4"
                 placeholder="Add key"
                 @input="updateInputConfigs"
               />
               <Input
+                :id="`value-${index}`"
                 v-model="config.defaultValue"
-                class="flex-1"
+                class="col-span-6"
                 :placeholder="getPlaceHolderValueText(config.inputType)"
                 :type="getDefaultValueType(config.inputType)"
                 @input="updateInputConfigs"
               />
-              <Checkbox
-                v-model="config.required"
-                @input="updateInputConfigs"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                @click="removeInput(index)"
-              >
-                <Trash2Icon class="w-4 h-4" />
-              </Button>
+              <div class="flex items-center justify-center col-span-2 gap-2">
+                <Checkbox
+                  v-model:checked="config.required"
+                  @update:checked="updateInputConfigs"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  class="w-8 h-8"
+                  @click="removeInput(index)"
+                >
+                  <Trash2Icon class="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             <DropdownMenu>
@@ -165,7 +193,8 @@ function getDefaultValueType(type: InputConfig['inputType']) {
         <FormMessage>{{ errorMessage }}</FormMessage>
       </FormItem>
     </FormField>
-    <div class="flex justify-end pr-3 mt-4">
+
+    <div class="flex justify-end">
       <Button
         type="submit"
         :disabled="!isFormValid || isLoading"

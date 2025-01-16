@@ -10,9 +10,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Handle, Position, useVueFlow } from '@vue-flow/core'
-import { CheckIcon, WebhookIcon } from 'lucide-vue-next'
+import { CheckIcon } from 'lucide-vue-next'
 import { useDeleteNode } from '../composables/use-delete-node'
-import { useNodeLabel } from '../composables/use-node-label'
 import { NodeTypeSelect } from './node-type-select'
 import NodePopover from './NodePopover.vue'
 
@@ -22,29 +21,39 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { edges, updateNodeData } = useVueFlow()
 
-const { getEdges } = useVueFlow()
-
-const isPopoverOpen = ref<boolean>(true)
-const hasNextNode = computed(() => getEdges.value.some(edge => edge.source === props.nodeProps.id))
+const isPopoverOpen = defineModel<boolean>('isPopoverOpen', { default: true })
+const hasNextNode = computed(() => edges.value.some(edge => edge.source === props.nodeProps.id))
 const isRootNode = computed(() => props.nodeProps.type === 'TRIGGER')
 
-const { label: nodeLabel, setLabel } = useNodeLabel(props.nodeProps.id)
 const isEditLabel = ref<boolean>(false)
-const label = ref<string>(nodeLabel)
+const nodeId = computed(() => props.nodeProps.id)
+const definition = computed(() => props.nodeProps.data.definition)
+const nodeLabel = computed(() => definition.value.label)
+const label = ref(nodeLabel.value)
+watch(
+  () => props.nodeProps.data.definition.label,
+  newLabel => label.value = newLabel,
+)
 
 function handleSaveLabel() {
   isEditLabel.value = false
   label.value = label.value.trim()
-  if (label.value === nodeLabel) {
+  if (label.value === nodeLabel.value) {
     return
   }
   else if (label.value === '') {
-    label.value = nodeLabel
+    label.value = nodeLabel.value
     return
   }
 
-  setLabel(label.value)
+  updateNodeData(nodeId.value, {
+    definition: {
+      ...definition.value,
+      label: label.value,
+    },
+  })
 }
 
 const { deleteNode: handleDelete } = useDeleteNode(props.nodeProps.id)
@@ -61,7 +70,9 @@ const { deleteNode: handleDelete } = useDeleteNode(props.nodeProps.id)
             variant="outline"
             @click="isPopoverOpen = !isPopoverOpen"
           >
-            <WebhookIcon />
+            <slot name="icon">
+              No icon provided
+            </slot>
           </Button>
         </ContextMenuTrigger>
         <ContextMenuContent>
@@ -78,7 +89,9 @@ const { deleteNode: handleDelete } = useDeleteNode(props.nodeProps.id)
       </ContextMenu>
       <NodePopover v-model:is-open="isPopoverOpen">
         <template #content>
-          <slot name="popover-content" />
+          <slot name="popover-content">
+            No content provided
+          </slot>
         </template>
       </NodePopover>
       <NodeTypeSelect

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TriggerType } from '@/types/workflow/node/trigger-node-definition'
+import type { TriggerType } from '@/types/workflow/node/definition/trigger-node-definition'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 import { useVueFlow } from '@vue-flow/core'
 import { ClockIcon, PlusIcon, WebhookIcon } from 'lucide-vue-next'
 import { v4 } from 'uuid'
+import { TRIGGER_DEFINITION_REGISTRY } from '../node-definition-registry'
 
 const { setNodes } = useVueFlow()
 
@@ -23,10 +24,7 @@ function replaceNode(type: TriggerType) {
       type: 'TRIGGER',
       position: { x: 0, y: 0 },
       data: {
-        label: type === 'ON_DEMAND' ? 'On Demand' : 'Schedule',
-        definition: {
-          type,
-        },
+        definition: TRIGGER_DEFINITION_REGISTRY[type],
       },
     }
     return [newNode]
