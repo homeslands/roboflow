@@ -30,7 +30,7 @@ const route = useRoute()
 const raybotId = computed(() => route.params.id as string)
 
 const selectedCommandType = defineModel<RaybotCommandType>()
-const { handleSubmit, resetForm } = useForm<CreateRaybotCommandParams<RaybotCommandType>>({
+const { handleSubmit, resetForm, meta } = useForm<CreateRaybotCommandParams<RaybotCommandType>>({
   validationSchema: toTypedSchema(createRaybotCommandSchema),
   initialValues: {
     type: undefined,
@@ -39,6 +39,8 @@ const { handleSubmit, resetForm } = useForm<CreateRaybotCommandParams<RaybotComm
 })
 
 const { mutate, isPending } = useCreateRaybotCommandMutation(raybotId)
+const isFormValid = computed(() => meta.value.valid)
+
 const onSubmit = handleSubmit((values) => {
   mutate(values, {
     onSuccess: () => {
@@ -172,9 +174,9 @@ function onCommandTypeChange(type: RaybotCommandType) {
     <div class="flex justify-end mt-4">
       <Button
         type="submit"
-        :disable="isPending"
+        :disable="!isFormValid || isPending"
       >
-        <LoaderCircleIcon v-if="isPending" class="w-4 h-4 mr-2 animate-spin" />
+        <LoaderCircleIcon v-if="isPending" class="w-4 h-4 animate-spin" />
         Create
       </Button>
     </div>

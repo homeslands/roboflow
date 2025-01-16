@@ -1,4 +1,4 @@
-import { HTTPError, RoboflowError } from '@/types/error'
+import { HTTPError } from '@/types/error'
 import { QueryCache, QueryClient, type VueQueryPluginOptions } from '@tanstack/vue-query'
 import { HttpStatusCode } from 'axios'
 
