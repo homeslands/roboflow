@@ -8,35 +8,33 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-// ref: https://github.com/moul/chizap/blob/main/chizap.go
-
-// Opts contains the middleware configuration.
-type Opts struct {
-	// WithReferer enables logging the "Referer" HTTP header value.
-	WithReferer bool
-
-	// WithUserAgent enables logging the "User-Agent" HTTP header value.
-	WithUserAgent bool
-}
-
 // Logging returns a logger middleware for chi, that implements the http.Handler interface.
-func Logging(log *slog.Logger) func(next http.Handler) http.Handler {
-	if log == nil {
-		return func(next http.Handler) http.Handler { return next }
+func Logging(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+		t1 := time.Now()
+
+		defer func() {
+			logLevel := slog.LevelInfo
+			if ww.Status() >= 500 {
+				logLevel = slog.LevelError
+			} else if ww.Status() >= 400 {
+				logLevel = slog.LevelWarn
+			}
+			slog.Log(r.Context(), logLevel, "http request",
+				slog.Duration("latency", time.Since(t1)), // Duration
+				slog.Int("status", ww.Status()),          // Status code
+				slog.String("method", r.Method),          // HTTP method
+				slog.String("path", r.URL.Path),          // Request URI
+				slog.String("query", r.URL.RawQuery),     // Request query string
+				slog.String("remote_ip", r.RemoteAddr),   // IP address
+				slog.String("host", r.Host),              // Host
+				slog.String("user_agent", r.UserAgent()), // User agent
+			)
+		}()
+
+		next.ServeHTTP(ww, r)
 	}
-	return func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-			t1 := time.Now()
-			defer func() {
-				log.Info("HTTP request",
-					slog.Int("status", ww.Status()),
-					slog.String("path", r.URL.Path),
-					slog.Duration("latency", time.Since(t1)),
-					slog.String("req_id", GetReqID(r.Context())))
-			}()
-			next.ServeHTTP(ww, r)
-		}
-		return http.HandlerFunc(fn)
-	}
+
+	return http.HandlerFunc(fn)
 }
