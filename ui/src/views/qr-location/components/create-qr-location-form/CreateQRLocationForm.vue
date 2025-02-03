@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useQRLocationMutation } from '@/composables/use-qr-location'
+import { useCreateQRLocationMutation } from '@/composables/use-qr-location'
 import { toTypedSchema } from '@vee-validate/zod'
 import { LoaderCircleIcon, PlusIcon, XIcon } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
@@ -31,7 +31,7 @@ const { handleSubmit, resetForm, setFieldValue } = useForm<CreateQRLocationParam
   },
 })
 
-const { mutate, isPending } = useQRLocationMutation()
+const { mutate, isPending } = useCreateQRLocationMutation()
 const onSubmit = handleSubmit((values) => {
   mutate(values, {
     onSuccess: () => {
