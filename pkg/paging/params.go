@@ -1,19 +1,20 @@
 package paging
 
 const (
-	defaultPage     = int32(1)
-	defaultPageSize = int32(10)
+	defaultPage     = 1
+	defaultPageSize = 10
 )
 
+// Params represents the parameters for paging.
 type Params struct {
-	PageSize int32
-	Page     int32
+	PageSize uint `validate:"required,min=1"`
+	Page     uint `validate:"required,min=1"`
 }
 
 // NewParams creates a new Params instance with page size and page.
 // If page size is nil or less than 0, it will use defaultPageSize(1).
 // If page is nil, it will use defaultPage(10).
-func NewParams(pageSize, page *int32, options ...ParamsOption) Params {
+func NewParams(pageSize, page *uint, options ...ParamsOption) Params {
 	p := Params{
 		PageSize: defaultPageSize,
 		Page:     defaultPage,
@@ -32,29 +33,29 @@ func NewParams(pageSize, page *int32, options ...ParamsOption) Params {
 	return p
 }
 
-func (p Params) Offset() int32 {
+func (p Params) Offset() uint {
 	return (p.Page - 1) * p.PageSize
 }
 
-func (p Params) Limit() int32 {
+func (p Params) Limit() uint {
 	return p.PageSize
 }
 
 type ParamsOption func(*Params)
 
-func WithDefaultPageSize(size int32) ParamsOption {
+func WithDefaultPageSize(size uint) ParamsOption {
 	return func(p *Params) {
 		p.PageSize = size
 	}
 }
 
-func WithDefaultPage(page int32) ParamsOption {
+func WithDefaultPage(page uint) ParamsOption {
 	return func(p *Params) {
 		p.Page = page
 	}
 }
 
-func WithMaxPageSize(size int32) ParamsOption {
+func WithMaxPageSize(size uint) ParamsOption {
 	return func(p *Params) {
 		if p.PageSize > size {
 			p.PageSize = size
