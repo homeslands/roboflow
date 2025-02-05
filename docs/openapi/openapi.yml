@@ -1,57 +1,46 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   version: 0.0.1
   title: Roboflow API
   description: >-
-    Roboflow API Swagger
+    The Roboflow API
   license:
+    url: https://opensource.org/licenses/MIT
     name: MIT
 servers:
   - url: /api/v1
-tags:
-  - name: raybot
-    description: Raybot operations
-  - name: raybotCommand
-    description: Raybot command operations
-  - name: qrLocation
-    description: QR Location operations
-  - name: workflow
-    description: Workflow operations
-  - name: workflowExecution
-    description: Workflow execution operations
-  - name: step
-    description: Step operations
+security: []
 paths:
+  /qr-locations:
+    $ref: "./paths/qr_location/qr-locations.yml"
+  /qr-locations/{qrLocationId}:
+    $ref: "./paths/qr_location/qr-locations@{qrLocationId}.yml"
+
   /raybots:
-    $ref: "./raybot/raybots.yml"
+    $ref: "./paths/raybot/raybots.yml"
   /raybots/{raybotId}:
-    $ref: "./raybot/raybots@{raybotId}.yml"
+    $ref: "./paths/raybot/raybots@{raybotId}.yml"
 
   /raybots/{raybotId}/commands:
-    $ref: "./raybot-command/raybots@{raybotId}@commands.yml"
+    $ref: "./paths/raybot_command/raybots@{raybotId}@commands.yml"
   /raybot-commands/{raybotCommandId}:
-    $ref: "./raybot-command/raybot-commands@{raybotCommandId}.yml"
-
-  /qr-locations:
-    $ref: "./qr-location/qr-locations.yml"
-  /qr-locations/{qrLocationId}:
-    $ref: "./qr-location/qr-locations@{qrLocationId}.yml"
+    $ref: "./paths/raybot_command/raybot-commands@{raybotCommandId}.yml"
 
   /workflows:
-    $ref: "./workflow/workflows.yml"
+    $ref: "./paths/workflow/workflows.yml"
   /workflows/{workflowId}:
-    $ref: "./workflow/workflows@{workflowId}.yml"
+    $ref: "./paths/workflow/workflows@{workflowId}.yml"
   /workflows/{workflowId}/run:
-    $ref: "./workflow/workflows@{workflowId}@run.yml"
+    $ref: "./paths/workflow/workflows@{workflowId}@run.yml"
 
   /workflows/{workflowId}/executions:
-    $ref: "./workflow-execution/workflows@{workflowId}@executions.yml"
+    $ref: "./paths/workflow_execution/workflows@{workflowId}@executions.yml"
   /workflow-executions/{workflowExecutionId}:
-    $ref: "./workflow-execution/workflow-executions@{workflowExecutionId}.yml"
-  /workflow-executions/{workflowExecutionId}/status:
-    $ref: "./workflow-execution/workflow-executions@{workflowExecutionId}@status.yml"
+    $ref: "./paths/workflow_execution/workflow-executions@{workflowExecutionId}.yml"
+  # /workflow-executions/{workflowExecutionId}/status:
+  #   $ref: "./paths/workflow_execution/workflow-executions@{workflowExecutionId}@status.yml"
 
   /workflow-executions/{workflowExecutionId}/steps:
-    $ref: "./step/workflow-executions@{workflowExecutionId}@steps.yml"
-  /steps/{stepId}:
-    $ref: "./step/steps@{stepId}.yml"
+    $ref: "./paths/step_execution/workflow-executions@{workflowExecutionId}@steps.yml"
+  /step-executions/{stepExecutionId}:
+    $ref: "./paths/step_execution/step-executions@{stepExecutionId}.yml"

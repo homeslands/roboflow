@@ -1,0 +1,82 @@
+get:
+  summary: List raybots
+  operationId: raybot:list
+  description: List raybots
+  tags:
+    - raybot
+  parameters:
+    - $ref: "../../components/parameters/paging.yml#/Page"
+    - $ref: "../../components/parameters/paging.yml#/PageSize"
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+          - Separate multiple columns with a comma (e.g., created_at,-updated_at).
+
+        Allowed columns: `name`, `control_mode`, `is_online`, `ip_address`, `last_connected_at`, `created_at`, `updated_at`.
+      required: false
+      schema:
+        type: string
+    - name: isOnline
+      in: query
+      description: >
+        Filter by raybot online status.
+      required: false
+      schema:
+        type: boolean
+    - name: controlMode
+      in: query
+      description: >
+        Filter by raybot control mode.
+
+        Allowed values: `MANUAL`, `AUTO`.
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List raybots successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/raybot.yml#/RaybotsListResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+post:
+  summary: Create raybot
+  operationId: raybot:create
+  description: Create raybot
+  tags:
+    - raybot
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/schemas/raybot.yml#/CreateRaybotRequest"
+  responses:
+    '201':
+      description: Created raybot successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/raybot.yml#/RaybotResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+    '409':
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+

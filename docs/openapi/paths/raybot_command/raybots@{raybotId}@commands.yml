@@ -1,13 +1,19 @@
 get:
   summary: List raybot commands
-  operationId: listRaybotCommands
+  operationId: raybotCommand:list
   description: List raybot commands
   tags:
     - raybotCommand
   parameters:
-    - $ref: "../components/raybot.yml#/parameters/RaybotId"
-    - $ref: "../components/paging.yml#/parameters/Page"
-    - $ref: "../components/paging.yml#/parameters/PageSize"
+    - $ref: "../../components/parameters/paging.yml#/Page"
+    - $ref: "../../components/parameters/paging.yml#/PageSize"
+    - name: raybotId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
     - name: sort
       in: query
       description: >
@@ -16,22 +22,26 @@ get:
           - Prefix with `-` for descending order (e.g., -created_at).
           - Separate multiple columns with a comma (e.g., created_at,-updated_at).
 
-        Allowed columns: `status`, `started_at`, `completed_at`.
+        Allowed columns: `type`, `status`, `completed_at`, `created_at`, `updated_at`.
       required: false
       schema:
         type: string
-        example: "created_at"
   responses:
     '200':
-      description: Expected response to a valid request
+      description: List raybot commands successfully
       content:
         application/json:
           schema:
-            $ref: "../components/raybot-command.yml#/schemas/PagingRaybotCommandResponse"
-
+            $ref: "../../components/schemas/raybot_command.yml#/RaybotCommandsListResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
 post:
   summary: Create raybot command
-  operationId: createRaybotCommand
+  operationId: raybotCommand:create
   description: >
     Create a command based on the specified `RaybotCommandType`. Each raybot command type defines the structure of its input.
 
@@ -45,13 +55,15 @@ post:
       - **DROP_BOX**: The following input is **optional**:
         ```json
         {
-          "distance": 1300
+          "distance": 1300,
+          "use_distance": false
         }
         ```
       - **LIFT_BOX**: The following input is **optional**:
         ```json
         {
-          "distance": 1300
+          "distance": 1300,
+          "use_distance": false
         }
         ```
       - **MOVE_TO_LOCATION**: The following input is **required**:
@@ -67,31 +79,40 @@ post:
           "qr_code": "string"
         }
         ```
+      - **SPEAK**: The following input is **required**:
+        ```json
+        {
+          "text": "string"
+        }
+        ```
 
     The `input` field must match the required structure for the selected `RaybotCommandType`. An invalid or missing input will result in an error.
   tags:
     - raybotCommand
   parameters:
-    - $ref: "../components/raybot.yml#/parameters/RaybotId"
+    - name: raybotId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: "../components/raybot-command.yml#/schemas/CreateRaybotCommandRequest"
+          $ref: "../../components/schemas/raybot_command.yml#/CreateRaybotCommandRequest"
   responses:
     '201':
-      description: Expected response to a valid request
+      description: Successfully created raybot command
       content:
         application/json:
           schema:
-            $ref: "../components/raybot-command.yml#/schemas/RaybotCommandResponse"
+            $ref: "../../components/schemas/raybot_command.yml#/RaybotCommandResponse"
     '400':
       description: Bad request
       content:
         application/json:
           schema:
-            $ref: "../components/error.yml#/schemas/Error"
-          example:
-            code: "bad_request"
-            message: "Bad request"
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

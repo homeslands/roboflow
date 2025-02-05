@@ -1,0 +1,27 @@
+get:
+  summary: Get workflow execution by id
+  operationId: workflowExecution:get
+  description: Get workflow execution by id
+  tags:
+    - workflowExecution
+  parameters:
+    - name: workflowExecutionId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '200':
+      description: Get workflow execution successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/workflow_execution.yml#/WorkflowExecutionResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

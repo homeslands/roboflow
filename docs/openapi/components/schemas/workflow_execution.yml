@@ -1,0 +1,86 @@
+WorkflowExecutionResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    workflowId:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 2
+    status:
+      $ref: "#/WorkflowExecutionStatus"
+      x-order: 3
+    data:
+      allOf:
+        - $ref: "./workflow.yml#/WorkflowData"
+        - x-go-type: json.RawMessage
+      x-order: 4
+    inputs:
+      type: object
+      x-go-type: map[string]any
+      x-order: 5
+    outputs:
+      type: object
+      x-go-type: map[string]any
+      x-order: 6
+    error:
+      type: string
+      nullable: true
+      x-order: 7
+    startedAt:
+      type: string
+      format: date-time
+      nullable: true
+      x-order: 10
+    completedAt:
+      type: string
+      format: date-time
+      nullable: true
+      x-order: 11
+    createdAt:
+      type: string
+      format: date-time
+      x-order: 8
+    updatedAt:
+      type: string
+      format: date-time
+      x-order: 9
+  required:
+    - id
+    - workflowId
+    - status
+    - data
+    - inputs
+    - outputs
+    - error
+    - startedAt
+    - completedAt
+    - createdAt
+    - updatedAt
+WorkflowExecutionsListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+      format: int64
+    items:
+      type: array
+      items:
+        $ref: "#/WorkflowExecutionResponse"
+  required:
+    - totalItems
+    - items
+WorkflowExecutionStatus:
+  type: string
+  enum:
+    - PENDING
+    - RUNNING
+    - COMPLETED
+    - FAILED
+    - CANCELLED
+  x-go-type: string
+

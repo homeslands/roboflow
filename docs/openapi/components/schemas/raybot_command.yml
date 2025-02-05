@@ -1,0 +1,104 @@
+RaybotCommandResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    raybotId:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 2
+    type:
+      $ref: "#/RaybotCommandType"
+      x-order: 3
+    status:
+      $ref: "#/RaybotCommandStatus"
+      x-order: 4
+    inputs:
+      type: object
+      x-go-type: "json.RawMessage"
+      x-order: 5
+    outputs:
+      type: object
+      x-go-type: "json.RawMessage"
+      x-order: 6
+    error:
+      type: string
+      nullable: true
+      x-order: 7
+    completedAt:
+      type: string
+      format: date-time
+      nullable: true
+      x-order: 10
+    createdAt:
+      type: string
+      format: date-time
+      x-order: 8
+    updatedAt:
+      type: string
+      format: date-time
+      x-order: 9
+  required:
+    - id
+    - raybotId
+    - type
+    - status
+    - inputs
+    - outputs
+    - error
+    - completedAt
+    - createdAt
+    - updatedAt
+RaybotCommandsListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+      format: int64
+    items:
+      type: array
+      items:
+        $ref: "#/RaybotCommandResponse"
+  required:
+    - totalItems
+    - items
+CreateRaybotCommandRequest:
+  type: object
+  properties:
+    type:
+      $ref: "#/RaybotCommandType"
+    inputs:
+      type: object
+      x-go-type: "json.RawMessage"
+  required:
+    - raybotId
+    - type
+    - inputs
+RaybotCommandType:
+  type: string
+  enum:
+    - STOP
+    - MOVE_FORWARD
+    - MOVE_BACKWARD
+    - MOVE_TO_LOCATION
+    - OPEN_BOX
+    - CLOSE_BOX
+    - LIFT_BOX
+    - DROP_BOX
+    - CHECK_QR
+    - WAIT_GET_ITEM
+    - SCAN_LOCATION
+    - SPEAK
+  x-go-type: string
+RaybotCommandStatus:
+  type: string
+  enum:
+    - PENDING
+    - IN_PROGRESS
+    - SUCCEDDED
+    - FAILED
+  x-go-type: string

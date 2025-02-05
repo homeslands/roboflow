@@ -1,0 +1,106 @@
+QRLocationResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    name:
+      type: string
+      description: The name of the location.
+      x-order: 2
+    qrCode:
+      type: string
+      description: The QR code of the location.
+      x-order: 3
+    metadata:
+      type: object
+      description: The metadata of the location.
+      x-order: 4
+      x-go-type: map[string]any
+    createdAt:
+      type: string
+      format: date-time
+      description: The date and time when the location was created.
+      x-order: 5
+    updatedAt:
+      type: string
+      format: date-time
+      description: The date and time when the location was last updated.
+      x-order: 6
+  required:
+    - id
+    - name
+    - qrCode
+    - metadata
+    - createdAt
+    - updatedAt
+QRLocationsListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+      format: int64
+      description: The total number of locations.
+    items:
+      type: array
+      items:
+        $ref: "#/QRLocationResponse"
+  required:
+    - totalItems
+    - items
+CreateQRLocationRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: The name of the location.
+      minLength: 1
+      maxLength: 255
+      pattern: "^[a-zA-Z0-9 ]+$"
+      example: "Location 1"
+    qrCode:
+      type: string
+      description: The QR code of the location.
+      minLength: 1
+      maxLength: 100
+      pattern: "^[a-zA-Z0-9_-]+$"
+      example: "location-1"
+    metadata:
+      type: object
+      description: The metadata of the location.
+      example:
+          key: value
+      x-go-type: map[string]any
+  required:
+    - name
+    - qrCode
+    - metadata
+UpdateQRLocationRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: The name of the location.
+      minLength: 1
+      maxLength: 255
+      pattern: "^[a-zA-Z0-9 ]+$"
+      example: "Location 1"
+    qrCode:
+      type: string
+      description: The QR code of the location.
+      minLength: 1
+      maxLength: 100
+      pattern: "^[a-zA-Z0-9_-]+$"
+      example: "location-1"
+    metadata:
+      type: object
+      description: The metadata of the location.
+      example:
+          key: value
+      x-go-type: map[string]any
+  required:
+    - name
+    - qrCode
+    - metadata
