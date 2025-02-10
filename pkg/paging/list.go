@@ -6,8 +6,8 @@ type List[T any] struct {
 }
 
 // NewList creates a new List instance with total item.
-func NewList[T any](items []T, totalItem int64) *List[T] {
-	return &List[T]{
+func NewList[T any](items []T, totalItem int64) List[T] {
+	return List[T]{
 		Items:     items,
 		TotalItem: totalItem,
 	}
