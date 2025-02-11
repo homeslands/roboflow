@@ -1,6 +1,15 @@
 ########################
 # Code generation
 ########################
+.PHONY: gen-api-server
+gen-api-server:
+	set -eux
+
+	npx --yes @redocly/cli bundle ./docs/openapi/openapi.yml --output bin/oas/openapi.yml --ext yml
+	go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1 \
+		-config internal/controller/http/oas/gen/openapi.yml \
+		bin/oas/openapi.yml
+
 .PHONY: gen-sqlc
 gen-sqlc:
 	go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate --file internal/db/sqlcpg/sqlc.yml
@@ -50,3 +59,14 @@ endif
 	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
 	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
 	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 create $(name) sql
+
+########################
+# Start services
+########################
+.PHONY: roboflow-standalone
+roboflow-standalone:
+	go run cmd/roboflow/main.go
+
+.PHONY: roboflow-api
+roboflow-api:
+	go run cmd/roboflow_api/main.go
