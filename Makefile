@@ -14,6 +14,10 @@ gen-api-server:
 gen-sqlc:
 	go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate --file internal/db/sqlcpg/sqlc.yml
 
+.PHONY: gen-mock
+gen-mock:
+	go run github.com/vektra/mockery/v2@v2.50 --config .mockery.yml
+
 ########################
 # Database
 ########################
@@ -70,3 +74,23 @@ roboflow-standalone:
 .PHONY: roboflow-api
 roboflow-api:
 	go run cmd/roboflow_api/main.go
+
+########################
+# Testing
+########################
+.PHONY: test
+test:
+	go test -v -cover -short ./...
+
+.PHONY: test-coverage
+test-coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o bin/coverage.html
+	@echo "Coverage report saved to bin/coverage.html"
+
+########################
+# Lint
+########################
+.PHONY: lint-go
+lint-go:
+	golangci-lint run ./... --config .golangci.yml

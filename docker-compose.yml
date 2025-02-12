@@ -1,3 +1,9 @@
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "3"
+
 networks:
   roboflow:
     driver: bridge
@@ -19,16 +25,34 @@ services:
   roboflow:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/roboflow/server.dockerfile
+      target: dev
     container_name: roboflow
     restart: unless-stopped
+    volumes:
+      - .air.toml:/app/.air.toml
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./pkg:/app/pkg
+      - ./bin/oas:/app/bin/oas
+      - ./embedded.go:/app/embedded.go
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
     ports:
       - 8080:8080
     environment:
-      - ENV=development
-      - PORT=8080
-      - POSTGRES_DSN=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
-    depends_on:
-      - postgres
+      - HTTP_SERVER_PORT=8080
+      - LOG_FORMAT=json
+      - LOG_LEVEL=debug
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB=postgres
+      - PG_SSLMODE=disable
+      - NATS_ENABLE_LOG=true
+    logging: *logging
     networks:
       - roboflow
+    depends_on:
+      - postgres
