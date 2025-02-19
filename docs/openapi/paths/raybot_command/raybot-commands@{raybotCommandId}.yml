@@ -1,0 +1,30 @@
+get:
+  summary: Get raybot command by id
+  operationId: raybotCommand:get
+  description: Get raybot command by id
+  tags:
+    - raybotCommand
+  parameters:
+    - name: raybotCommandId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '200':
+      description: Get raybot command successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/raybot_command.yml#/RaybotCommandResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+          example:
+            code: "not_found"
+            message: "Not found"

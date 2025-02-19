@@ -1,0 +1,70 @@
+StepExecutionResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    workflowExecutionId:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 2
+    status:
+      $ref: "#/StepExecutionStatus"
+    node:
+      allOf:
+        - $ref: "./workflow.yml#/WorkflowNode"
+        - x-go-type: json.RawMessage
+      x-order: 3
+    inputs:
+      type: object
+      x-go-type: map[string]any
+      x-order: 5
+    outputs:
+      type: object
+      x-go-type: map[string]any
+      x-order: 6
+    error:
+      type: string
+      nullable: true
+      x-order: 7
+    startedAt:
+      type: string
+      format: date-time
+      nullable: true
+      x-order: 10
+    completedAt:
+      type: string
+      format: date-time
+      nullable: true
+      x-order: 11
+    createdAt:
+      type: string
+      format: date-time
+      x-order: 8
+    updatedAt:
+      type: string
+      format: date-time
+      x-order: 9
+  required:
+    - id
+    - workflowExecutionId
+    - status
+    - node
+    - inputs
+    - outputs
+    - error
+    - startedAt
+    - completedAt
+    - createdAt
+    - updatedAt
+StepExecutionStatus:
+  type: string
+  enum:
+    - PENDING
+    - RUNNING
+    - COMPLETED
+    - FAILED
+  x-go-type: string

@@ -1,0 +1,118 @@
+get:
+  summary: List raybot commands
+  operationId: raybotCommand:list
+  description: List raybot commands
+  tags:
+    - raybotCommand
+  parameters:
+    - $ref: "../../components/parameters/paging.yml#/Page"
+    - $ref: "../../components/parameters/paging.yml#/PageSize"
+    - name: raybotId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+          - Separate multiple columns with a comma (e.g., created_at,-updated_at).
+
+        Allowed columns: `type`, `status`, `completed_at`, `created_at`, `updated_at`.
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List raybot commands successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/raybot_command.yml#/RaybotCommandsListResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+post:
+  summary: Create raybot command
+  operationId: raybotCommand:create
+  description: >
+    Create a command based on the specified `RaybotCommandType`. Each raybot command type defines the structure of its input.
+
+    ### Raybot Command Types and Inputs:
+      - **STOP**: No input required.
+      - **MOVE_FORWARD**: No input required.
+      - **MOVE_BACKWARD**: No input required.
+      - **OPEN_BOX**: No input required.
+      - **CLOSE_BOX**: No input required.
+      - **WAIT_GET_ITEM**: No input required.
+      - **DROP_BOX**: The following input is **optional**:
+        ```json
+        {
+          "distance": 1300,
+          "use_distance": false
+        }
+        ```
+      - **LIFT_BOX**: The following input is **optional**:
+        ```json
+        {
+          "distance": 1300,
+          "use_distance": false
+        }
+        ```
+      - **MOVE_TO_LOCATION**: The following input is **required**:
+        ```json
+        {
+          "location": "string",
+          "direction": "FORWARD or BACKWARD"
+        }
+        ```
+      - **CHECK_QR**: The following input is **required**:
+        ```json
+        {
+          "qr_code": "string"
+        }
+        ```
+      - **SPEAK**: The following input is **required**:
+        ```json
+        {
+          "text": "string"
+        }
+        ```
+
+    The `input` field must match the required structure for the selected `RaybotCommandType`. An invalid or missing input will result in an error.
+  tags:
+    - raybotCommand
+  parameters:
+    - name: raybotId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/schemas/raybot_command.yml#/CreateRaybotCommandRequest"
+  responses:
+    '201':
+      description: Successfully created raybot command
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/raybot_command.yml#/RaybotCommandResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

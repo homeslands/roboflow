@@ -1,0 +1,81 @@
+RaybotResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    name:
+      type: string
+      description: The name of the raybot.
+      x-order: 2
+    controlMode:
+      $ref: "#/ControlMode"
+      x-order: 3
+    isOnline:
+      type: boolean
+      description: The online status of the raybot.
+      x-order: 4
+    ipAddress:
+      type: string
+      description: The IP address of the raybot.
+      format: ipv4
+      nullable: true
+      x-order: 5
+    lastConnectedAt:
+      type: string
+      description: The last time the raybot was connected.
+      format: date-time
+      nullable: true
+      x-order: 6
+    createdAt:
+      type: string
+      description: The time the raybot was created.
+      format: date-time
+      x-order: 7
+    updatedAt:
+      type: string
+      description: The time the raybot was last updated.
+      format: date-time
+      x-order: 8
+  required:
+    - id
+    - name
+    - controlMode
+    - isOnline
+    - ipAddress
+    - lastConnectedAt
+    - createdAt
+    - updatedAt
+RaybotsListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+      format: int64
+    items:
+      type: array
+      items:
+        $ref: "#/RaybotResponse"
+  required:
+    - totalItems
+    - items
+CreateRaybotRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: The name of the raybot.
+      minLength: 1
+      maxLength: 255
+      pattern: "^[a-zA-Z0-9 ]+$"
+      example: "my raybot"
+  required:
+    - name
+ControlMode:
+  type: string
+  enum:
+    - MANUAL
+    - WORKFLOW
+  x-go-type: string

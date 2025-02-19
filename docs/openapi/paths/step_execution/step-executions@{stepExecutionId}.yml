@@ -1,0 +1,27 @@
+get:
+  summary: Get step by id
+  operationId: stepExecution:get
+  description: Get steps by id
+  tags:
+    - stepExecution
+  parameters:
+    - name: stepExecutionId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/step_execution.yml#/StepExecutionResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

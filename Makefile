@@ -1,12 +1,83 @@
-POSTGRES_DSN=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
-MIGRATION_DIR=db/migration
+########################
+# Code generation
+########################
+.PHONY: gen-api-server
+gen-api-server:
+	set -eux
 
-.PHONY: docs
-docs:
-	redocly bundle ./docs/openapi/openapi.yml -o ./docs/openapi/build/openapi.yml
-	oapi-codegen -generate types -o "./internal/api/openapi_types.gen.go" -package "api" "./docs/openapi/build/openapi.yml"
-	oapi-codegen -generate chi-server -o "./internal/api/openapi_api.gen.go" -package "api" "./docs/openapi/build/openapi.yml"
+	npx --yes @redocly/cli bundle ./docs/openapi/openapi.yml --output bin/oas/openapi.yml --ext yml
+	go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.4.1 \
+		-config internal/controller/http/oas/gen/openapi.yml \
+		bin/oas/openapi.yml
 
+.PHONY: gen-sqlc
+gen-sqlc:
+	go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.28.0 generate --file internal/db/sqlcpg/sqlc.yml
+
+.PHONY: gen-mock
+gen-mock:
+	go run github.com/vektra/mockery/v2@v2.50 --config .mockery.yml
+
+########################
+# Database
+########################
+GOOSE_DRIVER=postgres
+GOOSE_DBSTRING="postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+GOOSE_MIGRATION_DIR=internal/db/migration
+
+.PHONY: migrate-status
+migrate-status:
+	GOOSE_DRIVER=$(GOOSE_DRIVER) \
+	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
+	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
+	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 status
+
+.PHONY: migrate-up
+migrate-up:
+	GOOSE_DRIVER=$(GOOSE_DRIVER) \
+	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
+	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
+	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 up
+
+.PHONY: migrate-down
+migrate-down:
+	GOOSE_DRIVER=$(GOOSE_DRIVER) \
+	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
+	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
+	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 down
+
+.PHONY: migrate-reset
+migrate-reset:
+	GOOSE_DRIVER=$(GOOSE_DRIVER) \
+	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
+	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
+	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 reset
+
+.PHONY: migrate-new
+migrate-new:
+ifndef name
+	@echo "Usage: make migrate-new name=<your migration name>"
+	@exit 1
+endif
+	GOOSE_DRIVER=$(GOOSE_DRIVER) \
+	GOOSE_DBSTRING=$(GOOSE_DBSTRING) \
+	GOOSE_MIGRATION_DIR=$(GOOSE_MIGRATION_DIR) \
+	go run github.com/pressly/goose/v3/cmd/goose@v3.24.1 create $(name) sql
+
+########################
+# Start services
+########################
+.PHONY: roboflow-standalone
+roboflow-standalone:
+	go run cmd/roboflow/main.go
+
+.PHONY: roboflow-api
+roboflow-api:
+	go run cmd/roboflow_api/main.go
+
+########################
+# Testing
+########################
 .PHONY: test
 test:
 	go test -v -cover -short ./...
@@ -14,36 +85,12 @@ test:
 .PHONY: test-coverage
 test-coverage:
 	go test -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report generated in coverage.html"
+	go tool cover -html=coverage.out -o bin/coverage.html
+	@echo "Coverage report saved to bin/coverage.html"
 
-.PHONY: mock
-mock:
-	mockery --all
-
-.PHONY: server
-server:
-	go run cmd/main.go
-
-.PHONY: db-status
-db-status:
-	GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(POSTGRES_DSN) goose -dir=$(MIGRATION_DIR) status
-
-.PHONY: migrate-up
-migrate-up:
-	GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(POSTGRES_DSN) goose -dir=$(MIGRATION_DIR) up
-
-.PHONY: migrate-down
-migrate-down:
-	GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(POSTGRES_DSN) goose -dir=$(MIGRATION_DIR) down
-
-.PHONY: migrate-reset
-migrate-reset:
-	GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(POSTGRES_DSN) goose -dir=$(MIGRATION_DIR) reset
-
-.PHONY: migrate-create
-migrate-create:
-ifndef name
-	$(error name is required, use: `make migrate-create name=your_migration_name`)
-endif
-	GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(POSTGRES_DSN) goose -dir $(MIGRATION_DIR) create "$(name)" sql
+########################
+# Lint
+########################
+.PHONY: lint-go
+lint-go:
+	golangci-lint run ./... --config .golangci.yml

@@ -1,29 +1,25 @@
 package config
 
 import (
-	"github.com/caarlos0/env/v6"
+	"fmt"
+	//nolint:revive
+
+	"github.com/caarlos0/env/v11"
 	_ "github.com/joho/godotenv/autoload"
 )
 
-const (
-	prodEnvVal = "production"
-)
-
 type Config struct {
-	Env         string `env:"ENV" envDefault:"development"`
-	Port        int    `env:"PORT" envDefault:"8000"`
-	PostgresDsn string `env:"POSTGRES_DSN"`
+	Log        LogConfig        `envPrefix:"LOG_"`
+	HTTPServer HTTPServerConfig `envPrefix:"HTTP_SERVER_"`
+	Postgres   PostgresConfig   `envPrefix:"PG_"`
+	Nats       NatsConfig       `envPrefix:"NATS_"`
 }
 
-func (c *Config) IsProd() bool {
-	return c.Env == prodEnvVal
-}
-
-func MustLoadConfig() *Config {
+func Load() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
-		panic(err)
+		return nil, fmt.Errorf("error parsing env: %w", err)
 	}
 
-	return cfg
+	return cfg, nil
 }

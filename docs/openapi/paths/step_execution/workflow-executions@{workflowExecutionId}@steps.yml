@@ -1,0 +1,29 @@
+get:
+  summary: List steps by workflow execution id
+  operationId: stepExecution:listByWorkflowExecutionId
+  description: List steps by workflow execution id
+  tags:
+    - stepExecution
+  parameters:
+    - name: workflowExecutionId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '200':
+      description: List steps successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../components/schemas/step_execution.yml#/StepExecutionResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

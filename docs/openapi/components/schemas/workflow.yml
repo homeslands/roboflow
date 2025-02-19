@@ -1,0 +1,308 @@
+WorkflowResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    name:
+      type: string
+      description: The name of the workflow.
+      x-order: 2
+    description:
+      type: string
+      description: The description of the workflow.
+      x-order: 3
+    isDraft:
+      type: boolean
+      description: The draft status of the workflow.
+      x-order: 4
+    data:
+      # Using x-go-type with ref
+      # https://github.com/oapi-codegen/oapi-codegen/issues/863#issuecomment-2618631263
+      allOf:
+        - $ref: '#/WorkflowData'
+        - x-go-type: json.RawMessage
+      x-order: 5
+    createdAt:
+      type: string
+      format: date-time
+      description: The creation date of the workflow.
+      x-order: 6
+    updatedAt:
+      type: string
+      format: date-time
+      description: The last update date of the workflow.
+      x-order: 7
+  required:
+    - id
+    - name
+    - isDraft
+    - data
+    - createdAt
+    - updatedAt
+WorkflowItemListResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+    name:
+      type: string
+      description: The name of the workflow.
+      x-order: 2
+    description:
+      type: string
+      description: The description of the workflow.
+      x-order: 3
+    isDraft:
+      type: boolean
+      description: The draft status of the workflow.
+      x-order: 4
+    createdAt:
+      type: string
+      format: date-time
+      description: The creation date of the workflow.
+      x-order: 5
+    updatedAt:
+      type: string
+      format: date-time
+      description: The last update date of the workflow.
+      x-order: 6
+  required:
+    - id
+    - name
+    - isDraft
+    - createdAt
+    - updatedAt
+WorkflowsListResponse:
+  type: object
+  properties:
+    totalItems:
+      type: integer
+      format: int64
+      description: The total number of items.
+      x-order: 1
+    items:
+      type: array
+      items:
+        $ref: '#/WorkflowItemListResponse'
+      x-order: 2
+  required:
+    - totalItems
+    - items
+CreateWorkflowRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: The name of the workflow.
+      minLength: 1
+      maxLength: 255
+      pattern: "^[a-zA-Z0-9 ]+$"
+      example: "my workflow"
+      x-order: 1
+    description:
+      type: string
+      description: The description of the workflow.
+      x-order: 2
+    data:
+      allOf:
+        - $ref: '#/WorkflowData'
+        - x-go-type: json.RawMessage
+      description: The data of the workflow.
+      x-order: 3
+  required:
+    - name
+    - data
+UpdateWorkflowRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: The name of the workflow.
+      minLength: 1
+      maxLength: 255
+      pattern: "^[a-zA-Z0-9 ]+$"
+      example: "my workflow"
+      x-order: 1
+    description:
+      type: string
+      description: The description of the workflow.
+      x-order: 2
+    data:
+      allOf:
+        - $ref: '#/WorkflowData'
+        - x-go-type: json.RawMessage
+      description: The data of the workflow.
+      x-order: 3
+  required:
+    - name
+    - data
+RunWorkflowRequest:
+  type: object
+  properties:
+    runtimeVariables:
+      type: object
+      description: The runtime variables of the workflow.
+      x-order: 1
+      x-go-type: map[string]any
+  required:
+    - runtimeVariables
+RunWorkflowResponse:
+  type: object
+  properties:
+    id:
+      type: string
+      description: The id of the resource, in UUID format
+      example: 123e4567-e89b-12d3-a456-426614174000
+      x-order: 1
+  required:
+    - id
+WorkflowData:
+  type: object
+  properties:
+    nodes:
+      type: array
+      items:
+        $ref: '#/WorkflowNode'
+    edges:
+      type: array
+      items:
+        $ref: '#/WorkflowEdge'
+    viewport:
+      $ref: '#/ViewPort'
+    position:
+      type: array
+      items:
+        type: number
+        format: float
+    zoom:
+      type: number
+      format: float
+WorkflowNode:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      description: The unique identifier of the node.
+      x-order: 1
+    type:
+      $ref: '#/NodeType'
+      description: The type of the node.
+      x-order: 2
+    position:
+      $ref: '#/Position'
+      description: The position of the node.
+      x-order: 3
+    label:
+      type: string
+      description: The label of the node.
+      x-order: 4
+    data:
+      type: object
+      description: The data of the node.
+      x-go-type: json.RawMessage
+      x-order: 5
+  required:
+    - id
+    - type
+    - position
+    - label
+    - data
+WorkflowEdge:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      x-order: 1
+    type:
+      type: string
+      x-order: 2
+    source:
+      type: string
+      x-order: 3
+    target:
+      type: string
+      x-order: 4
+    sourceHandle:
+      type: string
+      x-order: 5
+    targetHandle:
+      type: string
+      x-order: 6
+    label:
+      type: string
+      x-order: 7
+    animated:
+      type: boolean
+      x-order: 8
+    sourceX:
+      type: number
+      format: float
+      x-order: 9
+    sourceY:
+      type: number
+      format: float
+      x-order: 10
+    targetX:
+      type: number
+      format: float
+      x-order: 11
+    targetY:
+      type: number
+      format: float
+      x-order: 12
+  required:
+    - id
+    - type
+    - source
+    - target
+    - sourceHandle
+    - targetHandle
+    - label
+    - animated
+    - sourceX
+    - sourceY
+    - targetX
+    - targetY
+NodeType:
+  type: string
+  enum:
+    - EMPTY
+    - TRIGGER
+    - CONTROL_RAYBOT
+  x-go-type: string
+Position:
+  type: object
+  properties:
+    x:
+      type: number
+      format: float
+    y:
+      type: number
+      format: float
+  required:
+    - x
+    - y
+ViewPort:
+  type: object
+  properties:
+    x:
+      type: number
+      format: float
+    y:
+      type: number
+      format: float
+    zoom:
+      type: number
+      format: float
+  required:
+    - x
+    - y
+    - zoom

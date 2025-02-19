@@ -1,13 +1,10 @@
 package middleware
 
-// ref: https://github.com/go-chi/chi/blob/master/middleware/recoverer.go
-
 import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"runtime/debug"
 )
 
 // Recoverer is a middleware that recovers from panics, logs the panic (and a
@@ -15,16 +12,14 @@ import (
 // possible.
 //
 // Recoverer prints a stack trace of the last function call.
-func Recoverer(next http.Handler, isProd bool, log *slog.Logger) http.Handler {
-	errorResponse := struct {
+func Recoverer(next http.Handler) http.Handler {
+	var errorMsg, err = json.Marshal(struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
 	}{
 		Code:    "internal_server_error",
 		Message: "Internal Server Error",
-	}
-
-	response, err := json.Marshal(errorResponse)
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -38,16 +33,13 @@ func Recoverer(next http.Handler, isProd bool, log *slog.Logger) http.Handler {
 					panic(rvr)
 				}
 
-				if isProd {
-					log.Error("panic", slog.Any("recover", rvr))
-				} else {
-					chimiddleware.PrintPrettyStack(rvr)
-				}
+				slog.Error("panic", slog.Any("recover", rvr),
+					slog.String("stack", string(debug.Stack())))
 
 				if r.Header.Get("Connection") != "Upgrade" {
-					w.Header().Set("Content-Type", "application/json")
 					w.WriteHeader(http.StatusInternalServerError)
-					w.Write(response)
+					//nolint:errcheck
+					w.Write(errorMsg)
 				}
 			}
 		}()

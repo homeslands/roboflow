@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"github.com/tuanvumaihuynh/roboflow/pkg/paging"
 )
 
@@ -14,5 +15,5 @@ func TestListCreation(t *testing.T) {
 	list := paging.NewList(items, totalItems)
 
 	assert.Equal(t, items, list.Items)
-	assert.Equal(t, totalItems, list.TotalItem)
+	assert.Equal(t, totalItems, list.TotalItems)
 }

@@ -1,0 +1,89 @@
+get:
+  summary: Get QR location by id
+  operationId: qrLocation:get
+  description: Get a QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - name: qrLocationId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    "200":
+      description: Get QR location successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/qr_location.yml#/QRLocationResponse"
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+put:
+  summary: Update QR location by id
+  operationId: qrLocation:update
+  description: Update a QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - name: qrLocationId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/schemas/qr_location.yml#/UpdateQRLocationRequest"
+  responses:
+    "200":
+      description: Updated QR location successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/qr_location.yml#/QRLocationResponse"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+delete:
+  summary: Delete QR location by id
+  operationId: qrLocation:delete
+  description: Delete a QR location by id
+  tags:
+    - qrLocation
+  parameters:
+    - name: qrLocationId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    "204":
+      description: Deleted QR location successfully
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

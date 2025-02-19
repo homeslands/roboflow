@@ -1,0 +1,58 @@
+get:
+  summary: List QR locations
+  operationId: qrLocation:list
+  description: List QR locations
+  tags:
+    - qrLocation
+  parameters:
+    - $ref: "../../components/parameters/paging.yml#/Page"
+    - $ref: "../../components/parameters/paging.yml#/PageSize"
+    - name: sort
+      in: query
+      description: >
+        Sort the results by one or more columns.
+          - Use a column name for ascending order (e.g., created_at).
+          - Prefix with `-` for descending order (e.g., -created_at).
+
+        Allowed columns: `name`, `qr_code`, `created_at`, `updated_at`.
+      required: false
+      schema:
+        type: string
+  responses:
+    "200":
+      description: A list of QR locations
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/qr_location.yml#/QRLocationsListResponse"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+post:
+  summary: Create QR location
+  operationId: qrLocation:create
+  description: Create a QR location
+  tags:
+    - qrLocation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/schemas/qr_location.yml#/CreateQRLocationRequest"
+  responses:
+    "201":
+      description: Successfully created QR location
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/qr_location.yml#/QRLocationResponse"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"

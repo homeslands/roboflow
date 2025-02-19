@@ -1,0 +1,83 @@
+get:
+  summary: Get workflow by id
+  operationId: workflow:get
+  description: Get workflow by id
+  tags:
+    - workflow
+  parameters:
+    - name: workflowId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '200':
+      description: Get workflow successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/workflow.yml#/WorkflowResponse"
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+put:
+  summary: Update workflow by id
+  operationId: workflow:update
+  description: Update workflow by id
+  tags:
+    - workflow
+  parameters:
+    - name: workflowId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../components/schemas/workflow.yml#/UpdateWorkflowRequest"
+  responses:
+    '200':
+      description: Updated workflow successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/workflow.yml#/WorkflowResponse"
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
+delete:
+  summary: Delete workflow by id
+  operationId: workflow:delete
+  description: Delete workflow by id
+  tags:
+    - workflow
+  parameters:
+    - name: workflowId
+      in: path
+      required: true
+      schema:
+        type: string
+        description: The id of the resource, in UUID format
+        example: 123e4567-e89b-12d3-a456-426614174000
+  responses:
+    '204':
+      description: Deleted workflow successfully
+    '404':
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../components/schemas/error.yml#/ErrorResponse"
